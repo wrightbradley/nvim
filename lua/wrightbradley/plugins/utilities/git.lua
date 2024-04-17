@@ -5,7 +5,7 @@ return {
       if type(opts.ensure_installed) == "table" then
         vim.list_extend(
           opts.ensure_installed,
-          { "git_config", "git_rebase", "gitattributes", "gitcommit", "gitignore" }
+          { "git_config", "git_rebase", "gitattributes", "gitcommit", "gitignore", "octo" }
         )
       end
     end,
