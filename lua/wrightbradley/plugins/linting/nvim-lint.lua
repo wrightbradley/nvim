@@ -6,7 +6,7 @@ return {
       -- Event to trigger linters
       events = { "BufWritePost", "BufReadPost", "InsertLeave" },
       linters_by_ft = {
-        -- fish = { "fish" },
+        -- sh = { "shellcheck" },
         -- Use the "*" filetype to run linters on all filetypes.
         -- ['*'] = { 'global linter' },
         -- Use the "_" filetype to run linters on filetypes that don't have other linters configured.
@@ -83,6 +83,9 @@ return {
         if #names > 0 then
           lint.try_lint(names)
         end
+        -- For debugging linters
+        -- local linters = require("lint").get_running()
+        -- Util.warn(linters, { title = "Linters" })
       end
 
       vim.api.nvim_create_autocmd(opts.events, {
