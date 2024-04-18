@@ -12,8 +12,26 @@ return {
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
       -- for ansiblels validation
-      vim.list_extend(opts.ensure_installed, { "ansible-lint" })
+      vim.list_extend(opts.ensure_installed, { "ansible-lint", "ansible-language-server" })
     end,
+  },
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        ansible = { "ansible-lint" },
+      },
+    },
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        ansible = { "yamlfmt" },
+      },
+    },
   },
   {
     "neovim/nvim-lspconfig",
