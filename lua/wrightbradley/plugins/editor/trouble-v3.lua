@@ -1,5 +1,3 @@
-local Config = require("wrightbradley.config")
-
 return {
   {
     "folke/trouble.nvim",
@@ -15,6 +13,20 @@ return {
       },
       { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
       { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+      {
+        "[q",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").prev({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cprev)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "Previous Trouble/Quickfix Item",
+      },
     },
   },
 
@@ -25,7 +37,7 @@ return {
     opts = function(_, opts)
       local trouble = require("trouble")
       if not trouble.statusline then
-        Util.error("You have enabled **trouble-v3**,\nbut still need to update it with `:Lazy`")
+        Util.error("You have enabled the **trouble-v3** extra,\nbut still need to update it with `:Lazy`")
         return
       end
 
@@ -60,6 +72,24 @@ return {
           end,
         })
       end
+    end,
+  },
+
+  {
+    "nvim-telescope/telescope.nvim",
+    optional = true,
+    opts = function(_, opts)
+      local open_with_trouble = require("trouble.sources.telescope").open
+      return vim.tbl_deep_extend("force", opts, {
+        defaults = {
+          mappings = {
+            i = {
+              ["<c-t>"] = open_with_trouble,
+              ["<a-t>"] = open_with_trouble,
+            },
+          },
+        },
+      })
     end,
   },
 }
