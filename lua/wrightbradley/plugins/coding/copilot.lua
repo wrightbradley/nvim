@@ -1,3 +1,6 @@
+if true then
+  return {}
+end
 -- copilot suggestions and completion
 return {
   -- copilot
