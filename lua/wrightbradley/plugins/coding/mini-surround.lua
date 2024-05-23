@@ -1,24 +1,24 @@
 if true then
   return {}
 end
--- Fast and feature-rich surround actions. For text that includes
--- surrounding characters like brackets or quotes, this allows you
--- to select the text inside, change or modify the surrounding characters,
--- and more.
 return {
+  -- Fast and feature-rich surround actions. For text that includes
+  -- surrounding characters like brackets or quotes, this allows you
+  -- to select the text inside, change or modify the surrounding characters,
+  -- and more.
   {
     "echasnovski/mini.surround",
+    recommended = true,
     keys = function(_, keys)
       -- Populate the keys based on the user's options
-      local plugin = require("lazy.core.config").spec.plugins["mini.surround"]
-      local opts = require("lazy.core.plugin").values(plugin, "opts", false)
+      local opts = Util.opts("mini.surround")
       local mappings = {
-        { opts.mappings.add, desc = "Add surrounding", mode = { "n", "v" } },
-        { opts.mappings.delete, desc = "Delete surrounding" },
-        { opts.mappings.find, desc = "Find right surrounding" },
-        { opts.mappings.find_left, desc = "Find left surrounding" },
-        { opts.mappings.highlight, desc = "Highlight surrounding" },
-        { opts.mappings.replace, desc = "Replace surrounding" },
+        { opts.mappings.add, desc = "Add Surrounding", mode = { "n", "v" } },
+        { opts.mappings.delete, desc = "Delete Surrounding" },
+        { opts.mappings.find, desc = "Find Right Surrounding" },
+        { opts.mappings.find_left, desc = "Find Left Surrounding" },
+        { opts.mappings.highlight, desc = "Highlight Surrounding" },
+        { opts.mappings.replace, desc = "Replace Surrounding" },
         { opts.mappings.update_n_lines, desc = "Update `MiniSurround.config.n_lines`" },
       }
       mappings = vim.tbl_filter(function(m)
