@@ -1,16 +1,17 @@
 return {
   {
     "mfussenegger/nvim-lint",
-    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+    event = "LazyFile",
     opts = {
       -- Event to trigger linters
       events = { "BufWritePost", "BufReadPost", "InsertLeave" },
       linters_by_ft = {
-        -- sh = { "shellcheck" },
+        -- fish = { "fish" },
         -- Use the "*" filetype to run linters on all filetypes.
         -- ['*'] = { 'global linter' },
         -- Use the "_" filetype to run linters on filetypes that don't have other linters configured.
         -- ['_'] = { 'fallback linter' },
+        -- ["*"] = { "typos" },
       },
       -- Util extension to easily override linter options
       -- or add custom linters.
@@ -40,7 +41,7 @@ return {
       lint.linters_by_ft = opts.linters_by_ft
 
       function M.debounce(ms, fn)
-        local timer = vim.loop.new_timer()
+        local timer = vim.uv.new_timer()
         return function(...)
           local argv = { ... }
           timer:start(ms, 0, function()
@@ -73,9 +74,9 @@ return {
         ctx.dirname = vim.fn.fnamemodify(ctx.filename, ":h")
         names = vim.tbl_filter(function(name)
           local linter = lint.linters[name]
-          -- if not linter then
-          --   Util.warn("Linter not found: " .. name, { title = "nvim-lint" })
-          -- end
+          if not linter then
+            Util.warn("Linter not found: " .. name, { title = "nvim-lint" })
+          end
           return linter and not (type(linter) == "table" and linter.condition and not linter.condition(ctx))
         end, names)
 
