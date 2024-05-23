@@ -6,7 +6,11 @@ return {
   {
     "echasnovski/mini.pairs",
     event = "VeryLazy",
-    opts = {},
+    opts = {
+      mappings = {
+        ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^\\`].", register = { cr = false } },
+      },
+    },
     keys = {
       {
         "<leader>up",
@@ -18,7 +22,7 @@ return {
             Util.info("Enabled auto pairs", { title = "Option" })
           end
         end,
-        desc = "Toggle auto pairs",
+        desc = "Toggle Auto Pairs",
       },
     },
   },
