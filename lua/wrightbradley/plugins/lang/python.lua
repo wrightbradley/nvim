@@ -21,6 +21,7 @@ return {
     opts = {
       servers = {
         ruff_lsp = {
+          enabled = true,
           keys = {
             {
               "<leader>co",
@@ -36,6 +37,9 @@ return {
               desc = "Organize Imports",
             },
           },
+        },
+        ruff = {
+          enabled = true,
         },
       },
       setup = {
@@ -98,7 +102,7 @@ return {
         },
       })
     end,
-    keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv" } },
+    keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
   },
   {
     "hrsh7th/nvim-cmp",
