@@ -38,13 +38,17 @@ return {
       -- Be aware that you also will need to properly configure your LSP server to
       -- provide the inlay hints.
       inlay_hints = {
-        enabled = false,
+        enabled = true,
       },
       -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
       -- Be aware that you also will need to properly configure your LSP server to
       -- provide the code lenses.
       codelens = {
         enabled = false,
+      },
+      -- Enable lsp cursor word highlighting
+      document_highlight = {
+        enabled = true,
       },
       -- add any global capabilities here
       capabilities = {},
@@ -75,6 +79,17 @@ return {
               completion = {
                 callSnippet = "Replace",
               },
+              doc = {
+                privateName = { "^_" },
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
             },
           },
         },
@@ -95,8 +110,7 @@ return {
     ---@param opts PluginLspOpts
     config = function(_, opts)
       if Util.has("neoconf.nvim") then
-        local plugin = require("lazy.core.config").spec.plugins["neoconf.nvim"]
-        require("neoconf").setup(require("lazy.core.plugin").values(plugin, "opts", false))
+        require("neoconf").setup(Util.opts("neoconf.nvim"))
       end
 
       -- setup autoformat
@@ -107,47 +121,42 @@ return {
         require("wrightbradley.config.lsp-keymaps").on_attach(client, buffer)
       end)
 
-      local register_capability = vim.lsp.handlers["client/registerCapability"]
+      Util.lsp.setup()
+      Util.lsp.on_dynamic_capability(require("wrightbradley.config.lsp-keymaps").on_attach)
 
-      vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
-        ---@diagnostic disable-next-line: no-unknown
-        local ret = register_capability(err, res, ctx)
-        local client = vim.lsp.get_client_by_id(ctx.client_id)
-        local buffer = vim.api.nvim_get_current_buf()
-        require("wrightbradley.config.lsp-keymaps").on_attach(client, buffer)
-        return ret
-      end
+      Util.lsp.words.setup(opts.document_highlight)
 
       -- diagnostics signs
       if vim.fn.has("nvim-0.10.0") == 0 then
-        for severity, icon in pairs(opts.diagnostics.signs.text) do
-          local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
-          name = "DiagnosticSign" .. name
-          vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+        if type(opts.diagnostics.signs) ~= "boolean" then
+          for severity, icon in pairs(opts.diagnostics.signs.text) do
+            local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
+            name = "DiagnosticSign" .. name
+            vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+          end
         end
       end
 
-      -- inlay hints
-      if opts.inlay_hints.enabled then
-        Util.lsp.on_attach(function(client, buffer)
-          if client.supports_method("textDocument/inlayHint") then
-            Util.toggle.inlay_hints(buffer, true)
-          end
-        end)
-      end
+      if vim.fn.has("nvim-0.10") == 1 then
+        -- inlay hints
+        if opts.inlay_hints.enabled then
+          Util.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+            if vim.api.nvim_buf_is_valid(buffer) and vim.bo[buffer].buftype == "" then
+              Util.toggle.inlay_hints(buffer, true)
+            end
+          end)
+        end
 
-      -- code lens
-      if opts.codelens.enabled and vim.lsp.codelens then
-        Util.lsp.on_attach(function(client, buffer)
-          if client.supports_method("textDocument/codeLens") then
+        -- code lens
+        if opts.codelens.enabled and vim.lsp.codelens then
+          Util.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
             vim.lsp.codelens.refresh()
-            --- autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
             vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
               buffer = buffer,
               callback = vim.lsp.codelens.refresh,
             })
-          end
-        end)
+          end)
+        end
       end
 
       if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
@@ -212,7 +221,14 @@ return {
       end
 
       if have_mason then
-        mlsp.setup({ ensure_installed = ensure_installed, handlers = { setup } })
+        mlsp.setup({
+          ensure_installed = vim.tbl_deep_extend(
+            "force",
+            ensure_installed,
+            Util.opts("mason-lspconfig.nvim").ensure_installed or {}
+          ),
+          handlers = { setup },
+        })
       end
 
       if Util.lsp.get_config("denols") and Util.lsp.get_config("tsserver") then
