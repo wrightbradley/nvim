@@ -1,4 +1,5 @@
 return {
+  desc = "Trouble rewrite including document symbols and a lualine component",
   {
     "folke/trouble.nvim",
     branch = "dev",

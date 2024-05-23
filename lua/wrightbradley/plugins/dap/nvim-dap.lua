@@ -12,6 +12,7 @@ end
 
 return {
   "mfussenegger/nvim-dap",
+  desc = "Debugging support. Requires language specific adapters to be configured. (see lang extras)",
 
   dependencies = {
 
@@ -26,8 +27,6 @@ return {
       },
       opts = {},
       config = function(_, opts)
-        -- setup dap config by VsCode launch.json file
-        -- require("dap.ext.vscode").load_launchjs()
         local dap = require("dap")
         local dapui = require("dapui")
         dapui.setup(opts)

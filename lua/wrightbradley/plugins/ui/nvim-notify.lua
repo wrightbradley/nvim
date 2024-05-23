@@ -1,5 +1,5 @@
--- Better `vim.notify()`
 return {
+  -- Better `vim.notify()`
   {
     "rcarriga/nvim-notify",
     keys = {
@@ -8,7 +8,7 @@ return {
         function()
           require("notify").dismiss({ silent = true, pending = true })
         end,
-        desc = "Dismiss all Notifications",
+        desc = "Dismiss All Notifications",
       },
     },
     opts = {

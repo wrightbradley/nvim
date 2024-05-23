@@ -1,8 +1,7 @@
 -- Show context of the current function
 return {
   "nvim-treesitter/nvim-treesitter-context",
-  event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-  enabled = true,
+  event = "LazyFile",
   opts = { mode = "cursor", max_lines = 3 },
   keys = {
     {
