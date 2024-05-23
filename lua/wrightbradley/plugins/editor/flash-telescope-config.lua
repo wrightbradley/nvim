@@ -4,9 +4,9 @@ return {
     "nvim-telescope/telescope.nvim",
     optional = true,
     opts = function(_, opts)
-      -- if not Util.has("flash.nvim") then
-      --   return
-      -- end
+      if not Util.has("flash.nvim") then
+        return
+      end
       local function flash(prompt_bufnr)
         require("flash").jump({
           pattern = "^",
