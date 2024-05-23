@@ -13,6 +13,8 @@ local LazyUtil = require("lazy.core.util")
 ---@field plugin wrightbradley.util.plugin
 ---@field inject wrightbradley.util.inject
 ---@field lualine wrightbradley.util.lualine
+---@field mini wrightbradley.util.mini
+---@field cmp wrightbradley.util.cmp
 local M = {}
 
 ---@type table<string, string|string[]>
@@ -69,7 +71,7 @@ end
 
 ---@param name string
 function M.opts(name)
-  local plugin = require("lazy.core.config").plugins[name]
+  local plugin = require("lazy.core.config").spec.plugins[name]
   if not plugin then
     return {}
   end
@@ -123,11 +125,15 @@ function M.lazy_notify()
   timer:start(500, 0, replay)
 end
 
+function M.is_loaded(name)
+  local Config = require("lazy.core.config")
+  return Config.plugins[name] and Config.plugins[name]._.loaded
+end
+
 ---@param name string
 ---@param fn fun(name:string)
 function M.on_load(name, fn)
-  local Config = require("lazy.core.config")
-  if Config.plugins[name] and Config.plugins[name]._.loaded then
+  if M.is_loaded(name) then
     fn(name)
   else
     vim.api.nvim_create_autocmd("User", {
@@ -164,6 +170,28 @@ function M.safe_keymap_set(mode, lhs, rhs, opts)
       opts.remap = nil
     end
     vim.keymap.set(modes, lhs, rhs, opts)
+  end
+end
+
+---@generic T
+---@param list T[]
+---@return T[]
+function M.dedup(list)
+  local ret = {}
+  local seen = {}
+  for _, v in ipairs(list) do
+    if not seen[v] then
+      table.insert(ret, v)
+      seen[v] = true
+    end
+  end
+  return ret
+end
+
+M.CREATE_UNDO = vim.api.nvim_replace_termcodes("<c-G>u", true, true, true)
+function M.create_undo()
+  if vim.api.nvim_get_mode().mode == "i" then
+    vim.api.nvim_feedkeys(M.CREATE_UNDO, "n", false)
   end
 end
 
