@@ -1,14 +1,14 @@
--- indent guides for Neovim
 return {
+  -- indent guides for Neovim
   {
     "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+    event = "LazyFile",
     opts = {
       indent = {
         char = "│",
         tab_char = "│",
       },
-      scope = { enabled = false },
+      scope = { show_start = false, show_end = false },
       exclude = {
         filetypes = {
           "help",
