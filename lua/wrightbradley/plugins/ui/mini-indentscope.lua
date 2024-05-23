@@ -1,13 +1,15 @@
--- Active indent guide and indent text objects. When you're browsing
--- code, this highlights the current level of indentation, and animates
--- the highlighting.
+if true then
+  return {}
+end
 return {
+  -- Active indent guide and indent text objects. When you're browsing
+  -- code, this highlights the current level of indentation, and animates
+  -- the highlighting.
   {
     "echasnovski/mini.indentscope",
     version = false, -- wait till new 0.7.0 release to put it back on semver
-    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+    event = "LazyFile",
     opts = {
-      -- symbol = "▏",
       symbol = "│",
       options = { try_as_border = true },
     },
@@ -31,5 +33,12 @@ return {
         end,
       })
     end,
+  },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = "LazyFile",
+    opts = {
+      scope = { enabled = false },
+    },
   },
 }
