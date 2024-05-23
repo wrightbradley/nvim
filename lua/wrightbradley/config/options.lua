@@ -5,6 +5,9 @@
 -- Options are automatically loaded before lazy.nvim startup
 vim.cmd("let g:netrw_liststyle = 3")
 
+-- Hide deprecation warnings
+vim.g.deprecation_warnings = false
+
 local opt = vim.opt
 
 -- Set <space> as the leader key
@@ -24,10 +27,10 @@ opt.mouse = "a"
 -- Don't show the mode, since it's already in status line
 opt.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-opt.clipboard = ""
+-- See `:help 'clipboard'`
+-- only set clipboard if not in ssh, to make sure the OSC 52
+-- integration works automatically. Requires Neovim >= 0.10.0
+opt.clipboard = vim.env.SSH_TTY and "" or ""
 
 -- Enable break indent
 opt.breakindent = true
@@ -94,6 +97,16 @@ opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
 opt.confirm = true -- Confirm to save changes before exiting modified buffer
 opt.expandtab = true -- Use spaces instead of tabs
+opt.fillchars = {
+  foldopen = "",
+  foldclose = "",
+  fold = " ",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
+}
+opt.foldlevel = 99
+opt.formatexpr = "v:lua.require'wrightbradley.util'.format.formatexpr()"
 opt.formatoptions = "jcroqlnt" -- tcqj
 opt.grepformat = "%f:%l:%c:%m"
 opt.grepprg = "rg --vimgrep"
@@ -110,47 +123,22 @@ opt.spelllang = { "en" }
 opt.splitkeep = "screen"
 opt.tabstop = 4 -- Number of spaces tabs count for
 opt.termguicolors = true -- True color support
-if not vim.g.vscode then
-  opt.timeoutlen = 300 -- Lower than default (1000) to quickly trigger which-key
-end
+opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower than default (1000) to quickly trigger which-key
 opt.updatetime = 200 -- Save swap file and trigger CursorHold
 opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.wrap = false -- Disable line wrap
-opt.fillchars = {
-  foldopen = "",
-  foldclose = "",
-  -- fold = "⸱",
-  fold = " ",
-  foldsep = " ",
-  diff = "╱",
-  eob = " ",
-}
 
 if vim.fn.has("nvim-0.10") == 1 then
   opt.smoothscroll = true
+  opt.foldexpr = "v:lua.require'wrightbradley.util'.ui.foldexpr()"
+  opt.foldmethod = "expr"
+  opt.foldtext = ""
+else
+  opt.foldmethod = "indent"
+  opt.foldtext = "v:lua.require'wrightbradley.util'.ui.foldtext()"
 end
-
--- Folding
-opt.foldlevel = 99
 
 -- Fix markdown indentation settings
 vim.g.markdown_recommended_style = 0
-
-if vim.fn.has("nvim-0.9.0") == 1 then
-  opt.statuscolumn = [[%!v:lua.require'wrightbradley.util'.ui.statuscolumn()]]
-  opt.foldtext = "v:lua.require'util'.ui.foldtext()"
-end
-
--- HACK: causes freezes on <= 0.9, so only enable on >= 0.10 for now
-if vim.fn.has("nvim-0.10") == 1 then
-  opt.foldmethod = "expr"
-  opt.foldexpr = "v:lua.require'wrightbradley.util'.ui.foldexpr()"
-  opt.foldtext = ""
-  opt.fillchars = "fold: "
-else
-  opt.foldmethod = "indent"
-end
-
-opt.formatexpr = "v:lua.require'wrightbradley.util'.format.formatexpr()"
