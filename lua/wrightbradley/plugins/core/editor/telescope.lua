@@ -1,3 +1,5 @@
+local have_make = vim.fn.executable("make") == 1
+local have_cmake = vim.fn.executable("cmake") == 1
 return {
   -- Fuzzy finder.
   -- The default key bindings to find files will use Telescope's
@@ -10,20 +12,23 @@ return {
     dependencies = {
       {
         "nvim-telescope/telescope-fzf-native.nvim",
-        build = vim.fn.executable("make") == 1 and "make"
+        build = have_make and "make"
           or "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-        enabled = vim.fn.executable("make") == 1 or vim.fn.executable("cmake") == 1,
-        config = function()
+        enabled = have_make or have_cmake,
+        config = function(plugin)
           Util.on_load("telescope.nvim", function()
-            require("telescope").load_extension("fzf")
-          end)
-        end,
-      },
-      {
-        "debugloop/telescope-undo.nvim",
-        config = function()
-          Util.on_load("telescope.nvim", function()
-            require("telescope").load_extension("undo")
+            local ok, err = pcall(require("telescope").load_extension, "fzf")
+            if not ok then
+              local lib = plugin.dir .. "/build/libfzf." .. (Util.is_win() and "dll" or "so")
+              if not vim.uv.fs_stat(lib) then
+                Util.warn("`telescope-fzf-native.nvim` not built. Rebuilding...")
+                require("lazy").build({ plugins = { plugin }, show = false }):wait(function()
+                  Util.info("Rebuilding `telescope-fzf-native.nvim` done.\nPlease restart Neovim.")
+                end)
+              else
+                Util.error("Failed to load `telescope-fzf-native.nvim`:\n" .. err)
+              end
+            end
           end)
         end,
       },
@@ -60,11 +65,14 @@ return {
       { "<leader>sG", Util.telescope("live_grep", { cwd = false }), desc = "Grep (cwd)" },
       { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
       { "<leader>sH", "<cmd>Telescope highlights<cr>", desc = "Search Highlight Groups" },
+      { "<leader>sj", "<cmd>Telescope jumplist<cr>", desc = "Jumplist" },
       { "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
+      { "<leader>sl", "<cmd>Telescope loclist<cr>", desc = "Location List" },
       { "<leader>sM", "<cmd>Telescope man_pages<cr>", desc = "Man Pages" },
       { "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Jump to Mark" },
       { "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
       { "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
+      { "<leader>sq", "<cmd>Telescope quickfix<cr>", desc = "Quickfix List" },
       { "<leader>sw", Util.telescope("grep_string", { word_match = "-w" }), desc = "Word (Root Dir)" },
       { "<leader>sW", Util.telescope("grep_string", { cwd = false, word_match = "-w" }), desc = "Word (cwd)" },
       { "<leader>sw", Util.telescope("grep_string"), mode = "v", desc = "Selection (Root Dir)" },
