@@ -23,6 +23,8 @@ function M.get()
       { "gK", vim.lsp.buf.signature_help, desc = "Signature Help", has = "signatureHelp" },
       { "<c-k>", vim.lsp.buf.signature_help, mode = "i", desc = "Signature Help", has = "signatureHelp" },
       { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action", mode = { "n", "v" }, has = "codeAction" },
+      { "<leader>cc", vim.lsp.codelens.run, desc = "Run Codelens", mode = { "n", "v" }, has = "codeLens" },
+      { "<leader>cC", vim.lsp.codelens.refresh, desc = "Refresh & Display Codelens", mode = { "n" }, has = "codeLens" },
       {
         "<leader>cA",
         function()
@@ -37,7 +39,9 @@ function M.get()
         end,
         desc = "Source Action",
         has = "codeAction",
-      }
+      },
+      { "]]", function() Util.lsp.words.jump(vim.v.count1) end, has = "documentHighlight", desc = "Next Reference" },
+      { "[[", function() Util.lsp.words.jump(-vim.v.count1) end, has = "documentHighlight", desc = "Next Reference" },
     }
   if Util.has("inc-rename.nvim") then
     M._keys[#M._keys + 1] = {
