@@ -15,7 +15,9 @@ function M.setup(_, opts)
 
   for _, key in ipairs({ "format_on_save", "format_after_save" }) do
     if opts[key] then
-      Util.warn(("Don't set `opts.%s` for `conform.nvim`.\n will use the conform formatter automatically"):format(key))
+      Util.warn(
+        ("Don't set `opts.%s` for `conform.nvim`.\n**Util** will use the conform formatter automatically"):format(key)
+      )
       ---@diagnostic disable-next-line: no-unknown
       opts[key] = nil
     end
@@ -47,9 +49,7 @@ return {
           priority = 100,
           primary = true,
           format = function(buf)
-            local plugin = require("lazy.core.config").plugins["conform.nvim"]
-            local Plugin = require("lazy.core.plugin")
-            local opts = Plugin.values(plugin, "opts", false)
+            local opts = Util.opts("conform.nvim")
             require("conform").format(Util.merge({}, opts.format, { bufnr = buf }))
           end,
           sources = function(buf)
@@ -67,12 +67,12 @@ return {
       if plugin.config ~= M.setup then
         Util.error({
           "Don't set `plugin.config` for `conform.nvim`.\n",
-          "This will break formatting.\n",
+          "This will break **Util** formatting.\n",
         }, { title = "Util" })
       end
       ---@class ConformOpts
       local opts = {
-        -- will use these options when formatting with the conform.nvim formatter
+        -- Util will use these options when formatting with the conform.nvim formatter
         format = {
           timeout_ms = 3000,
           async = false, -- not recommended to change
