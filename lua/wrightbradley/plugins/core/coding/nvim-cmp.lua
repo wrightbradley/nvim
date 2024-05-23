@@ -34,11 +34,8 @@ return {
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete(),
           ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<S-CR>"] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-          }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<CR>"] = Util.cmp.confirm(),
+          ["<S-CR>"] = Util.cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ["<C-CR>"] = function(fallback)
             cmp.abort()
             fallback()
@@ -72,20 +69,70 @@ return {
       for _, source in ipairs(opts.sources) do
         source.group_index = source.group_index or 1
       end
+
+      local parse = require("cmp.utils.snippet").parse
+      require("cmp.utils.snippet").parse = function(input)
+        local ok, ret = pcall(parse, input)
+        if ok then
+          return ret
+        end
+        return Util.cmp.snippet_preview(input)
+      end
+
       local cmp = require("cmp")
-      local Kind = cmp.lsp.CompletionItemKind
       cmp.setup(opts)
       cmp.event:on("confirm_done", function(event)
-        if not vim.tbl_contains(opts.auto_brackets or {}, vim.bo.filetype) then
-          return
+        if vim.tbl_contains(opts.auto_brackets or {}, vim.bo.filetype) then
+          Util.cmp.auto_brackets(event.entry)
         end
-        local entry = event.entry
-        local item = entry:get_completion_item()
-        if vim.tbl_contains({ Kind.Function, Kind.Method }, item.kind) then
-          local keys = vim.api.nvim_replace_termcodes("()<left>", false, false, true)
-          vim.api.nvim_feedkeys(keys, "i", true)
-        end
+      end)
+      cmp.event:on("menu_opened", function(event)
+        Util.cmp.add_missing_snippet_docs(event.window)
       end)
     end,
   },
+
+  -- snippets
+  vim.fn.has("nvim-0.10") == 1
+    and {
+      "nvim-cmp",
+      dependencies = {
+        {
+          "garymjr/nvim-snippets",
+          opts = {
+            friendly_snippets = true,
+            global_snippets = { "all", "global" },
+          },
+          dependencies = { "rafamadriz/friendly-snippets" },
+        },
+      },
+      opts = function(_, opts)
+        opts.snippet = {
+          expand = function(item)
+            return Util.cmp.expand(item.body)
+          end,
+        }
+        table.insert(opts.sources, { name = "snippets" })
+      end,
+      keys = {
+        {
+          "<Tab>",
+          function()
+            return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
+          end,
+          expr = true,
+          silent = true,
+          mode = { "i", "s" },
+        },
+        {
+          "<S-Tab>",
+          function()
+            return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<Tab>"
+          end,
+          expr = true,
+          silent = true,
+          mode = { "i", "s" },
+        },
+      },
+    },
 }
