@@ -20,7 +20,7 @@ return {
     optional = true,
     opts = {
       linters_by_ft = {
-        ansible = { "ansible-lint" },
+        ansible = { "ansible_lint" },
       },
     },
   },
