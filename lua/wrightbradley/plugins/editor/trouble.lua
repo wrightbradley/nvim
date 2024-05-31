@@ -2,7 +2,7 @@ return {
   desc = "Trouble rewrite including document symbols and a lualine component",
   {
     "folke/trouble.nvim",
-    branch = "dev",
+    branch = "main",
     keys = {
       { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
@@ -37,10 +37,10 @@ return {
     optional = true,
     opts = function(_, opts)
       local trouble = require("trouble")
-      if not trouble.statusline then
-        Util.error("You have enabled the **trouble-v3** extra,\nbut still need to update it with `:Lazy`")
-        return
-      end
+      -- if not trouble.statusline then
+      --   Util.error("You have enabled **trouble**,\nbut still need to update it with `:Lazy`")
+      --   return
+      -- end
 
       local symbols = trouble.statusline({
         mode = "symbols",

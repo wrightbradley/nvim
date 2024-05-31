@@ -8,6 +8,9 @@ vim.cmd("let g:netrw_liststyle = 3")
 -- Hide deprecation warnings
 vim.g.deprecation_warnings = false
 
+-- Show the current document symbols location from Trouble in lualine
+vim.g.trouble_lualine = true
+
 local opt = vim.opt
 
 -- Set <space> as the leader key
