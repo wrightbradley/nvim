@@ -11,6 +11,11 @@ return {
         "stylua",
         "circleci-yaml-language-server",
         "editorconfig-checker",
+        "actionlint",
+        "checkmake",
+        "commitlint",
+        "trivy",
+        "trufflehog",
       },
       ui = {
         icons = {

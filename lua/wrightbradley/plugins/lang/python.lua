@@ -14,13 +14,32 @@ return {
         "williamboman/mason.nvim",
         opts = function(_, opts)
           opts.ensure_installed = opts.ensure_installed or {}
-          vim.list_extend(opts.ensure_installed, { "ruff-lsp" })
+          vim.list_extend(opts.ensure_installed, { "ruff", "pyright", "ruff-lsp", "basedpyright" })
         end,
       },
     },
     opts = {
       servers = {
+        pyright = {
+          enabled = true,
+          settings = {
+            -- Using Ruff's import organizer
+            disableOrganizeImports = true,
+            python = {
+              analysis = {
+                -- Ignore all files for analysis to exclusively use Ruff for linting
+                ignore = { "*" },
+              },
+            },
+          },
+        },
+        basedpyright = {
+          enabled = true,
+        },
         ruff_lsp = {
+          enabled = true,
+        },
+        ruff = {
           enabled = true,
           keys = {
             {
@@ -38,9 +57,6 @@ return {
             },
           },
         },
-        ruff = {
-          enabled = true,
-        },
       },
       setup = {
         ruff_lsp = function()
@@ -51,6 +67,32 @@ return {
             end
           end)
         end,
+        ruff = function()
+          Util.lsp.on_attach(function(client, _)
+            if client.name == "ruff" then
+              -- Disable hover in favor of Pyright
+              client.server_capabilities.hoverProvider = false
+            end
+          end)
+        end,
+      },
+    },
+  },
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    opts = {
+      formatters_by_ft = {
+        python = { "ruff", "ruff_lsp" },
+      },
+    },
+  },
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        python = { "ruff", "ruff_lsp" },
       },
     },
   },
