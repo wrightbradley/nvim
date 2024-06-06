@@ -34,7 +34,7 @@ return {
           },
         },
         basedpyright = {
-          enabled = true,
+          enabled = false,
         },
         ruff_lsp = {
           enabled = true,
@@ -83,7 +83,7 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        python = { "ruff", "ruff_lsp" },
+        python = { "ruff_fix", "ruff_format", "ruff_organize_imports", "ruff" },
       },
     },
   },
@@ -92,7 +92,7 @@ return {
     optional = true,
     opts = {
       linters_by_ft = {
-        python = { "ruff", "ruff_lsp" },
+        python = { "ruff" },
       },
     },
   },
