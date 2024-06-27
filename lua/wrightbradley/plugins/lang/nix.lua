@@ -1,3 +1,6 @@
+if true then
+  return {}
+end
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -19,7 +22,7 @@ return {
     "williamboman/mason.nvim",
     opts = function(_, opts)
       vim.list_extend(opts.ensure_installed, {
-        -- "nixd",
+        "nixd",
         "nil",
         "nixpkgs-fmt",
       })
