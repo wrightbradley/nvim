@@ -4,14 +4,12 @@ return {
     "neovim/nvim-lspconfig",
     event = "LazyFile",
     dependencies = {
-      { "folke/neoconf.nvim", cmd = "Neoconf", config = false, dependencies = { "nvim-lspconfig" } },
-      { "folke/neodev.nvim", opts = {} },
       "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      { "williamboman/mason-lspconfig.nvim", config = function() end },
     },
-    ---@class PluginLspOpts
     opts = function()
-      return {
+      ---@class PluginLspOpts
+      local ret = {
         -- options for vim.diagnostic.config()
         ---@type vim.diagnostic.Opts
         diagnostics = {
@@ -40,7 +38,7 @@ return {
         -- provide the inlay hints.
         inlay_hints = {
           enabled = true,
-          exclude = {}, -- filetypes for which you don't want to enable inlay hints
+          exclude = { "vue" }, -- filetypes for which you don't want to enable inlay hints
         },
         -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
         -- Be aware that you also will need to properly configure your LSP server to
@@ -75,7 +73,7 @@ return {
             -- mason = false, -- set to false if you don't want this server to be installed with mason
             -- Use this to add any additional keymaps
             -- for specific lsp servers
-            ---@type LazyKeysSpec[]
+            -- ---@type LazyKeysSpec[]
             -- keys = {},
             settings = {
               Lua = {
@@ -116,13 +114,10 @@ return {
           -- ["*"] = function(server, opts) end,
         },
       }
+      return ret
     end,
     ---@param opts PluginLspOpts
     config = function(_, opts)
-      if Util.has("neoconf.nvim") then
-        require("neoconf").setup(Util.opts("neoconf.nvim"))
-      end
-
       -- setup autoformat
       Util.format.register(Util.lsp.formatter())
 
@@ -156,7 +151,7 @@ return {
               and vim.bo[buffer].buftype == ""
               and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
             then
-              Util.toggle.inlay_hints(buffer, true)
+              vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
             end
           end)
         end
@@ -176,7 +171,7 @@ return {
       if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
         opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
           or function(diagnostic)
-            local icons = require("wrightbradley.config").icons.diagnostics
+            local icons = Util.config.icons.diagnostics
             for d, icon in pairs(icons) do
               if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
                 return icon
@@ -250,8 +245,11 @@ return {
       if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
         local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
         Util.lsp.disable("vtsls", is_deno)
-        Util.lsp.disable("denols", function(root_dir)
-          return not is_deno(root_dir)
+        Util.lsp.disable("denols", function(root_dir, config)
+          if not is_deno(root_dir) then
+            config.settings.deno.enable = false
+          end
+          return false
         end)
       end
     end,
@@ -264,11 +262,11 @@ return {
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
+    opts_extend = { "ensure_installed" },
     opts = {
       ensure_installed = {
         "stylua",
         "shfmt",
-        -- "flake8",
       },
     },
     ---@param opts MasonSettings | {ensure_installed: string[]}
@@ -284,19 +282,15 @@ return {
           })
         end, 100)
       end)
-      local function ensure_installed()
+
+      mr.refresh(function()
         for _, tool in ipairs(opts.ensure_installed) do
           local p = mr.get_package(tool)
           if not p:is_installed() then
             p:install()
           end
         end
-      end
-      if mr.refresh then
-        mr.refresh(ensure_installed)
-      else
-        ensure_installed()
-      end
+      end)
     end,
   },
 }
