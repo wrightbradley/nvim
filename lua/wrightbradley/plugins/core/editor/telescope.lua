@@ -1,5 +1,49 @@
+vim.g.wrightbradley_picker = "telescope"
+
 local have_make = vim.fn.executable("make") == 1
 local have_cmake = vim.fn.executable("cmake") == 1
+
+---@type LazyPicker
+local picker = {
+  name = "telescope",
+  commands = {
+    files = "find_files",
+  },
+  -- this will return a function that calls telescope.
+  -- cwd will default to wrightbradley.util.get_root
+  -- for `files`, git_files or find_files will be chosen depending on .git
+  ---@param builtin string
+  ---@param opts? wrightbradley.util.pick.Opts
+  open = function(builtin, opts)
+    opts = opts or {}
+    opts.follow = opts.follow ~= false
+    if opts.cwd and opts.cwd ~= vim.uv.cwd() then
+      local function open_cwd_dir()
+        local action_state = require("telescope.actions.state")
+        local line = action_state.get_current_line()
+        Util.pick.open(
+          builtin,
+          vim.tbl_deep_extend("force", {}, opts or {}, {
+            root = false,
+            default_text = line,
+          })
+        )
+      end
+      ---@diagnostic disable-next-line: inject-field
+      opts.attach_mappings = function(_, map)
+        -- opts.desc is overridden by telescope, until it's changed there is this fix
+        map("i", "<a-c>", open_cwd_dir, { desc = "Open cwd Directory" })
+        return true
+      end
+    end
+
+    require("telescope.builtin")[builtin](opts)
+  end,
+}
+if not Util.pick.register(picker) then
+  return {}
+end
+
 return {
   -- Fuzzy finder.
   -- The default key bindings to find files will use Telescope's
@@ -8,6 +52,9 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
+    enabled = function()
+      return Util.pick.want() == "telescope"
+    end,
     version = false, -- telescope did only one release, so use HEAD for now
     dependencies = {
       {
@@ -39,17 +86,17 @@ return {
         "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>",
         desc = "Switch Buffer",
       },
-      { "<leader>/", Util.telescope("live_grep"), desc = "Grep (Root Dir)" },
+      { "<leader>/", Util.pick("live_grep"), desc = "Grep (Root Dir)" },
       { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
-      { "<leader><space>", Util.telescope("files"), desc = "Find Files (Root Dir)" },
+      { "<leader><space>", Util.pick("files"), desc = "Find Files (Root Dir)" },
       -- find
       { "<leader>fb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", desc = "Buffers" },
-      { "<leader>fc", Util.telescope.config_files(), desc = "Find Config File" },
-      { "<leader>ff", Util.telescope("files"), desc = "Find Files (Root Dir)" },
-      { "<leader>fF", Util.telescope("files", { cwd = false }), desc = "Find Files (cwd)" },
+      { "<leader>fc", Util.pick.config_files(), desc = "Find Config File" },
+      { "<leader>ff", Util.pick("files"), desc = "Find Files (Root Dir)" },
+      { "<leader>fF", Util.pick("files", { root = false }), desc = "Find Files (cwd)" },
       { "<leader>fg", "<cmd>Telescope git_files<cr>", desc = "Find Files (git-files)" },
       { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
-      { "<leader>fR", Util.telescope("oldfiles", { cwd = vim.uv.cwd() }), desc = "Recent (cwd)" },
+      { "<leader>fR", Util.pick("oldfiles", { cwd = vim.uv.cwd() }), desc = "Recent (cwd)" },
       -- git
       { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "Commits" },
       { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "Status" },
@@ -61,8 +108,8 @@ return {
       { "<leader>sC", "<cmd>Telescope commands<cr>", desc = "Commands" },
       { "<leader>sd", "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "Document Diagnostics" },
       { "<leader>sD", "<cmd>Telescope diagnostics<cr>", desc = "Workspace Diagnostics" },
-      { "<leader>sg", Util.telescope("live_grep"), desc = "Grep (Root Dir)" },
-      { "<leader>sG", Util.telescope("live_grep", { cwd = false }), desc = "Grep (cwd)" },
+      { "<leader>sg", Util.pick("live_grep"), desc = "Grep (Root Dir)" },
+      { "<leader>sG", Util.pick("live_grep", { root = false }), desc = "Grep (cwd)" },
       { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
       { "<leader>sH", "<cmd>Telescope highlights<cr>", desc = "Search Highlight Groups" },
       { "<leader>sj", "<cmd>Telescope jumplist<cr>", desc = "Jumplist" },
@@ -73,18 +120,16 @@ return {
       { "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
       { "<leader>sR", "<cmd>Telescope resume<cr>", desc = "Resume" },
       { "<leader>sq", "<cmd>Telescope quickfix<cr>", desc = "Quickfix List" },
-      { "<leader>sw", Util.telescope("grep_string", { word_match = "-w" }), desc = "Word (Root Dir)" },
-      { "<leader>sW", Util.telescope("grep_string", { cwd = false, word_match = "-w" }), desc = "Word (cwd)" },
-      { "<leader>sw", Util.telescope("grep_string"), mode = "v", desc = "Selection (Root Dir)" },
-      { "<leader>sW", Util.telescope("grep_string", { cwd = false }), mode = "v", desc = "Selection (cwd)" },
-      { "<leader>uC", Util.telescope("colorscheme", { enable_preview = true }), desc = "Colorscheme with Preview" },
-      -- add a keymap to change yaml schema
-      { "<leader>sy", "<cmd>Telescope yaml_schema<cr>", desc = "Select YAML schema" },
+      { "<leader>sw", Util.pick("grep_string", { word_match = "-w" }), desc = "Word (Root Dir)" },
+      { "<leader>sW", Util.pick("grep_string", { root = false, word_match = "-w" }), desc = "Word (cwd)" },
+      { "<leader>sw", Util.pick("grep_string"), mode = "v", desc = "Selection (Root Dir)" },
+      { "<leader>sW", Util.pick("grep_string", { root = false }), mode = "v", desc = "Selection (cwd)" },
+      { "<leader>uC", Util.pick("colorscheme", { enable_preview = true }), desc = "Colorscheme with Preview" },
       {
         "<leader>ss",
         function()
           require("telescope.builtin").lsp_document_symbols({
-            symbols = require("wrightbradley.config").get_kind_filter(),
+            symbols = Util.config.get_kind_filter(),
           })
         end,
         desc = "Goto Symbol",
@@ -93,7 +138,7 @@ return {
         "<leader>sS",
         function()
           require("telescope.builtin").lsp_dynamic_workspace_symbols({
-            symbols = require("wrightbradley.config").get_kind_filter(),
+            symbols = Util.config.get_kind_filter(),
           })
         end,
         desc = "Goto Symbol (Workspace)",
@@ -102,16 +147,32 @@ return {
     opts = function()
       local actions = require("telescope.actions")
 
-      local open_with_trouble = require("trouble.sources.telescope").open
+      local open_with_trouble = function(...)
+        return require("trouble.sources.telescope").open(...)
+      end
       local find_files_no_ignore = function()
         local action_state = require("telescope.actions.state")
         local line = action_state.get_current_line()
-        Util.telescope("find_files", { no_ignore = true, default_text = line })()
+        Util.pick("find_files", { no_ignore = true, default_text = line })()
       end
       local find_files_with_hidden = function()
         local action_state = require("telescope.actions.state")
         local line = action_state.get_current_line()
-        Util.telescope("find_files", { hidden = true, default_text = line })()
+        Util.pick("find_files", { hidden = true, default_text = line })()
+      end
+
+      local function find_command()
+        if 1 == vim.fn.executable("rg") then
+          return { "rg", "--files", "--color", "never", "-g", "!.git" }
+        elseif 1 == vim.fn.executable("fd") then
+          return { "fd", "--type", "f", "--color", "never", "-E", ".git" }
+        elseif 1 == vim.fn.executable("fdfind") then
+          return { "fdfind", "--type", "f", "--color", "never", "-E", ".git" }
+        elseif 1 == vim.fn.executable("find") and vim.fn.has("win32") == 0 then
+          return { "find", ".", "-type", "f" }
+        elseif 1 == vim.fn.executable("where") then
+          return { "where", "/r", ".", "*" }
+        end
       end
 
       return {
@@ -147,7 +208,83 @@ return {
             },
           },
         },
+        pickers = {
+          find_files = {
+            find_command = find_command,
+            hidden = true,
+          },
+        },
       }
+    end,
+  },
+
+  -- Flash Telescope config
+  {
+    "nvim-telescope/telescope.nvim",
+    optional = true,
+    opts = function(_, opts)
+      if not Util.has("flash.nvim") then
+        return
+      end
+      local function flash(prompt_bufnr)
+        require("flash").jump({
+          pattern = "^",
+          label = { after = { 0, 0 } },
+          search = {
+            mode = "search",
+            exclude = {
+              function(win)
+                return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "TelescopeResults"
+              end,
+            },
+          },
+          action = function(match)
+            local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+            picker:set_selection(match.pos[1] - 1)
+          end,
+        })
+      end
+      opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
+        mappings = { n = { s = flash }, i = { ["<c-s>"] = flash } },
+      })
+    end,
+  },
+
+  -- better vim.ui with telescope
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    enabled = function()
+      return Util.pick.want() == "telescope"
+    end,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+  },
+
+  {
+    "neovim/nvim-lspconfig",
+    opts = function()
+      if Util.pick.want() ~= "telescope" then
+        return
+      end
+      local Keys = require("Util.plugins.lsp.keymaps").get()
+      -- stylua: ignore
+      vim.list_extend(Keys, {
+        { "gd", function() require("telescope.builtin").lsp_definitions({ reuse_win = true }) end, desc = "Goto Definition", has = "definition" },
+        { "gr", "<cmd>Telescope lsp_references<cr>", desc = "References", nowait = true },
+        { "gI", function() require("telescope.builtin").lsp_implementations({ reuse_win = true }) end, desc = "Goto Implementation" },
+        { "gy", function() require("telescope.builtin").lsp_type_definitions({ reuse_win = true }) end, desc = "Goto T[y]pe Definition" },
+      })
     end,
   },
 }
