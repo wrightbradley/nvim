@@ -159,25 +159,25 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 -- stylua: ignore start
 
 -- toggle options
-map("n", "<leader>uf", function() Util.format.toggle() end, { desc = "Toggle Auto Format (Global)" })
-map("n", "<leader>uF", function() Util.format.toggle(true) end, { desc = "Toggle Auto Format (Buffer)" })
-map("n", "<leader>us", function() Util.toggle("spell") end, { desc = "Toggle Spelling" })
-map("n", "<leader>uw", function() Util.toggle("wrap") end, { desc = "Toggle Word Wrap" })
-map("n", "<leader>uL", function() Util.toggle("relativenumber") end, { desc = "Toggle Relative Line Numbers" })
-map("n", "<leader>ul", function() Util.toggle.number() end, { desc = "Toggle Line Numbers" })
-map("n", "<leader>ud", function() Util.toggle.diagnostics() end, { desc = "Toggle Diagnostics" })
-local conceallevel = vim.o.conceallevel > 0 and vim.o.conceallevel or 3
-map("n", "<leader>uc", function() Util.toggle("conceallevel", false, {0, conceallevel}) end, { desc = "Toggle Conceal" })
-if vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint then
-  map( "n", "<leader>uh", function() Util.toggle.inlay_hints() end, { desc = "Toggle Inlay Hints" })
+Util.toggle.map("<leader>uf", Util.toggle.format())
+Util.toggle.map("<leader>uF", Util.toggle.format(true))
+Util.toggle.map("<leader>us", Util.toggle("spell", { name = "Spelling" }))
+Util.toggle.map("<leader>uw", Util.toggle("wrap", { name = "Wrap" }))
+Util.toggle.map("<leader>uL", Util.toggle("relativenumber", { name = "Relative Number" }))
+Util.toggle.map("<leader>ud", Util.toggle.diagnostics)
+Util.toggle.map("<leader>ul", Util.toggle.number)
+Util.toggle.map( "<leader>uc", Util.toggle("conceallevel", { values = { 0, vim.o.conceallevel > 0 and vim.o.conceallevel or 2 } }))
+Util.toggle.map("<leader>uT", Util.toggle.treesitter)
+Util.toggle.map("<leader>ub", Util.toggle("background", { values = { "light", "dark" }, name = "Background" }))
+if vim.lsp.inlay_hint then
+  Util.toggle.map("<leader>uh", Util.toggle.inlay_hints)
 end
-map("n", "<leader>uT", function() if vim.b.ts_highlight then vim.treesitter.stop() else vim.treesitter.start() end end, { desc = "Toggle Treesitter Highlight" })
-map("n", "<leader>ub", function() Util.toggle("background", false, {"light", "dark"}) end, { desc = "Toggle Background" })
 
 -- lazygit
 map("n", "<leader>gg", function() Util.lazygit( { cwd = Util.root.git() }) end, { desc = "Lazygit (Root Dir)" })
 map("n", "<leader>gG", function() Util.lazygit() end, { desc = "Lazygit (cwd)" })
 map("n", "<leader>gb", Util.lazygit.blame_line, { desc = "Git Blame Line" })
+map("n", "<leader>gB", Util.lazygit.browse, { desc = "Git Browse" })
 
 map("n", "<leader>gf", function()
   local git_path = vim.api.nvim_buf_get_name(0)
@@ -185,8 +185,11 @@ map("n", "<leader>gf", function()
 end, { desc = "Lazygit Current File History" })
 
 map("n", "<leader>gl", function()
-  Util.lazygit({ args = { "log" } })
+  Util.lazygit({ args = { "log" }, cwd = Util.root.git() })
 end, { desc = "Lazygit Log" })
+map("n", "<leader>gL", function()
+  Util.lazygit({ args = { "log" } })
+end, { desc = "Lazygit Log (cwd)" })
 
 -- quit
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
@@ -212,17 +215,15 @@ map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
 -- windows
-map("n", "<leader>ww", "<C-W>p", { desc = "Other Window", remap = true })
-map("n", "<leader>wd", "<C-W>c", { desc = "Delete Window", remap = true })
-map("n", "<leader>w-", "<C-W>s", { desc = "Split Window Below", remap = true })
-map("n", "<leader>w|", "<C-W>v", { desc = "Split Window Right", remap = true })
+map("n", "<leader>w", "<c-w>", { desc = "Windows", remap = true })
 map("n", "<leader>-", "<C-W>s", { desc = "Split Window Below", remap = true })
 map("n", "<leader>|", "<C-W>v", { desc = "Split Window Right", remap = true })
-map("n", "<leader>wm", function() Util.toggle.maximize() end, { desc = "Maximize Toggle" })
-map("n", "<leader>m", function() Util.toggle.maximize() end, { desc = "Maximize Toggle" })
+map("n", "<leader>wd", "<C-W>c", { desc = "Delete Window", remap = true })
+Util.toggle.map("<leader>wm", Util.toggle.maximize)
 
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })
+map("n", "<leader><tab>o", "<cmd>tabonly<cr>", { desc = "Close Other Tabs" })
 map("n", "<leader><tab>f", "<cmd>tabfirst<cr>", { desc = "First Tab" })
 map("n", "<leader><tab><tab>", "<cmd>tabnew<cr>", { desc = "New Tab" })
 map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
