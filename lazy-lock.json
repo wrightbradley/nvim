@@ -93,7 +93,7 @@
   "vim-illuminate": { "branch": "master", "commit": "5eeb7951fc630682c322e88a9bbdae5c224ff0aa" },
   "vim-jsonnet": { "branch": "master", "commit": "4ebc6619ddce5d032a985b42a9864154c3d20e4a" },
   "vim-startuptime": { "branch": "master", "commit": "ac2cccb5be617672add1f4f3c0a55ce99ba34e01" },
-  "which-key.nvim": { "branch": "main", "commit": "439d1247cbfed8ee46d6c9a5edbfad6b4c968e06" },
+  "which-key.nvim": { "branch": "main", "commit": "0539da005b98b02cf730c1d9da82b8e8edb1c2d2" },
   "yanky.nvim": { "branch": "main", "commit": "73215b77d22ebb179cef98e7e1235825431d10e4" },
   "zen-mode.nvim": { "branch": "main", "commit": "a31cf7113db34646ca320f8c2df22cf1fbfc6f2a" }
 }
