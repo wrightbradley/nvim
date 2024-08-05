@@ -14,6 +14,8 @@ return {
       { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
+      { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
+      { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
     },
     opts = {
       options = {
@@ -24,7 +26,7 @@ return {
         diagnostics = "nvim_lsp",
         always_show_bufferline = false,
         diagnostics_indicator = function(_, _, diag)
-          local icons = require("wrightbradley.config").icons.diagnostics
+          local icons = Util.config.icons.diagnostics
           local ret = (diag.error and icons.Error .. diag.error .. " " or "")
             .. (diag.warning and icons.Warn .. diag.warning or "")
           return vim.trim(ret)
@@ -37,6 +39,10 @@ return {
             text_align = "left",
           },
         },
+        ---@param opts bufferline.IconFetcherOpts
+        get_element_icon = function(opts)
+          return Util.config.icons.ft[opts.filetype]
+        end,
       },
     },
     config = function(_, opts)
