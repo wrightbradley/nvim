@@ -1,5 +1,6 @@
-vim.g.wrightbradley_picker = "telescope"
-
+if true then
+  return {}
+end
 local have_make = vim.fn.executable("make") == 1
 local have_cmake = vim.fn.executable("cmake") == 1
 
@@ -277,7 +278,7 @@ return {
       if Util.pick.want() ~= "telescope" then
         return
       end
-      local Keys = require("Util.plugins.lsp.keymaps").get()
+      local Keys = require("wrightbradley.config.lsp-keymaps").get()
       -- stylua: ignore
       vim.list_extend(Keys, {
         { "gd", function() require("telescope.builtin").lsp_definitions({ reuse_win = true }) end, desc = "Goto Definition", has = "definition" },

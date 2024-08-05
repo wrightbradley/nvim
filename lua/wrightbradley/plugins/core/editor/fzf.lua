@@ -1,9 +1,3 @@
-if wrightbradley_docs then
-  -- In case you don't want to use `:LazyExtras`,
-  -- then you need to set the option below.
-  vim.g.wrightbradley_picker = "fzf"
-end
-
 ---@class FzfLuaOpts: wrightbradley.util.pick.Opts
 ---@field cmd string?
 

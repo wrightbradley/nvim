@@ -45,7 +45,7 @@ end
 function M.want()
   vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "auto"
   if vim.g.wrightbradley_picker == "auto" then
-    return Util.has_extra("editor.fzf") and "fzf" or "telescope"
+    return "fzf"
   end
   return vim.g.wrightbradley_picker
 end
