@@ -89,4 +89,13 @@ return {
       end)
     end,
   },
+  -- Filetype icons
+  {
+    "echasnovski/mini.icons",
+    opts = {
+      file = {
+        ["README.md"] = { glyph = "", hl = "MiniIconsGrey" },
+      },
+    },
+  },
 }
