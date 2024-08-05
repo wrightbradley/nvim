@@ -121,6 +121,7 @@ local defaults = {
 
 ---@type UtilOptions
 local options
+local lazy_clipboard
 
 ---@param opts? UtilOptions
 function M.setup(opts)
@@ -141,6 +142,9 @@ function M.setup(opts)
         M.load("autocmds")
       end
       M.load("keymaps")
+      if lazy_clipboard ~= nil then
+        vim.opt.clipboard = lazy_clipboard
+      end
 
       Util.format.setup()
       Util.root.setup()
@@ -208,7 +212,6 @@ function M.load(name)
     -- HACK: Util may have overwritten options of the Lazy ui, so reset this here
     vim.cmd([[do VimResized]])
   end
-  local pattern = "Util" .. name:sub(1, 1):upper() .. name:sub(2)
   vim.api.nvim_exec_autocmds("User", { pattern = pattern, modeline = false })
 end
 
@@ -218,6 +221,11 @@ function M.init()
     return
   end
   M.did_init = true
+  local plugin = require("lazy.core.config").spec.plugins.Util
+  if plugin then
+    vim.opt.rtp:append(plugin.dir)
+  end
+
 
   -- delay notifications till vim.notify was replaced or after 500ms
   Util.lazy_notify()
@@ -226,6 +234,9 @@ function M.init()
   -- this is needed to make sure options will be correctly applied
   -- after installing missing plugins
   M.load("options")
+  -- defer built-in clipboard handling: "xsel" and "pbcopy" can be slow
+  lazy_clipboard = vim.opt.clipboard
+  vim.opt.clipboard = ""
 
   if vim.g.deprecation_warnings == false then
     vim.deprecate = function() end
