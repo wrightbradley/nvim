@@ -3,6 +3,7 @@
 ---@class UtilGlobals
 vim.g = {}
 
+_G.wrightbradley_docs = true
 _G.Util = require("wrightbradley.util")
 
 ---@class vim.api.create_autocmd.callback.args

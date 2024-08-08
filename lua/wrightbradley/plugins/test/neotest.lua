@@ -1,14 +1,6 @@
 return {
+  recommended = true,
   desc = "Neotest support. Requires language specific adapters to be configured. (see lang extras)",
-  {
-    "folke/which-key.nvim",
-    optional = true,
-    opts = {
-      defaults = {
-        ["<leader>t"] = { name = "+test" },
-      },
-    },
-  },
   {
     "nvim-neotest/neotest",
     dependencies = { "nvim-neotest/nvim-nio" },
@@ -18,10 +10,11 @@ return {
       -- or a table of adapter names, mapped to adapter configs.
       -- The adapter will then be automatically loaded with the config.
       adapters = {},
-      -- Example for loading neotest-go with a custom config
+      -- Example for loading neotest-golang with a custom config
       -- adapters = {
-      --   ["neotest-go"] = {
-      --     args = { "-tags=integration" },
+      --   ["neotest-golang"] = {
+      --     go_test_args = { "-v", "-race", "-count=1", "-timeout=60s" },
+      --     dap_go_enabled = true,
       --   },
       -- },
       status = { virtual_text = true },
@@ -93,6 +86,9 @@ return {
               local meta = getmetatable(adapter)
               if adapter.setup then
                 adapter.setup(config)
+              elseif adapter.adapter then
+                adapter.adapter(config)
+                adapter = adapter.adapter
               elseif meta and meta.__call then
                 adapter(config)
               else
@@ -109,6 +105,7 @@ return {
     end,
     -- stylua: ignore
     keys = {
+      {"<leader>t", "", desc = "+test"},
       { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File" },
       { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Run All Test Files" },
       { "<leader>tr", function() require("neotest").run.run() end, desc = "Run Nearest" },
@@ -117,6 +114,7 @@ return {
       { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output" },
       { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Toggle Output Panel" },
       { "<leader>tS", function() require("neotest").run.stop() end, desc = "Stop" },
+      { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end, desc = "Toggle Watch" },
     },
   },
   {

@@ -207,7 +207,8 @@ function M.load(name)
       end, { msg = "Failed loading " .. mod })
     end
   end
-  _load("wrightbradley.config." .. name)
+  local pattern = "wrightbradley" .. name:sub(1, 1):upper() .. name:sub(2)
+  _load("config." .. name)
   if vim.bo.filetype == "lazy" then
     -- HACK: Util may have overwritten options of the Lazy ui, so reset this here
     vim.cmd([[do VimResized]])
@@ -221,11 +222,6 @@ function M.init()
     return
   end
   M.did_init = true
-  local plugin = require("lazy.core.config").spec.plugins.Util
-  if plugin then
-    vim.opt.rtp:append(plugin.dir)
-  end
-
 
   -- delay notifications till vim.notify was replaced or after 500ms
   Util.lazy_notify()

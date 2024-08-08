@@ -1,5 +1,3 @@
-vim.g.wrightbradley_picker = "fzf"
-
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -86,8 +84,7 @@ vim.g.autoformat = true
 -- Util picker to use.
 -- Can be one of: telescope, fzf
 -- Leave it to "auto" to automatically use the picker
--- enabled with `:LazyExtras`
-vim.g.wrightbradley_picker = "auto"
+vim.g.wrightbradley_picker = "telescope"
 
 -- Util root dir detection
 -- Each entry can be:
@@ -130,9 +127,6 @@ vim.g.trouble_lualine = true
 local opt = vim.opt
 
 opt.autowrite = true -- Enable auto write
--- only set clipboard if not in ssh, to make sure the OSC 52
--- integration works automatically. Requires Neovim >= 0.10.0
-opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
 opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
 opt.confirm = true -- Confirm to save changes before exiting modified buffer
