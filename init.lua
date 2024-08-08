@@ -97,23 +97,12 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+require("wrightbradley.config").init()
+
 -- Plugins setup
 require("lazy").setup({
   spec = {
     { import = "wrightbradley.plugins" },
-    { import = "wrightbradley.plugins.core.editor" },
-    { import = "wrightbradley.plugins.core.ui" },
-    { import = "wrightbradley.plugins.core.coding" },
-    { import = "wrightbradley.plugins.coding" },
-    { import = "wrightbradley.plugins.colorscheme" },
-    { import = "wrightbradley.plugins.dap" },
-    { import = "wrightbradley.plugins.editor" },
-    { import = "wrightbradley.plugins.formatting" },
-    { import = "wrightbradley.plugins.linting" },
-    { import = "wrightbradley.plugins.lsp" },
-    { import = "wrightbradley.plugins.ui" },
-    { import = "wrightbradley.plugins.utilities" },
-    { import = "wrightbradley.plugins.lang" },
   },
 })
 -- Setup the custom configuration for NeoVim
