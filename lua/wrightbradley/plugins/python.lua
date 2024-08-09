@@ -1,100 +1,67 @@
+if wrightbradley_docs then
+  -- LSP Server to use for Python.
+  -- Set to "basedpyright" to use basedpyright instead of pyright.
+  vim.g.wrightbradley_python_lsp = "pyright"
+  -- Set to "ruff_lsp" to use the old LSP implementation version.
+  vim.g.wrightbradley_python_ruff = "ruff"
+end
+
+local lsp = vim.g.wrightbradley_python_lsp or "pyright"
+local ruff = vim.g.wrightbradley_python_ruff or "ruff"
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "ninja", "python", "rst", "toml" })
-      end
-    end,
+    opts = { ensure_installed = { "ninja", "rst" } },
   },
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      {
-        "williamboman/mason.nvim",
-        opts = function(_, opts)
-          opts.ensure_installed = opts.ensure_installed or {}
-          vim.list_extend(opts.ensure_installed, { "ruff", "pyright", "ruff-lsp", "basedpyright" })
-        end,
-      },
-    },
     opts = {
       servers = {
-        pyright = {
-          enabled = true,
-          settings = {
-            -- Using Ruff's import organizer
-            disableOrganizeImports = true,
-            python = {
-              analysis = {
-                -- Ignore all files for analysis to exclusively use Ruff for linting
-                ignore = { "*" },
-              },
+        ruff = {
+          cmd_env = { RUFF_TRACE = "messages" },
+          init_options = {
+            settings = {
+              logLevel = "error",
             },
           },
-        },
-        basedpyright = {
-          enabled = false,
-        },
-        ruff_lsp = {
-          enabled = true,
-        },
-        ruff = {
-          enabled = true,
           keys = {
             {
               "<leader>co",
-              function()
-                vim.lsp.buf.code_action({
-                  apply = true,
-                  context = {
-                    only = { "source.organizeImports" },
-                    diagnostics = {},
-                  },
-                })
-              end,
+              Util.lsp.action["source.organizeImports"],
+              desc = "Organize Imports",
+            },
+          },
+        },
+        ruff_lsp = {
+          keys = {
+            {
+              "<leader>co",
+              Util.lsp.action["source.organizeImports"],
               desc = "Organize Imports",
             },
           },
         },
       },
       setup = {
-        ruff_lsp = function()
+        [ruff] = function()
           Util.lsp.on_attach(function(client, _)
-            if client.name == "ruff_lsp" then
-              -- Disable hover in favor of Pyright
-              client.server_capabilities.hoverProvider = false
-            end
-          end)
-        end,
-        ruff = function()
-          Util.lsp.on_attach(function(client, _)
-            if client.name == "ruff" then
-              -- Disable hover in favor of Pyright
-              client.server_capabilities.hoverProvider = false
-            end
-          end)
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end, ruff)
         end,
       },
     },
   },
   {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        python = { "ruff_fix", "ruff_format", "ruff_organize_imports", "ruff" },
-      },
-    },
-  },
-  {
-    "mfussenegger/nvim-lint",
-    optional = true,
-    opts = {
-      linters_by_ft = {
-        python = { "ruff" },
-      },
-    },
+    "neovim/nvim-lspconfig",
+    opts = function(_, opts)
+      local servers = { "pyright", "basedpyright", "ruff", "ruff_lsp", ruff, lsp }
+      for _, server in ipairs(servers) do
+        opts.servers[server] = opts.servers[server] or {}
+        opts.servers[server].enabled = server == lsp or server == ruff
+      end
+    end,
   },
   {
     "nvim-neotest/neotest",
@@ -123,34 +90,50 @@ return {
         { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
       },
       config = function()
-        local path = require("mason-registry").get_package("debugpy"):get_install_path()
-        require("dap-python").setup(path .. "/venv/bin/python")
+        if vim.fn.has("win32") == 1 then
+          require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/Scripts/pythonw.exe"))
+        else
+          require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/bin/python"))
+        end
       end,
     },
   },
+
   {
     "linux-cultist/venv-selector.nvim",
+    branch = "regexp", -- Use this branch for the new version
     cmd = "VenvSelect",
-    opts = function(_, opts)
-      if Util.has("nvim-dap-python") then
-        opts.dap_enabled = true
-      end
-      return vim.tbl_deep_extend("force", opts, {
-        name = {
-          "venv",
-          ".venv",
-          "env",
-          ".env",
-        },
-      })
+    enabled = function()
+      return Util.has("telescope.nvim")
     end,
+    opts = {
+      settings = {
+        options = {
+          notify_user_on_venv_activation = true,
+        },
+      },
+    },
+    --  Call config for python files and load the cached venv automatically
+    ft = "python",
     keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
   },
+
   {
     "hrsh7th/nvim-cmp",
     opts = function(_, opts)
       opts.auto_brackets = opts.auto_brackets or {}
       table.insert(opts.auto_brackets, "python")
     end,
+  },
+
+  -- Don't mess up DAP adapters provided by nvim-dap-python
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    optional = true,
+    opts = {
+      handlers = {
+        python = function() end,
+      },
+    },
   },
 }
