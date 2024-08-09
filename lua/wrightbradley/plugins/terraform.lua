@@ -1,14 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, {
-          "terraform",
-          "hcl",
-        })
-      end
-    end,
+    opts = { ensure_installed = { "terraform", "hcl" } },
   },
   {
     "neovim/nvim-lspconfig",
@@ -18,13 +11,27 @@ return {
       },
     },
   },
+  -- ensure terraform tools are installed
+  {
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = { "tflint" } },
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    optional = true,
+    opts = function(_, opts)
+      local null_ls = require("null-ls")
+      opts.sources = vim.list_extend(opts.sources or {}, {
+        null_ls.builtins.formatting.terraform_fmt,
+        null_ls.builtins.diagnostics.terraform_validate,
+      })
+    end,
+  },
   {
     "mfussenegger/nvim-lint",
     optional = true,
     opts = {
       linters_by_ft = {
-        -- terraform = { "terraform_validate", "tflint" },
-        -- tf = { "terraform_validate", "tflint" },
         terraform = { "terraform_validate" },
         tf = { "terraform_validate" },
       },
@@ -43,6 +50,7 @@ return {
   },
   {
     "nvim-telescope/telescope.nvim",
+    optional = true,
     dependencies = {
       {
         "ANGkeith/telescope-terraform-doc.nvim",
