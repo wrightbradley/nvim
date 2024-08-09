@@ -89,4 +89,13 @@ return {
       end)
     end,
   },
+  -- Filetype icons
+  {
+    "echasnovski/mini.icons",
+    opts = {
+      filetype = {
+        markdown = { glyph = "", hl = "MiniIconsGrey" },
+      },
+    },
+  },
 }
