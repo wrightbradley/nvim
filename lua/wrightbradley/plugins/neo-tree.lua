@@ -2,7 +2,6 @@ return {
   -- file explorer
   {
     "nvim-neo-tree/neo-tree.nvim",
-    branch = "v3.x",
     cmd = "Neotree",
     keys = {
       {
@@ -59,7 +58,7 @@ return {
       })
     end,
     opts = {
-      sources = { "filesystem", "buffers", "git_status", "document_symbols" },
+      sources = { "filesystem", "buffers", "git_status" },
       open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
       filesystem = {
         bind_to_cwd = false,
@@ -68,6 +67,8 @@ return {
       },
       window = {
         mappings = {
+          ["l"] = "open",
+          ["h"] = "close_node",
           ["<space>"] = "none",
           ["Y"] = {
             function(state)
@@ -83,6 +84,7 @@ return {
             end,
             desc = "Open with System Application",
           },
+          ["P"] = { "toggle_preview", config = { use_float = false } },
         },
       },
       default_component_configs = {
