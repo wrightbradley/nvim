@@ -1,6 +1,3 @@
-if true then
-  return {}
-end
 return {
   desc = "Use native snippets instead of LuaSnip. Only works on Neovim >= 0.10!",
   {
