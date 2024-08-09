@@ -84,7 +84,7 @@ vim.g.autoformat = true
 -- Util picker to use.
 -- Can be one of: telescope, fzf
 -- Leave it to "auto" to automatically use the picker
-vim.g.wrightbradley_picker = "telescope"
+vim.g.wrightbradley_picker = "fzf"
 
 -- Util root dir detection
 -- Each entry can be:

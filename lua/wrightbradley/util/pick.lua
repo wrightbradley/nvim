@@ -43,10 +43,7 @@ function M.register(picker)
 end
 
 function M.want()
-  vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "auto"
-  if vim.g.wrightbradley_picker == "auto" then
-    return "fzf"
-  end
+  vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "fzf"
   return vim.g.wrightbradley_picker
 end
 
