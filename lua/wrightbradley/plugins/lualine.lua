@@ -18,15 +18,15 @@ return {
       local lualine_require = require("lualine_require")
       lualine_require.require = require
 
-      local icons = require("wrightbradley.config").icons
+      local icons = Util.config.icons
 
       vim.o.laststatus = vim.g.lualine_laststatus
 
       local opts = {
         options = {
           theme = "auto",
-          globalstatus = true,
-          disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
+          globalstatus = vim.o.laststatus == 3,
+          disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter" } },
         },
         sections = {
           lualine_a = { "mode" },
@@ -51,24 +51,25 @@ return {
             {
               function() return require("noice").api.status.command.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-              color = Util.ui.fg("Statement"),
+              color = function() return Util.ui.fg("Statement") end,
             },
             -- stylua: ignore
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = Util.ui.fg("Constant"),
+              color = function() return Util.ui.fg("Constant") end,
             },
             -- stylua: ignore
             {
               function() return "  " .. require("dap").status() end,
-              cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
-              color = Util.ui.fg("Debug"),
+              cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
+              color = function() return Util.ui.fg("Debug") end,
             },
+            -- stylua: ignore
             {
               require("lazy.status").updates,
               cond = require("lazy.status").has_updates,
-              color = Util.ui.fg("Special"),
+              color = function() return Util.ui.fg("Special") end,
             },
             {
               "diff",
@@ -103,20 +104,22 @@ return {
       }
 
       -- do not add trouble symbols if aerial is enabled
-      if vim.g.trouble_lualine then
+      -- And allow it to be overriden for some buffer types (see autocmds)
+      if vim.g.trouble_lualine and Util.has("trouble.nvim") then
         local trouble = require("trouble")
-        local symbols = trouble.statusline
-          and trouble.statusline({
-            mode = "symbols",
-            groups = {},
-            title = false,
-            filter = { range = true },
-            format = "{kind_icon}{symbol.name:Normal}",
-            hl_group = "lualine_c_normal",
-          })
+        local symbols = trouble.statusline({
+          mode = "symbols",
+          groups = {},
+          title = false,
+          filter = { range = true },
+          format = "{kind_icon}{symbol.name:Normal}",
+          hl_group = "lualine_c_normal",
+        })
         table.insert(opts.sections.lualine_c, {
           symbols and symbols.get,
-          cond = symbols and symbols.has,
+          cond = function()
+            return vim.b.trouble_lualine ~= false and symbols.has()
+          end,
         })
       end
 
