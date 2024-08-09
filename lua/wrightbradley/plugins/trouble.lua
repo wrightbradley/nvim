@@ -1,17 +1,20 @@
 return {
-  desc = "Trouble rewrite including document symbols and a lualine component",
+  -- better diagnostics list and others
   {
     "folke/trouble.nvim",
-    branch = "main",
+    cmd = { "Trouble" },
+    opts = {
+      modes = {
+        lsp = {
+          win = { position = "right" },
+        },
+      },
+    },
     keys = {
       { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-      { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
-      {
-        "<leader>cS",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        desc = "LSP references/definitions/... (Trouble)",
-      },
+      { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
+      { "<leader>cS", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/... (Trouble)" },
       { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
       { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
       {
@@ -27,6 +30,20 @@ return {
           end
         end,
         desc = "Previous Trouble/Quickfix Item",
+      },
+      {
+        "]q",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").next({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cnext)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "Next Trouble/Quickfix Item",
       },
     },
   },
