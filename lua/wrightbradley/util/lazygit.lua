@@ -54,6 +54,10 @@ function M.open(opts)
   opts = vim.tbl_deep_extend("force", {}, {
     esc_esc = false,
     ctrl_hjkl = false,
+    size = {
+      width = 1,
+      height = 1,
+    },
   }, opts or {})
 
   local cmd = { "lazygit" }
