@@ -110,7 +110,19 @@ require("wrightbradley.config").init()
 -- Plugins setup
 require("lazy").setup({
   spec = {
-    { import = "wrightbradley.plugins" },
+    -- Order matters!
+    { import = "wrightbradley.plugins.colorscheme" },
+    { import = "wrightbradley.plugins.ui" },
+    { import = "wrightbradley.plugins.editor" },
+    { import = "wrightbradley.plugins.lsp" },
+    { import = "wrightbradley.plugins.coding" },
+    { import = "wrightbradley.plugins.formatting" },
+    { import = "wrightbradley.plugins.linting" },
+    { import = "wrightbradley.plugins.treesitter" },
+    { import = "wrightbradley.plugins.dap" },
+    { import = "wrightbradley.plugins.test" },
+    { import = "wrightbradley.plugins.lang" },
+    { import = "wrightbradley.plugins.utilities" },
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.

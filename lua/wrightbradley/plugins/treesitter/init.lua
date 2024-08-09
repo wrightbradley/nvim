@@ -3,7 +3,7 @@ return {
     "folke/which-key.nvim",
     opts = {
       spec = {
-        { "<BS>", desc = "Decrement Selection", mode = "x" },
+        { "<BS>",      desc = "Decrement Selection", mode = "x" },
         { "<c-space>", desc = "Increment Selection", mode = { "x", "n" } },
       },
     },
@@ -30,7 +30,7 @@ return {
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
       { "<c-space>", desc = "Increment Selection" },
-      { "<bs>", desc = "Decrement Selection", mode = "x" },
+      { "<bs>",      desc = "Decrement Selection", mode = "x" },
     },
     opts_extend = { "ensure_installed" },
     ---@type TSConfig
@@ -132,4 +132,25 @@ return {
     event = "LazyFile",
     opts = {},
   },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "VeryLazy",
+    opts = function()
+      local tsc = require("treesitter-context")
+
+      Util.toggle.map("<leader>ut", {
+        name = "Treesitter Context",
+        get = tsc.enabled,
+        set = function(state)
+          if state then
+            tsc.enable()
+          else
+            tsc.disable()
+          end
+        end,
+      })
+
+      return { mode = "cursor", max_lines = 3 }
+    end,
+  }
 }

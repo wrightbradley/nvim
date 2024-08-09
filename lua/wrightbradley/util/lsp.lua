@@ -149,10 +149,12 @@ end
 ---@param to string
 ---@param rename? fun()
 function M.on_rename(from, to, rename)
-  local changes = { files = { {
-    oldUri = vim.uri_from_fname(from),
-    newUri = vim.uri_from_fname(to),
-  } } }
+  local changes = {
+    files = { {
+      oldUri = vim.uri_from_fname(from),
+      newUri = vim.uri_from_fname(to),
+    } }
+  }
 
   local clients = M.get_clients()
   for _, client in ipairs(clients) do
@@ -218,7 +220,7 @@ function M.formatter(opts)
       ---@param client vim.lsp.Client
       local ret = vim.tbl_filter(function(client)
         return client.supports_method("textDocument/formatting")
-          or client.supports_method("textDocument/rangeFormatting")
+            or client.supports_method("textDocument/rangeFormatting")
       end, clients)
       ---@param client vim.lsp.Client
       return vim.tbl_map(function(client)
