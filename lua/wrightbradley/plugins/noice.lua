@@ -3,6 +3,7 @@ return {
   {
     "folke/noice.nvim",
     event = "VeryLazy",
+    commit = "d9328ef903168b6f52385a751eb384ae7e906c6f",
     opts = {
       lsp = {
         override = {
