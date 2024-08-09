@@ -34,7 +34,7 @@ function M.get_signs(buf, lnum)
   )
   for _, extmark in pairs(extmarks) do
     signs[#signs + 1] = {
-      name = extmark[4].sign_hl_group or "",
+      name = extmark[4].sign_hl_group or extmark[4].sign_name or "",
       text = extmark[4].sign_text,
       texthl = extmark[4].sign_hl_group,
       priority = extmark[4].priority,
@@ -78,7 +78,7 @@ function M.foldtext()
   if not ret or type(ret) == "string" then
     ret = { { vim.api.nvim_buf_get_lines(0, vim.v.lnum - 1, vim.v.lnum, false)[1], {} } }
   end
-  table.insert(ret, { " " .. require("wrightbradley.config").icons.misc.dots })
+  table.insert(ret, { " " .. Util.config.icons.misc.dots })
 
   if not vim.treesitter.foldtext then
     return table.concat(
@@ -99,22 +99,34 @@ function M.statuscolumn()
 
   local components = { "", "", "" } -- left, middle, right
 
+  local show_open_folds = vim.g.wrightbradley_statuscolumn and vim.g.wrightbradley_statuscolumn.folds_open
+  local use_githl = vim.g.wrightbradley_statuscolumn and vim.g.wrightbradley_statuscolumn.folds_githl
+
   if show_signs then
+    local signs = M.get_signs(buf, vim.v.lnum)
+
     ---@type Sign?,Sign?,Sign?
-    local left, right, fold
-    for _, s in ipairs(M.get_signs(buf, vim.v.lnum)) do
+    local left, right, fold, githl
+    for _, s in ipairs(signs) do
       if s.name and (s.name:find("GitSign") or s.name:find("MiniDiffSign")) then
         right = s
+        if use_githl then
+          githl = s["texthl"]
+        end
       else
         left = s
       end
     end
-    if vim.v.virtnum ~= 0 then
-      left = nil
-    end
+
     vim.api.nvim_win_call(win, function()
       if vim.fn.foldclosed(vim.v.lnum) >= 0 then
-        fold = { text = vim.opt.fillchars:get().foldclose or "", texthl = "Folded" }
+        fold = { text = vim.opt.fillchars:get().foldclose or "", texthl = githl or "Folded" }
+      elseif
+        show_open_folds
+        and not Util.ui.skip_foldexpr[buf]
+        and tostring(vim.treesitter.foldexpr(vim.v.lnum)):sub(1, 1) == ">"
+      then -- fold start
+        fold = { text = vim.opt.fillchars:get().foldopen or "", texthl = githl }
       end
     end)
     -- Left: mark or non-git sign
@@ -128,10 +140,14 @@ function M.statuscolumn()
   local is_num = vim.wo[win].number
   local is_relnum = vim.wo[win].relativenumber
   if (is_num or is_relnum) and vim.v.virtnum == 0 then
-    if vim.v.relnum == 0 then
-      components[2] = is_num and "%l" or "%r" -- the current line
+    if vim.fn.has("nvim-0.11") == 1 then
+      components[2] = "%l" -- 0.11 handles both the current and other lines with %l
     else
-      components[2] = is_relnum and "%r" or "%l" -- other lines
+      if vim.v.relnum == 0 then
+        components[2] = is_num and "%l" or "%r" -- the current line
+      else
+        components[2] = is_relnum and "%r" or "%l" -- other lines
+      end
     end
     components[2] = "%=" .. components[2] .. " " -- right align
   end
@@ -215,7 +231,7 @@ function M.bufremove(buf)
 
   if vim.bo.modified then
     local choice = vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
-    if choice == 0 then -- Cancel
+    if choice == 0 or choice == 3 then -- 0 for <Esc>/<C-c> and 3 for Cancel
       return
     end
     if choice == 1 then -- Yes
