@@ -81,6 +81,11 @@ vim.g.maplocalleader = "\\"
 -- Enable auto format
 vim.g.autoformat = true
 
+-- Util picker to use.
+-- Can be one of: telescope, fzf
+-- Leave it to "auto" to automatically use the picker
+vim.g.wrightbradley_picker = "telescope"
+
 -- Util root dir detection
 -- Each entry can be:
 -- * the name of a detector function like `lsp` or `cwd`
