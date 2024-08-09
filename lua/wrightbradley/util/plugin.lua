@@ -3,6 +3,9 @@ local Plugin = require("lazy.core.plugin")
 ---@class wrightbradley.util.plugin
 local M = {}
 
+---@type string[]
+M.core_imports = {}
+
 M.lazy_file_events = { "BufReadPost", "BufNewFile", "BufWritePre" }
 
 ---@type table<string, string>
@@ -14,9 +17,17 @@ M.renames = {
   ["glepnir/dashboard-nvim"] = "nvimdev/dashboard-nvim",
 }
 
+function M.save_core()
+  if vim.v.vim_did_enter == 1 then
+    return
+  end
+  M.core_imports = vim.deepcopy(require("lazy.core.config").spec.modules)
+end
+
 function M.setup()
   M.fix_renames()
   M.lazy_file()
+  table.insert(package.loaders, function(module) end)
 end
 
 function M.lazy_file()
