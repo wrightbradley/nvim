@@ -2,11 +2,7 @@ return {
   -- Add C/C++ to treesitter
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "c", "cpp" })
-      end
-    end,
+    opts = { ensure_installed = { "cpp" } },
   },
 
   {
@@ -92,12 +88,12 @@ return {
     },
   },
 
-  {
-    "nvim-cmp",
-    opts = function(_, opts)
-      table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
-    end,
-  },
+  -- {
+  --   "nvim-cmp",
+  --   opts = function(_, opts)
+  --     table.insert(opts.sorting.comparators, 1, require("clangd_extensions.cmp_scores"))
+  --   end,
+  -- },
 
   {
     "mfussenegger/nvim-dap",
@@ -106,11 +102,7 @@ return {
       -- Ensure C/C++ debugger is installed
       "williamboman/mason.nvim",
       optional = true,
-      opts = function(_, opts)
-        if type(opts.ensure_installed) == "table" then
-          vim.list_extend(opts.ensure_installed, { "codelldb" })
-        end
-      end,
+      opts = { ensure_installed = { "codelldb" } },
     },
     opts = function()
       local dap = require("dap")

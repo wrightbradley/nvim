@@ -22,4 +22,16 @@ return {
       },
     },
   },
+  -- Filetype icons
+  {
+    "echasnovski/mini.icons",
+    opts = {
+      file = {
+        ["toml.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
+      },
+      filetype = {
+        toml = { glyph = "", hl = "MiniIconsGrey" },
+      },
+    },
+  },
 }
