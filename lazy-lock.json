@@ -18,6 +18,7 @@
   "cypher-vim-syntax": { "branch": "master", "commit": "386abb72a5113dfd3aa88ab59bb1e99d3ff33c8e" },
   "dashboard-nvim": { "branch": "master", "commit": "fabf5feec96185817c732d47d363f34034212685" },
   "deadcolumn.nvim": { "branch": "master", "commit": "af13928aa281f36273e8f220b19e78d497c7fb87" },
+  "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "dressing.nvim": { "branch": "master", "commit": "6741f1062d3dc6e4755367a7e9b347b553623f04" },
   "earthly.vim": { "branch": "main", "commit": "cb0440a357a09fb9234ece56a6b09e04d25c1b1d" },
   "flash.nvim": { "branch": "main", "commit": "34c7be146a91fec3555c33fe89c7d643f6ef5cf1" },
