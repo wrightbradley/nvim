@@ -40,6 +40,24 @@ return {
 
       -- see below for full list of optional dependencies 👇
     },
+    keys = {
+      { "<leader>oo", ":cd /Users/bwright/Projects/writing/obsidian-vault/<cr>", desc = "Navigate to Obsidian Vault" },
+      {
+        "<leader>on",
+        ":ObsidianTemplate note<cr> :lua vim.cmd([[1,/^\\S/s/^\\n\\{1,}//]])<cr>",
+        desc = "Convert note to template and remove leading white space",
+      },
+      {
+        "<leader>os",
+        ':Telescope find_files search_dirs={"/Users/alex/library/Mobile\\ Documents/iCloud~md~obsidian/Documents/ZazenCodes/notes"}<cr>',
+        desc = "Find files in Obsidian Vault",
+      },
+      {
+        "<leader>oz",
+        ':Telescope live_grep search_dirs={"/Users/alex/library/Mobile\\ Documents/iCloud~md~obsidian/Documents/ZazenCodes/notes"}<cr>',
+        desc = "Grep files in Obsidian Vault",
+      },
+    },
     opts = {
       workspaces = {
         {
@@ -52,6 +70,38 @@ return {
         -- },
       },
       -- see below for full list of options 👇
+      disable_frontmatter = true,
+      templates = {
+        subdir = "templates",
+        date_format = "%Y-%m-%d",
+        time_format = "%H:%M:%S",
+      },
+      -- key mappings, below are the defaults
+      mappings = {
+        -- overrides the 'gf' mapping to work on markdown/wiki links within your vault
+        ["gf"] = {
+          action = function()
+            return require("obsidian").util.gf_passthrough()
+          end,
+          opts = { noremap = false, expr = true, buffer = true },
+        },
+        -- toggle check-boxes
+        -- ["<leader>ch"] = {
+        --   action = function()
+        --     return require("obsidian").util.toggle_checkbox()
+        --   end,
+        --   opts = { buffer = true },
+        -- },
+      },
+      completion = {
+        nvim_cmp = true,
+        min_chars = 2,
+      },
+      ui = {
+        -- Disable some things below here because I set these manually for all Markdown files using treesitter
+        checkboxes = {},
+        bullets = {},
+      },
     },
     config = function(_, opts)
       require("obsidian").setup(opts)
