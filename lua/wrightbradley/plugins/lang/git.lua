@@ -77,7 +77,7 @@ return {
         function()
           require("telescope").extensions.git_worktree.create_git_worktree()
         end,
-        desc = "Crate new Git Worktree",
+        desc = "Create new Git Worktree",
       },
     },
   },

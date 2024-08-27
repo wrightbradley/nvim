@@ -19,7 +19,7 @@ return {
         desc = "Explorer NeoTree (cwd)",
       },
       { "<leader>e", "<leader>fe", desc = "Explorer NeoTree (Root Dir)", remap = true },
-      { "<leader>E", "<leader>fE", desc = "Explorer NeoTree (cwd)",      remap = true },
+      { "<leader>E", "<leader>fE", desc = "Explorer NeoTree (cwd)", remap = true },
       {
         "<leader>ge",
         function()
@@ -110,7 +110,7 @@ return {
       local events = require("neo-tree.events")
       opts.event_handlers = opts.event_handlers or {}
       vim.list_extend(opts.event_handlers, {
-        { event = events.FILE_MOVED,   handler = on_move },
+        { event = events.FILE_MOVED, handler = on_move },
         { event = events.FILE_RENAMED, handler = on_move },
       })
       require("neo-tree").setup(opts)
@@ -307,12 +307,16 @@ return {
       },
     },
     keys = {
-      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",              desc = "Diagnostics (Trouble)" },
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
-      { "<leader>cs", "<cmd>Trouble symbols toggle<cr>",                  desc = "Symbols (Trouble)" },
-      { "<leader>cS", "<cmd>Trouble lsp toggle<cr>",                      desc = "LSP references/definitions/... (Trouble)" },
-      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                  desc = "Location List (Trouble)" },
-      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                   desc = "Quickfix List (Trouble)" },
+      { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
+      {
+        "<leader>cS",
+        "<cmd>Trouble lsp toggle<cr>",
+        desc = "LSP references/definitions/... (Trouble)",
+      },
+      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
+      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
       {
         "[q",
         function()
@@ -379,10 +383,10 @@ return {
           ft = "trouble",
           filter = function(_buf, win)
             return vim.w[win].trouble
-                and vim.w[win].trouble.position == pos
-                and vim.w[win].trouble.type == "split"
-                and vim.w[win].trouble.relative == "editor"
-                and not vim.w[win].trouble_preview
+              and vim.w[win].trouble.position == pos
+              and vim.w[win].trouble.type == "split"
+              and vim.w[win].trouble.relative == "editor"
+              and not vim.w[win].trouble_preview
           end,
         })
       end
@@ -486,23 +490,96 @@ return {
     keys = {
       -- stylua: ignore
       { "<leader>p", function() require("telescope").extensions.yank_history.yank_history({}) end, desc = "Open Yank History" },
-      { "y",         "<Plug>(YankyYank)",                                                          mode = { "n", "x" },                           desc = "Yank Text" },
-      { "p",         "<Plug>(YankyPutAfter)",                                                      mode = { "n", "x" },                           desc = "Put Yanked Text After Cursor" },
-      { "P",         "<Plug>(YankyPutBefore)",                                                     mode = { "n", "x" },                           desc = "Put Yanked Text Before Cursor" },
-      { "gp",        "<Plug>(YankyGPutAfter)",                                                     mode = { "n", "x" },                           desc = "Put Yanked Text After Selection" },
-      { "gP",        "<Plug>(YankyGPutBefore)",                                                    mode = { "n", "x" },                           desc = "Put Yanked Text Before Selection" },
-      { "[y",        "<Plug>(YankyCycleForward)",                                                  desc = "Cycle Forward Through Yank History" },
-      { "]y",        "<Plug>(YankyCycleBackward)",                                                 desc = "Cycle Backward Through Yank History" },
-      { "]p",        "<Plug>(YankyPutIndentAfterLinewise)",                                        desc = "Put Indented After Cursor (Linewise)" },
-      { "[p",        "<Plug>(YankyPutIndentBeforeLinewise)",                                       desc = "Put Indented Before Cursor (Linewise)" },
-      { "]P",        "<Plug>(YankyPutIndentAfterLinewise)",                                        desc = "Put Indented After Cursor (Linewise)" },
-      { "[P",        "<Plug>(YankyPutIndentBeforeLinewise)",                                       desc = "Put Indented Before Cursor (Linewise)" },
-      { ">p",        "<Plug>(YankyPutIndentAfterShiftRight)",                                      desc = "Put and Indent Right" },
-      { "<p",        "<Plug>(YankyPutIndentAfterShiftLeft)",                                       desc = "Put and Indent Left" },
-      { ">P",        "<Plug>(YankyPutIndentBeforeShiftRight)",                                     desc = "Put Before and Indent Right" },
-      { "<P",        "<Plug>(YankyPutIndentBeforeShiftLeft)",                                      desc = "Put Before and Indent Left" },
-      { "=p",        "<Plug>(YankyPutAfterFilter)",                                                desc = "Put After Applying a Filter" },
-      { "=P",        "<Plug>(YankyPutBeforeFilter)",                                               desc = "Put Before Applying a Filter" },
+      {
+        "y",
+        "<Plug>(YankyYank)",
+        mode = { "n", "x" },
+        desc = "Yank Text",
+      },
+      {
+        "p",
+        "<Plug>(YankyPutAfter)",
+        mode = { "n", "x" },
+        desc = "Put Yanked Text After Cursor",
+      },
+      {
+        "P",
+        "<Plug>(YankyPutBefore)",
+        mode = { "n", "x" },
+        desc = "Put Yanked Text Before Cursor",
+      },
+      {
+        "gp",
+        "<Plug>(YankyGPutAfter)",
+        mode = { "n", "x" },
+        desc = "Put Yanked Text After Selection",
+      },
+      {
+        "gP",
+        "<Plug>(YankyGPutBefore)",
+        mode = { "n", "x" },
+        desc = "Put Yanked Text Before Selection",
+      },
+      {
+        "[y",
+        "<Plug>(YankyCycleForward)",
+        desc = "Cycle Forward Through Yank History",
+      },
+      {
+        "]y",
+        "<Plug>(YankyCycleBackward)",
+        desc = "Cycle Backward Through Yank History",
+      },
+      {
+        "]p",
+        "<Plug>(YankyPutIndentAfterLinewise)",
+        desc = "Put Indented After Cursor (Linewise)",
+      },
+      {
+        "[p",
+        "<Plug>(YankyPutIndentBeforeLinewise)",
+        desc = "Put Indented Before Cursor (Linewise)",
+      },
+      {
+        "]P",
+        "<Plug>(YankyPutIndentAfterLinewise)",
+        desc = "Put Indented After Cursor (Linewise)",
+      },
+      {
+        "[P",
+        "<Plug>(YankyPutIndentBeforeLinewise)",
+        desc = "Put Indented Before Cursor (Linewise)",
+      },
+      {
+        ">p",
+        "<Plug>(YankyPutIndentAfterShiftRight)",
+        desc = "Put and Indent Right",
+      },
+      {
+        "<p",
+        "<Plug>(YankyPutIndentAfterShiftLeft)",
+        desc = "Put and Indent Left",
+      },
+      {
+        ">P",
+        "<Plug>(YankyPutIndentBeforeShiftRight)",
+        desc = "Put Before and Indent Right",
+      },
+      {
+        "<P",
+        "<Plug>(YankyPutIndentBeforeShiftLeft)",
+        desc = "Put Before and Indent Left",
+      },
+      {
+        "=p",
+        "<Plug>(YankyPutAfterFilter)",
+        desc = "Put After Applying a Filter",
+      },
+      {
+        "=P",
+        "<Plug>(YankyPutBeforeFilter)",
+        desc = "Put Before Applying a Filter",
+      },
     },
   },
 }
