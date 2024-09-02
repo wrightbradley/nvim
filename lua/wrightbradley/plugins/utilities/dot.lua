@@ -1,3 +1,6 @@
+if true then
+  return {}
+end
 ---@type string
 local xdg_config = vim.env.XDG_CONFIG_HOME or vim.env.HOME .. "/.config"
 
