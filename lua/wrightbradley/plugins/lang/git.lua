@@ -41,7 +41,8 @@ return {
     end,
   },
   {
-    "polarmutex/git-worktree.nvim",
+    -- "polarmutex/git-worktree.nvim",
+    "wrightbradley/git-worktree.nvim",
     -- version = "^2",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -55,7 +56,7 @@ return {
         vim.notify("Switched to ~" .. relativePath)
 
         -- Update the current buffer
-        -- Hooks.builtins.update_current_buffer_on_switch(path, prev_path)
+        Hooks.builtins.update_current_buffer_on_switch(path, prev_path)
 
         for _, buf in ipairs(vim.api.nvim_list_bufs()) do
           if vim.api.nvim_buf_is_loaded(buf) then
