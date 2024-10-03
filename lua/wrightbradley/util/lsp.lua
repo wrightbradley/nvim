@@ -149,12 +149,10 @@ end
 ---@param to string
 ---@param rename? fun()
 function M.on_rename(from, to, rename)
-  local changes = {
-    files = { {
-      oldUri = vim.uri_from_fname(from),
-      newUri = vim.uri_from_fname(to),
-    } }
-  }
+  local changes = { files = { {
+    oldUri = vim.uri_from_fname(from),
+    newUri = vim.uri_from_fname(to),
+  } } }
 
   local clients = M.get_clients()
   for _, client in ipairs(clients) do
@@ -181,6 +179,15 @@ end
 function M.get_config(server)
   local configs = require("lspconfig.configs")
   return rawget(configs, server)
+end
+
+---@return {default_config:lspconfig.Config}
+function M.get_raw_config(server)
+  local ok, ret = pcall(require, "lspconfig.configs." .. server)
+  if ok then
+    return ret
+  end
+  return require("lspconfig.server_configurations." .. server)
 end
 
 function M.is_enabled(server)
@@ -220,7 +227,7 @@ function M.formatter(opts)
       ---@param client vim.lsp.Client
       local ret = vim.tbl_filter(function(client)
         return client.supports_method("textDocument/formatting")
-            or client.supports_method("textDocument/rangeFormatting")
+          or client.supports_method("textDocument/rangeFormatting")
       end, clients)
       ---@param client vim.lsp.Client
       return vim.tbl_map(function(client)
