@@ -3,6 +3,9 @@ local M = {}
 
 ---@class wrightbradley.Toggle
 ---@field name string
+---@field icon? string
+---@field color_enabled? string
+---@field color_disabled? string
 ---@field get fun():boolean
 ---@field set fun(state:boolean)
 
@@ -50,7 +53,8 @@ function M.wk(lhs, toggle)
     {
       lhs,
       icon = function()
-        return safe_get() and { icon = " ", color = "green" } or { icon = " ", color = "yellow" }
+        return safe_get() and { icon = toggle.icon or " ", color = toggle.color_enabled or "green" }
+          or { icon = toggle.icon or " ", color = toggle.color_disabled or "yellow" }
       end,
       desc = function()
         return (safe_get() and "Disable " or "Enable ") .. toggle.name
@@ -127,9 +131,25 @@ M.number = M.wrap({
 M.diagnostics = M.wrap({
   name = "Diagnostics",
   get = function()
-    return vim.diagnostic.is_enabled and vim.diagnostic.is_enabled()
+    local enabled = false
+    if vim.diagnostic.is_enabled then
+      enabled = vim.diagnostic.is_enabled()
+    elseif vim.diagnostic.is_disabled then
+      enabled = not vim.diagnostic.is_disabled()
+    end
+    return enabled
   end,
-  set = vim.diagnostic.enable,
+  set = function(state)
+    if vim.fn.has("nvim-0.10") == 0 then
+      if state then
+        pcall(vim.diagnostic.enable)
+      else
+        pcall(vim.diagnostic.disable)
+      end
+    else
+      vim.diagnostic.enable(state)
+    end
+  end,
 })
 
 M.inlay_hints = M.wrap({
