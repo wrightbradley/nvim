@@ -26,6 +26,13 @@ return {
     end,
   },
   {
+    "dlvhdr/gh-blame.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
+    keys = {
+      { "<leader>ghb", "<cmd>GhBlameCurrentLine<cr>", desc = "GitHub Blame Current Line" },
+    },
+  },
+  {
     "pwntester/octo.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -83,6 +90,54 @@ return {
     },
   },
   {
-    "sindrets/diffview.nvim",
+    "dlvhdr/gh-addressed.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "folke/trouble.nvim",
+    },
+    cmd = "GhReviewComments",
+    keys = {
+      { "<leader>gc", "<cmd>GhReviewComments<cr>", desc = "GitHub Review Comments" },
+    },
+  },
+  {
+    "linrongbin16/gitlinker.nvim",
+    cmd = "GitLink",
+    opts = {},
+    keys = {
+      { "<leader>gy", "<cmd>GitLink<cr>", mode = { "n", "v" }, desc = "Yank git link" },
+      { "<leader>gY", "<cmd>GitLink!<cr>", mode = { "n", "v" }, desc = "Open git link" },
+    },
+  },
+  {
+    "aaronhallaert/advanced-git-search.nvim",
+    cmd = { "AdvancedGitSearch" },
+    config = function()
+      -- optional: setup telescope before loading the extension
+      require("telescope").setup({
+        -- move this to the place where you call the telescope setup function
+        extensions = {
+          advanced_git_search = {
+            -- See Config
+          },
+        },
+      })
+
+      require("telescope").load_extension("advanced_git_search")
+    end,
+    dependencies = {
+      ---     "nvim-telescope/telescope.nvim",
+      -- to show diff splits and open commits in browser
+      "tpope/vim-fugitive",
+      -- to open commits in browser with fugitive
+      "tpope/vim-rhubarb",
+      -- optional: to replace the diff from fugitive with diffview.nvim
+      -- (fugitive is still needed to open in browser)
+      "sindrets/diffview.nvim",
+    },
+  },
+  {
+    "lewis6991/gitsigns.nvim",
   },
 }
