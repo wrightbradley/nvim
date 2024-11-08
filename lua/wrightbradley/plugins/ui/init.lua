@@ -9,6 +9,7 @@ return {
     -- stylua: ignore
     keys = {
       { "<leader>qs", function() require("persistence").load() end,                desc = "Restore Session" },
+      { "<leader>qS", function() require("persistence").select() end,              desc = "Select Session" },
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
       { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
     },
@@ -401,14 +402,14 @@ return {
     lazy = false, -- As https://github.com/nvimdev/dashboard-nvim/pull/450, dashboard-nvim shouldn't be lazy-loaded to properly handle stdin.
     opts = function()
       local logo = [[
-              ██████   █████                   █████   █████  ███                  
-             ░░██████ ░░███                   ░░███   ░░███  ░░░                   
-              ░███░███ ░███   ██████   ██████  ░███    ░███  ████  █████████████   
-              ░███░░███░███  ███░░███ ███░░███ ░███    ░███ ░░███ ░░███░░███░░███  
-              ░███ ░░██████ ░███████ ░███ ░███ ░░███   ███   ░███  ░███ ░███ ░███  
-              ░███  ░░█████ ░███░░░  ░███ ░███  ░░░█████░    ░███  ░███ ░███ ░███  
-              █████  ░░█████░░██████ ░░██████     ░░███      █████ █████░███ █████ 
-             ░░░░░    ░░░░░  ░░░░░░   ░░░░░░       ░░░      ░░░░░ ░░░░░ ░░░ ░░░░░  
+              ██████   █████                   █████   █████  ███
+             ░░██████ ░░███                   ░░███   ░░███  ░░░
+              ░███░███ ░███   ██████   ██████  ░███    ░███  ████  █████████████
+              ░███░░███░███  ███░░███ ███░░███ ░███    ░███ ░░███ ░░███░░███░░███
+              ░███ ░░██████ ░███████ ░███ ░███ ░░███   ███   ░███  ░███ ░███ ░███
+              ░███  ░░█████ ░███░░░  ░███ ░███  ░░░█████░    ░███  ░███ ░███ ░███
+              █████  ░░█████░░██████ ░░██████     ░░███      █████ █████░███ █████
+             ░░░░░    ░░░░░  ░░░░░░   ░░░░░░       ░░░      ░░░░░ ░░░░░ ░░░ ░░░░░
         ]]
 
       logo = string.rep("\n", 8) .. logo .. "\n\n"
