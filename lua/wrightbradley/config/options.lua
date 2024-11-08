@@ -93,11 +93,14 @@ vim.g.wrightbradley_picker = "fzf"
 -- * a function with signature `function(buf) -> string|string[]`
 vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
 
--- automatically configures lazygit:
+-- Automatically configures lazygit:
 --  * theme, based on the active colorscheme.
---  * editorPreset to nvim-remote
+--  * editPreset to nvim-remote
 --  * enables nerd font icons
 -- Set to false to disable.
+-- Set the options you want to override in `~/.config/lazygit/custom.yml`
+-- WARN: on Windows you might want to set `editPreset: "nvim"` due to
+-- this issue https://github.com/jesseduffield/lazygit/issues/3467
 vim.g.lazygit_config = true
 
 -- Options for the Util statuscolumn
