@@ -1,3 +1,10 @@
+if wrightbradley_docs then
+  -- Set to false to disable auto format
+  vim.g.wrightbradley_eslint_auto_format = true
+end
+
+local auto_format = vim.g.wrightbradley_eslint_auto_format == nil or vim.g.wrightbradley_eslint_auto_format
+
 return {
   {
     "mfussenegger/nvim-lint",
@@ -109,11 +116,15 @@ return {
           settings = {
             -- helps eslint find the eslintrc when it's placed in a subfolder instead of the cwd root
             workingDirectories = { mode = "auto" },
+            format = auto_format,
           },
         },
       },
       setup = {
         eslint = function()
+          if not auto_format then
+            return
+          end
           local function get_client(buf)
             return Util.lsp.get_clients({ name = "eslint", bufnr = buf })[1]
           end
