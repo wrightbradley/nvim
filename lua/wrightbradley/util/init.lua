@@ -6,8 +6,6 @@ local LazyUtil = require("lazy.core.util")
 ---@field lsp wrightbradley.util.lsp
 ---@field root wrightbradley.util.root
 ---@field terminal wrightbradley.util.terminal
----@field lazygit wrightbradley.util.lazygit
----@field toggle wrightbradley.util.toggle
 ---@field format wrightbradley.util.format
 ---@field plugin wrightbradley.util.plugin
 ---@field inject wrightbradley.util.inject
@@ -16,36 +14,17 @@ local LazyUtil = require("lazy.core.util")
 ---@field cmp wrightbradley.util.cmp
 local M = {}
 
----@type table<string, string|string[]>
-local deprecated = {
-  get_clients = "lsp",
-  on_attach = "lsp",
-  on_rename = "lsp",
-  root_patterns = { "root", "patterns" },
-  get_root = { "root", "get" },
-  float_term = { "terminal", "open" },
-  toggle_diagnostics = { "toggle", "diagnostics" },
-  toggle_number = { "toggle", "number" },
-  fg = "ui",
-  telescope = "pick",
-}
-
 setmetatable(M, {
   __index = function(t, k)
     if LazyUtil[k] then
       return LazyUtil[k]
     end
-    local dep = deprecated[k]
-    if dep then
-      local mod = type(dep) == "table" and dep[1] or dep
-      local key = type(dep) == "table" and dep[2] or k
-      M.deprecate([[Util.]] .. k, [[Util.]] .. mod .. "." .. key)
-      ---@diagnostic disable-next-line: no-unknown
-      t[mod] = require("wrightbradley.util." .. mod) -- load here to prevent loops
-      return t[mod][key]
+    if k == "lazygit" or k == "toggle" then -- HACK: special case for lazygit
+      return M.deprecated[k]()
     end
     ---@diagnostic disable-next-line: no-unknown
     t[k] = require("wrightbradley.util." .. k)
+    M.deprecated.decorate(k, t[k])
     return t[k]
   end,
 })

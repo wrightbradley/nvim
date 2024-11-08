@@ -93,30 +93,8 @@ vim.g.wrightbradley_picker = "fzf"
 -- * a function with signature `function(buf) -> string|string[]`
 vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
 
--- Automatically configures lazygit:
---  * theme, based on the active colorscheme.
---  * editPreset to nvim-remote
---  * enables nerd font icons
--- Set to false to disable.
--- Set the options you want to override in `~/.config/lazygit/custom.yml`
--- WARN: on Windows you might want to set `editPreset: "nvim"` due to
--- this issue https://github.com/jesseduffield/lazygit/issues/3467
-vim.g.lazygit_config = true
-
--- Options for the Util statuscolumn
-vim.g.wrightbradley_statuscolumn = {
-  folds_open = false, -- show fold sign when fold is open
-  folds_githl = false, -- highlight fold sign with git sign color
-}
-
 -- Hide deprecation warnings
 vim.g.deprecation_warnings = false
-
--- Set filetype to `bigfile` for files larger than 1.5 MB
--- Only vim syntax will be enabled (with the correct filetype)
--- LSP, treesitter and other ft plugins will be disabled.
--- mini.animate will also be disabled.
-vim.g.bigfile_size = 1024 * 1024 * 1.5 -- 1.5 MB
 
 -- Show the current document symbols location from Trouble in lualine
 vim.g.trouble_lualine = true
@@ -169,7 +147,6 @@ opt.splitbelow = true -- Put new windows below current
 opt.splitkeep = "screen"
 opt.tabstop = 4 -- Number of spaces tabs count for
 opt.splitright = true -- Put new windows right of current
-opt.statuscolumn = [[%!v:lua.require'wrightbradley.util'.ui.statuscolumn()]]
 opt.termguicolors = true -- True color support
 opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower than default (1000) to quickly trigger which-key
 opt.undofile = true

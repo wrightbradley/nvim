@@ -129,8 +129,6 @@ return {
       Util.lsp.setup()
       Util.lsp.on_dynamic_capability(require("wrightbradley.config.lsp-keymaps").on_attach)
 
-      Util.lsp.words.setup(opts.document_highlight)
-
       -- diagnostics signs
       if vim.fn.has("nvim-0.10.0") == 0 then
         if type(opts.diagnostics.signs) ~= "boolean" then

@@ -3,7 +3,7 @@ return {
     "folke/which-key.nvim",
     opts = {
       spec = {
-        { "<BS>",      desc = "Decrement Selection", mode = "x" },
+        { "<BS>", desc = "Decrement Selection", mode = "x" },
         { "<c-space>", desc = "Increment Selection", mode = { "x", "n" } },
       },
     },
@@ -30,7 +30,7 @@ return {
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
       { "<c-space>", desc = "Increment Selection" },
-      { "<bs>",      desc = "Decrement Selection", mode = "x" },
+      { "<bs>", desc = "Decrement Selection", mode = "x" },
     },
     opts_extend = { "ensure_installed" },
     ---@type TSConfig
@@ -138,7 +138,7 @@ return {
     opts = function()
       local tsc = require("treesitter-context")
 
-      Util.toggle.map("<leader>ut", {
+      Snacks.toggle({
         name = "Treesitter Context",
         get = tsc.enabled,
         set = function(state)
@@ -148,9 +148,9 @@ return {
             tsc.disable()
           end
         end,
-      })
+      }):map("<leader>ut")
 
       return { mode = "cursor", max_lines = 3 }
     end,
-  }
+  },
 }

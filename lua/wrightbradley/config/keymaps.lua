@@ -63,12 +63,12 @@ map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Wi
 map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width" })
 
 -- Move Lines
-map("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move Down" })
-map("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move Up" })
+map("n", "<A-j>", "<cmd>execute 'move .+' . v:count1<cr>==", { desc = "Move Down" })
+map("n", "<A-k>", "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = "Move Up" })
 map("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Down" })
 map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up" })
-map("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move Down" })
-map("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move Up" })
+map("v", "<A-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = "Move Down" })
+map("v", "<A-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Up" })
 
 -- buffers
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
@@ -77,12 +77,11 @@ map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
-map("n", "<leader>bd", Util.ui.bufremove, { desc = "Delete Buffer" })
+map("n", "<leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 
--- Set highlight on search, but clear on pressing <Esc> in normal mode
-vim.opt.hlsearch = true
-map("n", "<Esc>", "<cmd>nohlsearch<CR>")
 -- Clear search with <esc>
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear hlsearch" })
 
@@ -139,7 +138,6 @@ map({ "n", "v" }, "<leader>cf", function()
   Util.format({ force = true })
 end, { desc = "Format" })
 
--- Diagnostic keymaps
 -- diagnostic
 local diagnostic_goto = function(next, severity)
   local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
@@ -159,37 +157,30 @@ map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 -- stylua: ignore start
 
 -- toggle options
-Util.toggle.map("<leader>uf", Util.toggle.format())
-Util.toggle.map("<leader>uF", Util.toggle.format(true))
-Util.toggle.map("<leader>us", Util.toggle("spell", { name = "Spelling" }))
-Util.toggle.map("<leader>uw", Util.toggle("wrap", { name = "Wrap" }))
-Util.toggle.map("<leader>uL", Util.toggle("relativenumber", { name = "Relative Number" }))
-Util.toggle.map("<leader>ud", Util.toggle.diagnostics)
-Util.toggle.map("<leader>ul", Util.toggle.number)
-Util.toggle.map( "<leader>uc", Util.toggle("conceallevel", { values = { 0, vim.o.conceallevel > 0 and vim.o.conceallevel or 2 } }))
-Util.toggle.map("<leader>uT", Util.toggle.treesitter)
-Util.toggle.map("<leader>ub", Util.toggle("background", { values = { "light", "dark" }, name = "Background" }))
+Util.format.snacks_toggle():map("<leader>uf")
+Util.format.snacks_toggle(true):map("<leader>uF")
+Snacks.toggle.option("spell", { name = "Spelling"}):map("<leader>us")
+Snacks.toggle.option("wrap", {name = "Wrap"}):map("<leader>uw")
+Snacks.toggle.option("relativenumber", { name = "Relative Number"}):map("<leader>uL")
+Snacks.toggle.diagnostics():map("<leader>ud")
+Snacks.toggle.line_number():map("<leader>ul")
+Snacks.toggle.option("conceallevel", {off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2}):map("<leader>uc")
+Snacks.toggle.treesitter():map("<leader>uT")
+Snacks.toggle.option("background", { off = "light", on = "dark" , name = "Dark Background"}):map("<leader>ub")
 if vim.lsp.inlay_hint then
-  Util.toggle.map("<leader>uh", Util.toggle.inlay_hints)
+  Snacks.toggle.inlay_hints():map("<leader>uh")
 end
 
 -- lazygit
-map("n", "<leader>gg", function() Util.lazygit( { cwd = Util.root.git() }) end, { desc = "Lazygit (Root Dir)" })
-map("n", "<leader>gG", function() Util.lazygit() end, { desc = "Lazygit (cwd)" })
-map("n", "<leader>gb", Util.lazygit.blame_line, { desc = "Git Blame Line" })
-map("n", "<leader>gB", Util.lazygit.browse, { desc = "Git Browse" })
-
-map("n", "<leader>gf", function()
-  local git_path = vim.api.nvim_buf_get_name(0)
-  Util.lazygit({args = { "-f", vim.trim(git_path) }})
-end, { desc = "Lazygit Current File History" })
-
-map("n", "<leader>gl", function()
-  Util.lazygit({ args = { "log" }, cwd = Util.root.git() })
-end, { desc = "Lazygit Log" })
-map("n", "<leader>gL", function()
-  Util.lazygit({ args = { "log" } })
-end, { desc = "Lazygit Log (cwd)" })
+if vim.fn.executable("lazygit") == 1 then
+  map("n", "<leader>gg", function() Snacks.lazygit( { cwd = Util.root.git() }) end, { desc = "Lazygit (Root Dir)" })
+  map("n", "<leader>gG", function() Snacks.lazygit() end, { desc = "Lazygit (cwd)" })
+  map("n", "<leader>gb", function() Snacks.git.blame_line() end, { desc = "Git Blame Line" })
+  map("n", "<leader>gB", function() Snacks.gitbrowse() end, { desc = "Git Browse" })
+  map("n", "<leader>gf", function() Snacks.lazygit.log_file() end, { desc = "Lazygit Current File History" })
+  map("n", "<leader>gl", function() Snacks.lazygit.log({ cwd = Util.root.git() }) end, { desc = "Lazygit Log" })
+  map("n", "<leader>gL", function() Snacks.lazygit.log() end, { desc = "Lazygit Log (cwd)" })
+end
 
 -- quit
 map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
@@ -198,19 +189,16 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 map("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
 
+-- Util Changelog
+map("n", "<leader>L", function() Util.news.changelog() end, { desc = "Util Changelog" })
+
 -- floating terminal
-local lazyterm = function() Util.terminal(nil, { cwd = Util.root() }) end
-map("n", "<leader>ft", lazyterm, { desc = "Terminal (Root Dir)" })
-map("n", "<leader>fT", function() Util.terminal() end, { desc = "Terminal (cwd)" })
-map("n", "<c-/>", lazyterm, { desc = "Terminal (Root Dir)" })
-map("n", "<c-_>", lazyterm, { desc = "which_key_ignore" })
+map("n", "<leader>fT", function() Snacks.terminal() end, { desc = "Terminal (cwd)" })
+map("n", "<leader>ft", function() Snacks.terminal(nil, { cwd = Util.root() }) end, { desc = "Terminal (Root Dir)" })
+map("n", "<c-/>",      function() Snacks.terminal(nil, { cwd = Util.root() }) end, { desc = "Terminal (Root Dir)" })
+map("n", "<c-_>",      function() Snacks.terminal(nil, { cwd = Util.root() }) end, { desc = "which_key_ignore" })
 
 -- Terminal Mappings
-map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
-map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Go to Left Window" })
-map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to Lower Window" })
-map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to Upper Window" })
-map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to Right Window" })
 map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
 map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
@@ -219,7 +207,7 @@ map("n", "<leader>w", "<c-w>", { desc = "Windows", remap = true })
 map("n", "<leader>-", "<C-W>s", { desc = "Split Window Below", remap = true })
 map("n", "<leader>|", "<C-W>v", { desc = "Split Window Right", remap = true })
 map("n", "<leader>wd", "<C-W>c", { desc = "Delete Window", remap = true })
-Util.toggle.map("<leader>wm", Util.toggle.maximize)
+Util.ui.maximize():map("<leader>wm")
 
 -- tabs
 map("n", "<leader><tab>l", "<cmd>tablast<cr>", { desc = "Last Tab" })

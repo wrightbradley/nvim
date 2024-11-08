@@ -139,6 +139,7 @@ return {
         { path = "luvit-meta/library", words = { "vim%.uv" } },
         { path = "wrightbradley", words = { "Util" } },
         { path = "lazy.nvim", words = { "Util" } },
+        { path = "snacks.nvim", words = { "Snacks" } },
       },
     },
   },
