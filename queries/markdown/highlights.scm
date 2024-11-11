@@ -29,4 +29,3 @@
     @text.todo.checked
    (#offset! @text.todo.checked 0 -2 0 0)
  ] @conceal (#set! conceal ""))
-

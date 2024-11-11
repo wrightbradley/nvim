@@ -1,7 +1,8 @@
 # nvim
 
 This is my personal configuration for NeoVim. This was initial generated from
-the [LazyVim](https://github.com/LazyVim/LazyVim) starter template.
+the [LazyVim](https://github.com/LazyVim/LazyVim) starter template. You can see
+all the plugins I leverage [here](/docs/nvim-plugin-catalog.md).
 
 ![](docs/assets/screenshot-dashboard.png)
 
