@@ -17,7 +17,7 @@ return {
       ---@type snacks.Config
       return {
         toggle = { map = Util.safe_keymap_set },
-        notifier = { enabled = not Util.has("noice.nvim") },
+        statuscolumn = { enabled = false }, -- we set this in options.lua
         terminal = {
           win = {
             keys = {
