@@ -189,14 +189,23 @@ return {
               -- see ./doc/WHICH_KEY.md for more details
               auto_register = true,
             },
+            -- load keymaps and commands from nvim-tree.lua
+            nvim_tree = true,
+            -- load commands from smart-splits.nvim
+            -- and create keymaps, see :h legendary-extensions-smart-splits.nvim
+            smart_splits = {
+              directions = { "h", "j", "k", "l" },
+              mods = {
+                move = "<C>",
+                resize = "<M>",
+              },
+            },
+            -- load commands from op.nvim
+            op_nvim = true,
+            -- load keymaps from diffview.nvim
+            diffview = true,
           },
         },
-        config = function(_, opts)
-          require("legendary").setup(opts)
-          --   require("todo-comments").setup(opts)
-          --   local mappings = require("lazy-plugins.keymaps.todo_comments")
-          --   require("legendary").keymaps(mappings)
-        end,
       },
     },
     opts_extend = { "spec" },

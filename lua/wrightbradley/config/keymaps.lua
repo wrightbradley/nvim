@@ -192,8 +192,14 @@ map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 map("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
 map("n", "<leader>uI", "<cmd>InspectTree<cr>", { desc = "Inspect Tree" })
 
--- Util Changelog
-map("n", "<leader>L", function() Util.news.changelog() end, { desc = "Util Changelog" })
+-- Legendary Keymaps
+map("n", "<leader>L", "<cmd>Legendary<CR>", { desc = "Search keymaps, commands, and autocmds" })
+map("n", "<leader>Lk", "<cmd>Legendary keymaps<CR>", { desc = "Search keymaps" })
+map("n", "<leader>Lc", "<cmd>Legendary commands<CR>", { desc = "Search commands" })
+map("n", "<leader>Lf", "<cmd>Legendary functions<CR>", { desc = "Search functions" })
+map("n", "<leader>La", "<cmd>Legendary autocmds<CR>", { desc = "Search autocmds" })
+map("n", "<leader>Lr", "<cmd>LegendaryRepeat<CR>", { desc = "Repeat last item executed" })
+map("n", "<leader>Lr!", "<cmd>LegendaryRepeat!<CR>", { desc = "Repeat last item executed (ignore filters)" })
 
 -- floating terminal
 map("n", "<leader>fT", function() Snacks.terminal() end, { desc = "Terminal (cwd)" })
