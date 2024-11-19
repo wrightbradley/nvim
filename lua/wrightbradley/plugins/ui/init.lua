@@ -27,6 +27,142 @@ return {
       vim.g.startuptime_tries = 10
     end,
   },
+  {
+    "ntpeters/vim-better-whitespace",
+    config = function()
+      vim.api.nvim_command("augroup vimrc")
+      vim.api.nvim_command("autocmd TermOpen * :DisableWhitespace")
+      vim.api.nvim_command("augroup END")
+      vim.g.better_whitespace_enabled = 1
+      vim.g.strip_whitespace_on_save = 1
+      vim.g.strip_whitelines_at_eof = 0
+      vim.g.better_whitespace_filetypes_blacklist = {
+        "terminal",
+        "nofile",
+        "markdown",
+        "help",
+        "startify",
+        "dashboard",
+        "packer",
+        "neogitstatus",
+        "NvimTree",
+        "Trouble",
+      }
+    end,
+  },
+  {
+    "Bekaboo/deadcolumn.nvim",
+  },
+  -- better vim.ui
+  {
+    "stevearc/dressing.nvim",
+    lazy = true,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.select = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.select(...)
+      end
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.ui.input = function(...)
+        require("lazy").load({ plugins = { "dressing.nvim" } })
+        return vim.ui.input(...)
+      end
+    end,
+  },
+  {
+    "folke/zen-mode.nvim",
+    config = function()
+      require("zen-mode").setup({
+        -- window = {
+        --   backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+        --   -- height and width can be:
+        --   -- * an absolute number of cells when > 1
+        --   -- * a percentage of the width / height of the editor when <= 1
+        --   -- * a function that returns the width or the height
+        --   width = 120, -- width of the Zen window
+        --   height = 1, -- height of the Zen window
+        --   -- by default, no options are changed for the Zen window
+        --   -- uncomment any of the options below, or add other vim.wo options you want to apply
+        --   options = {
+        --     -- signcolumn = "no", -- disable signcolumn
+        --     -- number = false, -- disable number column
+        --     -- relativenumber = false, -- disable relative numbers
+        --     -- cursorline = false, -- disable cursorline
+        --     -- cursorcolumn = false, -- disable cursor column
+        --     -- foldcolumn = "0", -- disable fold column
+        --     -- list = false, -- disable whitespace characters
+        --   },
+        -- },
+        plugins = {
+          -- -- disable some global vim options (vim.o...)
+          -- -- comment the lines to not apply the options
+          -- options = {
+          --   enabled = true,
+          --   ruler = false, -- disables the ruler text in the cmd line area
+          --   showcmd = false, -- disables the command in the last line of the screen
+          -- },
+          twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+          gitsigns = { enabled = false }, -- disables git signs
+          tmux = { enabled = false }, -- disables the tmux statusline
+          -- this will change the font size on alacritty when in zen mode
+          -- requires  Alacritty Version 0.10.0 or higher
+          -- uses `alacritty msg` subcommand to change font size
+          alacritty = {
+            enabled = false,
+            font = "14", -- font size
+          },
+        },
+      })
+    end,
+  },
+  {
+    "folke/twilight.nvim",
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  -- Automatically highlights other instances of the word under your cursor.
+  -- This works with LSP, Treesitter, and regexp matching to find the other
+  -- instances.
+  {
+    "RRethy/vim-illuminate",
+    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+    opts = {
+      delay = 200,
+      large_file_cutoff = 2000,
+      large_file_overrides = {
+        providers = { "lsp" },
+      },
+    },
+    config = function(_, opts)
+      require("illuminate").configure(opts)
+
+      local function map(key, dir, buffer)
+        vim.keymap.set("n", key, function()
+          require("illuminate")["goto_" .. dir .. "_reference"](false)
+        end, { desc = dir:sub(1, 1):upper() .. dir:sub(2) .. " Reference", buffer = buffer })
+      end
+
+      map("]]", "next")
+      map("[[", "prev")
+
+      -- also set it after loading ftplugins, since a lot overwrite [[ and ]]
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          local buffer = vim.api.nvim_get_current_buf()
+          map("]]", "next", buffer)
+          map("[[", "prev", buffer)
+        end,
+      })
+    end,
+    keys = {
+      { "]]", desc = "Next Reference" },
+      { "[[", desc = "Prev Reference" },
+    },
+  },
   -- This is what powers the fancy-looking
   -- tabs, which include filetype icons and close buttons.
   {
@@ -429,141 +565,5 @@ return {
 
       return opts
     end,
-  },
-  {
-    "ntpeters/vim-better-whitespace",
-    config = function()
-      vim.api.nvim_command("augroup vimrc")
-      vim.api.nvim_command("autocmd TermOpen * :DisableWhitespace")
-      vim.api.nvim_command("augroup END")
-      vim.g.better_whitespace_enabled = 1
-      vim.g.strip_whitespace_on_save = 1
-      vim.g.strip_whitelines_at_eof = 0
-      vim.g.better_whitespace_filetypes_blacklist = {
-        "terminal",
-        "nofile",
-        "markdown",
-        "help",
-        "startify",
-        "dashboard",
-        "packer",
-        "neogitstatus",
-        "NvimTree",
-        "Trouble",
-      }
-    end,
-  },
-  {
-    "Bekaboo/deadcolumn.nvim",
-  },
-  -- better vim.ui
-  {
-    "stevearc/dressing.nvim",
-    lazy = true,
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.select = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.select(...)
-      end
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.ui.input = function(...)
-        require("lazy").load({ plugins = { "dressing.nvim" } })
-        return vim.ui.input(...)
-      end
-    end,
-  },
-  {
-    "folke/zen-mode.nvim",
-    config = function()
-      require("zen-mode").setup({
-        -- window = {
-        --   backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
-        --   -- height and width can be:
-        --   -- * an absolute number of cells when > 1
-        --   -- * a percentage of the width / height of the editor when <= 1
-        --   -- * a function that returns the width or the height
-        --   width = 120, -- width of the Zen window
-        --   height = 1, -- height of the Zen window
-        --   -- by default, no options are changed for the Zen window
-        --   -- uncomment any of the options below, or add other vim.wo options you want to apply
-        --   options = {
-        --     -- signcolumn = "no", -- disable signcolumn
-        --     -- number = false, -- disable number column
-        --     -- relativenumber = false, -- disable relative numbers
-        --     -- cursorline = false, -- disable cursorline
-        --     -- cursorcolumn = false, -- disable cursor column
-        --     -- foldcolumn = "0", -- disable fold column
-        --     -- list = false, -- disable whitespace characters
-        --   },
-        -- },
-        plugins = {
-          -- -- disable some global vim options (vim.o...)
-          -- -- comment the lines to not apply the options
-          -- options = {
-          --   enabled = true,
-          --   ruler = false, -- disables the ruler text in the cmd line area
-          --   showcmd = false, -- disables the command in the last line of the screen
-          -- },
-          twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
-          gitsigns = { enabled = false }, -- disables git signs
-          tmux = { enabled = false }, -- disables the tmux statusline
-          -- this will change the font size on alacritty when in zen mode
-          -- requires  Alacritty Version 0.10.0 or higher
-          -- uses `alacritty msg` subcommand to change font size
-          alacritty = {
-            enabled = false,
-            font = "14", -- font size
-          },
-        },
-      })
-    end,
-  },
-  {
-    "folke/twilight.nvim",
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-  },
-  -- Automatically highlights other instances of the word under your cursor.
-  -- This works with LSP, Treesitter, and regexp matching to find the other
-  -- instances.
-  {
-    "RRethy/vim-illuminate",
-    event = { "BufReadPost", "BufWritePost", "BufNewFile" },
-    opts = {
-      delay = 200,
-      large_file_cutoff = 2000,
-      large_file_overrides = {
-        providers = { "lsp" },
-      },
-    },
-    config = function(_, opts)
-      require("illuminate").configure(opts)
-
-      local function map(key, dir, buffer)
-        vim.keymap.set("n", key, function()
-          require("illuminate")["goto_" .. dir .. "_reference"](false)
-        end, { desc = dir:sub(1, 1):upper() .. dir:sub(2) .. " Reference", buffer = buffer })
-      end
-
-      map("]]", "next")
-      map("[[", "prev")
-
-      -- also set it after loading ftplugins, since a lot overwrite [[ and ]]
-      vim.api.nvim_create_autocmd("FileType", {
-        callback = function()
-          local buffer = vim.api.nvim_get_current_buf()
-          map("]]", "next", buffer)
-          map("[[", "prev", buffer)
-        end,
-      })
-    end,
-    keys = {
-      { "]]", desc = "Next Reference" },
-      { "[[", desc = "Prev Reference" },
-    },
   },
 }
