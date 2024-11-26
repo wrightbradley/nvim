@@ -37,7 +37,6 @@
 | SchemaStore.nvim | 🛍 JSON schemas for Neovim | [Link](https://github.com/b0o/SchemaStore.nvim) |
 | mini.icons | Icon provider. Part of 'mini.nvim' library.  | [Link](https://github.com/echasnovski/mini.icons) |
 | better-escape.nvim | Map keys without delay when typing | [Link](https://github.com/max397574/better-escape.nvim) |
-| dashboard-nvim | vim dashboard | [Link](https://github.com/nvimdev/dashboard-nvim) |
 | vim-better-whitespace | Better whitespace highlighting for Vim | [Link](https://github.com/ntpeters/vim-better-whitespace) |
 | flash.nvim | Navigate your code with search labels, enhanced character motions and Treesitter integration | [Link](https://github.com/folke/flash.nvim) |
 | nvim-base64 | Neovim plugin to encode/decode base64 strings | [Link](https://github.com/deponian/nvim-base64) |
@@ -106,6 +105,7 @@
 | neotest-python | No description available. | [Link](https://github.com/nvim-neotest/neotest-python) |
 | mini.hipatterns | Highlight patterns in text. Part of 'mini.nvim' library.  | [Link](https://github.com/echasnovski/mini.hipatterns) |
 | nvim-treesitter-context | Show code context | [Link](https://github.com/nvim-treesitter/nvim-treesitter-context) |
+| smear-cursor.nvim | Neovim plugin to animate the cursor with a smear effect | [Link](https://github.com/sphamba/smear-cursor.nvim) |
 | nvim-cmp | A completion plugin for neovim coded in Lua. | [Link](https://github.com/hrsh7th/nvim-cmp) |
 | fzf-lua | Improved fzf.vim written in lua | [Link](https://github.com/ibhagwan/fzf-lua) |
 | venv-selector.nvim | Allows selection of python virtual environment from within neovim | [Link](https://github.com/linux-cultist/venv-selector.nvim) |
