@@ -1,0 +1,12 @@
+{
+  "Import UV": {
+    "prefix": "uvimport",
+    "body": [
+      "# /// script",
+      "# dependencies = [",
+      "#   \"dep\",",
+      "# ]",
+      "# ///"
+    ]
+  }
+}
