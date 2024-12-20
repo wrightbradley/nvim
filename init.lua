@@ -156,7 +156,8 @@ require("lazy").setup({
 })
 
 -- Prepend mise shims to PATH
-vim.env.PATH = vim.env.HOME .. "/.local/share/mise/shims:" .. vim.env.PATH
+-- There is a issue with mise and mason packages. Disable for now.
+-- vim.env.PATH = vim.env.HOME .. "/.local/share/mise/shims:" .. vim.env.PATH
 
 -- Setup the custom configuration for NeoVim
 require("wrightbradley.config").setup()
