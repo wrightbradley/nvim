@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2024-12-21
+## What's Changed
+
+### <!-- 7 -->📚 Documentation
+
+- Release 0.1.1  by @github-actions[bot] - ([cb6f822](cb6f8221e99bbe693e9a0a16f9076a149823fada))
+
+### <!-- 9 -->🤖 CI
+
+- Improve release automation  by @wrightbradley - ([61cc5ab](61cc5ab731e4f8909b373a45b5d371873069688b))
+
+
+## New Contributors
+* @github-actions[bot] made their first contribution
+
+**Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.1...0.1.2
+
 ## [0.1.1] - 2024-12-20
 ## What's Changed
 
