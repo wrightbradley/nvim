@@ -7,6 +7,7 @@
 | which-key.nvim | 💥   Create key bindings that stick. WhichKey helps you remember your Neovim keymaps, by showing available keybindings in a popup as you type. | [Link](https://github.com/folke/which-key.nvim) |
 | clangd_extensions.nvim | Clangd's off-spec features for neovim's LSP client. Use https://sr.ht/~p00f/clangd_extensions.nvim instead | [Link](https://github.com/p00f/clangd_extensions.nvim) |
 | vim-startuptime | A plugin for viewing Vim and Neovim startup event timing information. | [Link](https://github.com/dstein64/vim-startuptime) |
+| mini.surround | Neovim Lua plugin with fast and feature-rich surround actions. Part of 'mini.nvim' library. | [Link](https://github.com/echasnovski/mini.surround) |
 | snacks.nvim | 🍿 A collection of small QoL plugins for Neovim | [Link](https://github.com/folke/snacks.nvim) |
 | tailwindcss-colorizer-cmp.nvim | :rainbow: A Neovim plugin to add vscode-style TailwindCSS completion to nvim-cmp | [Link](https://github.com/roobert/tailwindcss-colorizer-cmp.nvim) |
 | deadcolumn.nvim | A neovim plugin that shows colorcolumn dynamically | [Link](https://github.com/Bekaboo/deadcolumn.nvim) |
@@ -56,6 +57,7 @@
 | earthly.vim | Earthfile syntax highlighting for vim | [Link](https://github.com/earthly/earthly.vim) |
 | advanced-git-search.nvim | Search your git history by commit message, content and author in Neovim | [Link](https://github.com/aaronhallaert/advanced-git-search.nvim) |
 | vim-jsonnet | Jsonnet filetype plugin for Vim. | [Link](https://github.com/google/vim-jsonnet) |
+| avante.nvim | Use your Neovim like using Cursor AI IDE! | [Link](https://github.com/yetone/avante.nvim) |
 | lazydev.nvim | Faster LuaLS setup for Neovim | [Link](https://github.com/folke/lazydev.nvim) |
 | conform.nvim | Lightweight yet powerful formatter plugin for Neovim | [Link](https://github.com/stevearc/conform.nvim) |
 | cmp-buffer | nvim-cmp source for buffer words | [Link](https://github.com/hrsh7th/cmp-buffer) |
@@ -88,10 +90,11 @@
 | yanky.nvim | Improved Yank and Put functionalities for Neovim | [Link](https://github.com/gbprod/yanky.nvim) |
 | nvim-lint | An asynchronous linter plugin for Neovim complementary to the built-in Language Server Protocol support. | [Link](https://github.com/mfussenegger/nvim-lint) |
 | octo.nvim | Edit and review GitHub issues and pull requests from the comfort of your favorite editor | [Link](https://github.com/pwntester/octo.nvim) |
-| nvim-web-devicons | lua `fork` of vim-web-devicons for neovim | [Link](https://github.com/nvim-tree/nvim-web-devicons) |
+| nvim-web-devicons | Provides Nerd Font icons (glyphs) for use by neovim plugins | [Link](https://github.com/nvim-tree/nvim-web-devicons) |
 | cmp-git | Git source for nvim-cmp | [Link](https://github.com/petertriho/cmp-git) |
 | trouble.nvim | 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all the trouble your code is causing. | [Link](https://github.com/folke/trouble.nvim) |
 | cloak.nvim | Cloak allows you to overlay *'s over defined patterns in defined files. | [Link](https://github.com/laytan/cloak.nvim) |
+| img-clip.nvim | Effortlessly embed images into any markup language, like LaTeX, Markdown or Typst | [Link](https://github.com/HakonHarnes/img-clip.nvim) |
 | nvim-jdtls | Extensions for the built-in LSP support in Neovim for eclipse.jdt.ls | [Link](https://github.com/mfussenegger/nvim-jdtls) |
 | luvit-meta | Meta type definitions for the Lua platform Luvit. | [Link](https://github.com/Bilal2453/luvit-meta) |
 | mason.nvim | Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters. | [Link](https://github.com/williamboman/mason.nvim) |
@@ -105,7 +108,6 @@
 | neotest-python | No description available. | [Link](https://github.com/nvim-neotest/neotest-python) |
 | mini.hipatterns | Highlight patterns in text. Part of 'mini.nvim' library.  | [Link](https://github.com/echasnovski/mini.hipatterns) |
 | nvim-treesitter-context | Show code context | [Link](https://github.com/nvim-treesitter/nvim-treesitter-context) |
-| smear-cursor.nvim | Neovim plugin to animate the cursor with a smear effect | [Link](https://github.com/sphamba/smear-cursor.nvim) |
 | nvim-cmp | A completion plugin for neovim coded in Lua. | [Link](https://github.com/hrsh7th/nvim-cmp) |
 | fzf-lua | Improved fzf.vim written in lua | [Link](https://github.com/ibhagwan/fzf-lua) |
 | venv-selector.nvim | Allows selection of python virtual environment from within neovim | [Link](https://github.com/linux-cultist/venv-selector.nvim) |
