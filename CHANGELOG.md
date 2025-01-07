@@ -5,13 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-01-05
+## [0.1.2] - 2025-01-07
 ## What's Changed
+
+### <!-- 0 -->🚀 Features
+
+- Add maxInlayHintLength for vtsls to resolve inlay hint too long  by @wrightbradley - ([dd0c286](dd0c286423e882ea254b3ea201e55b0f7d71b46c))
 
 ### <!-- 7 -->📚 Documentation
 
 - Release 0.1.1  by @github-actions[bot] - ([cb6f822](cb6f8221e99bbe693e9a0a16f9076a149823fada))
 - Release 0.1.2 [skip ci]  by @github-actions[bot] - ([d885308](d885308d575a4f8288de731667f0ee472fa69a9d))
+- Update plugin catalog  by @wrightbradley - ([3391cfc](3391cfc282af849c84627d25818600b4ef569c6b))
 
 ### <!-- 8 -->🧹 Miscellaneous Tasks
 
