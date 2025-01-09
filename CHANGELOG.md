@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## New Contributors
-* @dependabot[bot] made their first contribution in [#6](https://github.com/wrightbradley/nvim/pull/6)
+* @dependabot[bot] made their first contribution in [#5](https://github.com/wrightbradley/nvim/pull/5)
 * @github-actions[bot] made their first contribution
 
 **Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.1...0.1.2
