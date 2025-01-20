@@ -5,12 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-01-09
+## [0.1.2] - 2025-01-20
 ## What's Changed
 
 ### <!-- 0 -->🚀 Features
 
 - Add maxInlayHintLength for vtsls to resolve inlay hint too long  by @wrightbradley - ([dd0c286](dd0c286423e882ea254b3ea201e55b0f7d71b46c))
+- Disable avante hints  by @wrightbradley - ([12bd7eb](12bd7eb40df84f2a3afad9d6b0faf6126736a43a))
+- Change to gpt4o model  by @wrightbradley - ([1fcaa9d](1fcaa9d0a17fccd665b8fa704ee184e5eafbd284))
+
+### <!-- 4 -->⚡ Performance
+
+- Lazy load avante.nvim  by @wrightbradley - ([c4f4e76](c4f4e76291fc312d76d228fd5c9033621bc9787f))
 
 ### <!-- 7 -->📚 Documentation
 
@@ -28,8 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## New Contributors
-* @dependabot[bot] made their first contribution in [#5](https://github.com/wrightbradley/nvim/pull/5)
 * @github-actions[bot] made their first contribution
+* @dependabot[bot] made their first contribution in [#5](https://github.com/wrightbradley/nvim/pull/5)
 
 **Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.1...0.1.2
 
