@@ -34,16 +34,18 @@ return {
     },
   },
   {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "markdown", "markdown_inline" })
-      end
-    end,
+    "williamboman/mason.nvim",
+    opts = { ensure_installed = { "markdownlint-cli2", "markdown-toc", "vale-ls" } },
   },
   {
-    "williamboman/mason.nvim",
-    opts = { ensure_installed = { "markdownlint-cli2", "markdown-toc", "vale-ls", "vale" } },
+    "nvimtools/none-ls.nvim",
+    optional = true,
+    opts = function(_, opts)
+      local nls = require("null-ls")
+      opts.sources = vim.list_extend(opts.sources or {}, {
+        nls.builtins.diagnostics.markdownlint_cli2,
+      })
+    end,
   },
   {
     "mfussenegger/nvim-lint",
@@ -84,6 +86,7 @@ return {
       vim.cmd([[do FileType]])
     end,
   },
+
   {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
@@ -95,6 +98,9 @@ return {
       heading = {
         sign = false,
         icons = {},
+      },
+      checkbox = {
+        enabled = false,
       },
     },
     ft = { "markdown", "norg", "rmd", "org" },
@@ -119,14 +125,5 @@ return {
         end,
       }):map("<leader>um")
     end,
-  },
-  -- Filetype icons
-  {
-    "echasnovski/mini.icons",
-    opts = {
-      filetype = {
-        markdown = { glyph = "", hl = "MiniIconsGrey" },
-      },
-    },
   },
 }
