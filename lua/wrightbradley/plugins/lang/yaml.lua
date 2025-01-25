@@ -1,15 +1,4 @@
 return {
-
-  -- add yaml specific modules to treesitter
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        vim.list_extend(opts.ensure_installed, { "yaml" })
-      end
-    end,
-  },
-
   -- yaml schema support
   {
     "b0o/SchemaStore.nvim",
@@ -20,15 +9,6 @@ return {
   -- correctly setup lspconfig
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      {
-        "williamboman/mason.nvim",
-        opts = function(_, opts)
-          opts.ensure_installed = opts.ensure_installed or {}
-          vim.list_extend(opts.ensure_installed, { "yamlfmt", "yamllint" })
-        end,
-      },
-    },
     opts = {
       -- make sure mason installs the server
       servers = {
