@@ -6,6 +6,11 @@ return {
     dependencies = {
       "mason.nvim",
       { "williamboman/mason-lspconfig.nvim", config = function() end },
+      {
+        "folke/neoconf.nvim",
+        cmd = "Neoconf",
+        opts = {},
+      },
     },
     opts = function()
       ---@class PluginLspOpts
@@ -45,10 +50,6 @@ return {
         -- provide the code lenses.
         codelens = {
           enabled = false,
-        },
-        -- Enable lsp cursor word highlighting
-        document_highlight = {
-          enabled = true,
         },
         -- add any global capabilities here
         capabilities = {
@@ -182,11 +183,13 @@ return {
 
       local servers = opts.servers
       local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+      local has_blink, blink = pcall(require, "blink.cmp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
         has_cmp and cmp_nvim_lsp.default_capabilities() or {},
+        has_blink and blink.get_lsp_capabilities() or {},
         opts.capabilities or {}
       )
 
