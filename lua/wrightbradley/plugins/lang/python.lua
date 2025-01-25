@@ -33,15 +33,15 @@ return {
             },
           },
         },
-        -- ruff_lsp = {
-        --   keys = {
-        --     {
-        --       "<leader>co",
-        --       Util.lsp.action["source.organizeImports"],
-        --       desc = "Organize Imports",
-        --     },
-        --   },
-        -- },
+        ruff_lsp = {
+          keys = {
+            {
+              "<leader>co",
+              Util.lsp.action["source.organizeImports"],
+              desc = "Organize Imports",
+            },
+          },
+        },
       },
       setup = {
         [ruff] = function()
@@ -56,8 +56,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      -- local servers = { "pyright", "basedpyright", "ruff", "ruff_lsp", ruff, lsp }
-      local servers = { "pyright", "basedpyright", "ruff", ruff, lsp }
+      local servers = { "pyright", "basedpyright", "ruff", "ruff_lsp", ruff, lsp }
       for _, server in ipairs(servers) do
         opts.servers[server] = opts.servers[server] or {}
         opts.servers[server].enabled = server == lsp or server == ruff
@@ -121,6 +120,7 @@ return {
 
   {
     "hrsh7th/nvim-cmp",
+    optional = true,
     opts = function(_, opts)
       opts.auto_brackets = opts.auto_brackets or {}
       table.insert(opts.auto_brackets, "python")
