@@ -17,9 +17,15 @@ return {
       ---@type snacks.Config
       return {
         bigfile = { enabled = true },
+        indent = { enabled = true },
+        input = { enabled = true },
         notifier = { enabled = true },
         quickfile = { enabled = true },
+        scope = { enabled = true },
+        scroll = { enabled = true },
         statuscolumn = { enabled = false }, -- we set this in options.lua
+        toggle = { map = Util.safe_keymap_set },
+        words = { enabled = true },
         terminal = {
           win = {
             keys = {
@@ -30,18 +36,15 @@ return {
             },
           },
         },
-        toggle = { map = Util.safe_keymap_set },
-        words = { enabled = true },
       }
     end,
+    -- stylua: ignore
     keys = {
-      {
-        "<leader>un",
-        function()
-          Snacks.notifier.hide()
-        end,
-        desc = "Dismiss All Notifications",
-      },
+      { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
+      { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
+      { "<leader>dps", function() Snacks.profiler.scratch() end, desc = "Profiler Scratch Buffer" },
+      { "<leader>n", function() Snacks.notifier.show_history() end, desc = "Notification History" },
+      { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
     },
     config = function(_, opts)
       local notify = vim.notify
@@ -62,17 +65,14 @@ return {
     opts = {},
     -- stylua: ignore
     keys = {
-      { "<leader>qs", function() require("persistence").load() end,                desc = "Restore Session" },
-      { "<leader>qS", function() require("persistence").select() end,              desc = "Select Session" },
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>qS", function() require("persistence").select() end,desc = "Select Session" },
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't Save Current Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
   -- library used by other plugins
-  {
-    "nvim-lua/plenary.nvim",
-    lazy = true,
-  },
+  { "nvim-lua/plenary.nvim", lazy = true },
   -- measure startuptime
   {
     "dstein64/vim-startuptime",
@@ -124,52 +124,52 @@ return {
       end
     end,
   },
-  {
-    "folke/zen-mode.nvim",
-    config = function()
-      require("zen-mode").setup({
-        -- window = {
-        --   backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
-        --   -- height and width can be:
-        --   -- * an absolute number of cells when > 1
-        --   -- * a percentage of the width / height of the editor when <= 1
-        --   -- * a function that returns the width or the height
-        --   width = 120, -- width of the Zen window
-        --   height = 1, -- height of the Zen window
-        --   -- by default, no options are changed for the Zen window
-        --   -- uncomment any of the options below, or add other vim.wo options you want to apply
-        --   options = {
-        --     -- signcolumn = "no", -- disable signcolumn
-        --     -- number = false, -- disable number column
-        --     -- relativenumber = false, -- disable relative numbers
-        --     -- cursorline = false, -- disable cursorline
-        --     -- cursorcolumn = false, -- disable cursor column
-        --     -- foldcolumn = "0", -- disable fold column
-        --     -- list = false, -- disable whitespace characters
-        --   },
-        -- },
-        plugins = {
-          -- -- disable some global vim options (vim.o...)
-          -- -- comment the lines to not apply the options
-          -- options = {
-          --   enabled = true,
-          --   ruler = false, -- disables the ruler text in the cmd line area
-          --   showcmd = false, -- disables the command in the last line of the screen
-          -- },
-          twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
-          gitsigns = { enabled = false }, -- disables git signs
-          tmux = { enabled = false }, -- disables the tmux statusline
-          -- this will change the font size on alacritty when in zen mode
-          -- requires  Alacritty Version 0.10.0 or higher
-          -- uses `alacritty msg` subcommand to change font size
-          alacritty = {
-            enabled = false,
-            font = "14", -- font size
-          },
-        },
-      })
-    end,
-  },
+  -- {
+  --   "folke/zen-mode.nvim",
+  --   config = function()
+  --     require("zen-mode").setup({
+  --       -- window = {
+  --       --   backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+  --       --   -- height and width can be:
+  --       --   -- * an absolute number of cells when > 1
+  --       --   -- * a percentage of the width / height of the editor when <= 1
+  --       --   -- * a function that returns the width or the height
+  --       --   width = 120, -- width of the Zen window
+  --       --   height = 1, -- height of the Zen window
+  --       --   -- by default, no options are changed for the Zen window
+  --       --   -- uncomment any of the options below, or add other vim.wo options you want to apply
+  --       --   options = {
+  --       --     -- signcolumn = "no", -- disable signcolumn
+  --       --     -- number = false, -- disable number column
+  --       --     -- relativenumber = false, -- disable relative numbers
+  --       --     -- cursorline = false, -- disable cursorline
+  --       --     -- cursorcolumn = false, -- disable cursor column
+  --       --     -- foldcolumn = "0", -- disable fold column
+  --       --     -- list = false, -- disable whitespace characters
+  --       --   },
+  --       -- },
+  --       plugins = {
+  --         -- -- disable some global vim options (vim.o...)
+  --         -- -- comment the lines to not apply the options
+  --         -- options = {
+  --         --   enabled = true,
+  --         --   ruler = false, -- disables the ruler text in the cmd line area
+  --         --   showcmd = false, -- disables the command in the last line of the screen
+  --         -- },
+  --         twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+  --         gitsigns = { enabled = false }, -- disables git signs
+  --         tmux = { enabled = false }, -- disables the tmux statusline
+  --         -- this will change the font size on alacritty when in zen mode
+  --         -- requires  Alacritty Version 0.10.0 or higher
+  --         -- uses `alacritty msg` subcommand to change font size
+  --         alacritty = {
+  --           enabled = false,
+  --           font = "14", -- font size
+  --         },
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     "folke/twilight.nvim",
     opts = {
@@ -274,6 +274,7 @@ return {
       })
     end,
   },
+
   -- statusline
   {
     "nvim-lualine/lualine.nvim",
@@ -322,29 +323,30 @@ return {
             { Util.lualine.pretty_path() },
           },
           lualine_x = {
+            Snacks.profiler.status(),
             -- stylua: ignore
             {
               function() return require("noice").api.status.command.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-              color = function() return Util.ui.fg("Statement") end,
+              color = function() return { fg = Snacks.util.color("Statement") } end,
             },
             -- stylua: ignore
             {
               function() return require("noice").api.status.mode.get() end,
               cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-              color = function() return Util.ui.fg("Constant") end,
+              color = function() return { fg = Snacks.util.color("Constant") } end,
             },
             -- stylua: ignore
             {
               function() return "  " .. require("dap").status() end,
               cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
-              color = function() return Util.ui.fg("Debug") end,
+              color = function() return { fg = Snacks.util.color("Debug") } end,
             },
             -- stylua: ignore
             {
               require("lazy.status").updates,
               cond = require("lazy.status").has_updates,
-              color = function() return Util.ui.fg("Special") end,
+              color = function() return { fg = Snacks.util.color("Special") } end,
             },
             {
               "diff",
@@ -381,7 +383,7 @@ return {
             end,
           },
         },
-        extensions = { "neo-tree", "lazy" },
+        extensions = { "neo-tree", "lazy", "fzf" },
       }
 
       -- do not add trouble symbols if aerial is enabled
@@ -483,9 +485,6 @@ return {
           ["vim.lsp.util.stylize_markdown"] = true,
           ["cmp.entry.get_documentation"] = true,
         },
-        hover = {
-          silent = true,
-        },
       },
       routes = {
         {
@@ -499,12 +498,6 @@ return {
           },
           view = "mini",
         },
-        -- {
-        --   filter = {
-        --     event = "notify",
-        --     any = { { find = "No information available" } },
-        --   },
-        -- },
       },
       presets = {
         bottom_search = true,
@@ -541,7 +534,6 @@ return {
     opts = {
       file = {
         [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
-        ["init.lua"] = { glyph = "", hl = "MiniIconsCyan" },
         ["README.md"] = { glyph = "󱎭", hl = "MiniIconsGrey" },
         ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
       },
@@ -581,7 +573,7 @@ return {
             { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
             { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-            { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
+            -- { icon = " ", key = "x", desc = "Lazy Extras", action = ":LazyExtras" },
             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },
@@ -617,32 +609,38 @@ return {
   },
   -- {
   --   "sphamba/smear-cursor.nvim",
-  --
+  --   event = "VeryLazy",
+  --   cond = vim.g.neovide == nil,
   --   opts = {
   --     -- Cursor color. Defaults to Cursor gui color
   --     -- cursor_color = "#d3cdc3",
-  --
+  --     cursor_color = "none",
   --     -- Background color. Defaults to Normal gui background color
   --     normal_bg = "#282828",
-  --
   --     -- Smear cursor when switching buffers
   --     smear_between_buffers = false,
-  --
   --     -- Smear cursor when moving within line or to neighbor lines
   --     smear_between_neighbor_lines = true,
-  --
   --     -- Use floating windows to display smears outside buffers.
   --     -- May have performance issues with other plugins.
   --     use_floating_windows = false,
-  --
   --     -- Set to `true` if your font supports legacy computing symbols (block unicode symbols).
   --     -- Smears will blend better on all backgrounds.
   --     legacy_computing_symbols_support = false,
-  --
   --     stiffness = 0.8, -- 0.6      [0, 1]
   --     trailing_stiffness = 0.5, -- 0.3      [0, 1]
   --     distance_stop_animating = 0.5, -- 0.1      > 0
-  --     hide_target_hack = false, -- true     boolean
+  --     hide_target_hack = true, -- true     boolean
+  --   },
+  --   specs = {
+  --     -- disable mini.animate cursor
+  --     {
+  --       "echasnovski/mini.animate",
+  --       optional = true,
+  --       opts = {
+  --         cursor = { enable = false },
+  --       },
+  --     },
   --   },
   -- },
 }
