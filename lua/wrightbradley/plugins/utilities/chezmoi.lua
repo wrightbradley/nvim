@@ -19,6 +19,38 @@ local pick_chezmoi = function()
       },
     }
     fzf_lua.fzf_exec(results, opts)
+  elseif Util.pick.picker.name == "snacks" then
+    local results = require("chezmoi.commands").list({
+      args = {
+        "--path-style",
+        "absolute",
+        "--include",
+        "files",
+        "--exclude",
+        "externals",
+      },
+    })
+    local items = {}
+
+    for _, czFile in ipairs(results) do
+      table.insert(items, {
+        text = czFile,
+        file = czFile,
+      })
+    end
+
+    ---@type snacks.picker.Config
+    local opts = {
+      items = items,
+      confirm = function(picker, item)
+        picker:close()
+        require("chezmoi.commands").edit({
+          targets = { item.text },
+          args = { "--watch" },
+        })
+      end,
+    }
+    Snacks.picker.pick(opts)
   end
 end
 
@@ -64,6 +96,31 @@ return {
       })
     end,
   },
+  {
+    "nvimdev/dashboard-nvim",
+    optional = true,
+    opts = function(_, opts)
+      local projects = {
+        action = pick_chezmoi,
+        desc = "  Config",
+        icon = "",
+        key = "c",
+      }
+
+      projects.desc = projects.desc .. string.rep(" ", 43 - #projects.desc)
+      projects.key_format = "  %s"
+
+      -- remove wrightbradley config property
+      for i = #opts.config.center, 1, -1 do
+        if opts.config.center[i].key == "c" then
+          table.remove(opts.config.center, i)
+        end
+      end
+
+      table.insert(opts.config.center, 5, projects)
+    end,
+  },
+
   -- Filetype icons
   {
     "echasnovski/mini.icons",
@@ -77,6 +134,7 @@ return {
         ["json.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
         ["ps1.tmpl"] = { glyph = "󰨊", hl = "MiniIconsGrey" },
         ["sh.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
+        ["toml.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
         ["yaml.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
         ["zsh.tmpl"] = { glyph = "", hl = "MiniIconsGrey" },
       },
