@@ -1,3 +1,9 @@
+if wrightbradley_docs then
+  -- In case you don't want to use `:LazyExtras`,
+  -- then you need to set the option below.
+  vim.g.wrightbradley_picker = "fzf"
+end
+
 ---@class FzfLuaOpts: wrightbradley.util.pick.Opts
 ---@field cmd string?
 
@@ -39,8 +45,9 @@ return {
     "ibhagwan/fzf-lua",
     cmd = "FzfLua",
     opts = function(_, opts)
-      local config = require("fzf-lua.config")
-      local actions = require("fzf-lua.actions")
+      local fzf = require("fzf-lua")
+      local config = fzf.config
+      local actions = fzf.actions
 
       -- Quickfix
       config.defaults.keymap.fzf["ctrl-q"] = "select-all+accept"
@@ -279,6 +286,9 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = function()
+      if Util.pick.want() ~= "fzf" then
+        return
+      end
       local Keys = require("wrightbradley.config.lsp-keymaps").get()
       -- stylua: ignore
       vim.list_extend(Keys, {

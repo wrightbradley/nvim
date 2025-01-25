@@ -59,6 +59,7 @@ return {
     end,
     opts = {
       sources = { "filesystem", "buffers", "git_status" },
+      -- sources = { "filesystem" },
       open_files_do_not_replace_types = { "terminal", "Trouble", "trouble", "qf", "Outline" },
       filesystem = {
         bind_to_cwd = false,
@@ -158,11 +159,11 @@ return {
     opts = {},
     -- stylua: ignore
     keys = {
-      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
-      { "S",     mode = { "n", "o", "x" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
-      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
-      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "o", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
     },
   },
   -- which-key helps you remember key bindings by showing a popup
@@ -210,12 +211,15 @@ return {
     },
     opts_extend = { "spec" },
     opts = {
+      preset = "helix",
       defaults = {},
       spec = {
         {
           mode = { "n", "v" },
           { "<leader><tab>", group = "tabs" },
           { "<leader>c", group = "code" },
+          { "<leader>d", group = "debug" },
+          { "<leader>dp", group = "profiler" },
           { "<leader>f", group = "file/find" },
           { "<leader>g", group = "git" },
           { "<leader>gh", group = "hunks" },
@@ -333,6 +337,21 @@ return {
       end,
     },
   },
+  {
+    "gitsigns.nvim",
+    opts = function()
+      Snacks.toggle({
+        name = "Git Signs",
+        get = function()
+          return require("gitsigns.config").config.signcolumn
+        end,
+        set = function(state)
+          require("gitsigns").toggle_signs(state)
+        end,
+      }):map("<leader>uG")
+    end,
+  },
+
   -- better diagnostics list and others
   {
     "folke/trouble.nvim",
@@ -348,11 +367,7 @@ return {
       { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
       { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
       { "<leader>cs", "<cmd>Trouble symbols toggle<cr>", desc = "Symbols (Trouble)" },
-      {
-        "<leader>cS",
-        "<cmd>Trouble lsp toggle<cr>",
-        desc = "LSP references/definitions/... (Trouble)",
-      },
+      { "<leader>cS", "<cmd>Trouble lsp toggle<cr>", desc = "LSP references/definitions/... (Trouble)" },
       { "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
       { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
       {
@@ -385,36 +400,120 @@ return {
       },
     },
   },
-
-  -- lualine integration
+  -- Finds and lists all of the TODO, HACK, BUG, etc comment
+  -- in your project and loads them into a browsable list.
   {
-    "nvim-lualine/lualine.nvim",
-    optional = true,
-    opts = function(_, opts)
-      local trouble = require("trouble")
-      -- if not trouble.statusline then
-      --   Util.error("You have enabled **trouble**,\nbut still need to update it with `:Lazy`")
-      --   return
-      -- end
-
-      local symbols = trouble.statusline({
-        mode = "symbols",
-        groups = {},
-        title = false,
-        filter = { range = true },
-        format = "{kind_icon}{symbol.name:Normal}",
-      })
-      table.insert(opts.sections.lualine_c, {
-        symbols.get,
-        cond = symbols.has,
-      })
-    end,
+    "folke/todo-comments.nvim",
+    cmd = { "TodoTrouble", "TodoTelescope" },
+    event = "LazyFile",
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next Todo Comment" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous Todo Comment" },
+      { "<leader>xt", "<cmd>Trouble todo toggle<cr>", desc = "Todo (Trouble)" },
+      { "<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
+      { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme" },
+    },
   },
-
+  -- edgy
   {
     "folke/edgy.nvim",
-    optional = true,
-    opts = function(_, opts)
+    event = "VeryLazy",
+    keys = {
+      {
+        "<leader>ue",
+        function()
+          require("edgy").toggle()
+        end,
+        desc = "Edgy Toggle",
+      },
+      -- stylua: ignore
+      { "<leader>uE", function() require("edgy").select() end, desc = "Edgy Select Window" },
+    },
+    opts = function()
+      local opts = {
+        bottom = {
+          {
+            ft = "toggleterm",
+            size = { height = 0.4 },
+            filter = function(buf, win)
+              return vim.api.nvim_win_get_config(win).relative == ""
+            end,
+          },
+          {
+            ft = "noice",
+            size = { height = 0.4 },
+            filter = function(buf, win)
+              return vim.api.nvim_win_get_config(win).relative == ""
+            end,
+          },
+          "Trouble",
+          { ft = "qf", title = "QuickFix" },
+          {
+            ft = "help",
+            size = { height = 20 },
+            -- don't open help files in edgy that we're editing
+            filter = function(buf)
+              return vim.bo[buf].buftype == "help"
+            end,
+          },
+          { title = "Spectre", ft = "spectre_panel", size = { height = 0.4 } },
+          { title = "Neotest Output", ft = "neotest-output-panel", size = { height = 15 } },
+        },
+        left = {
+          { title = "Neotest Summary", ft = "neotest-summary" },
+          -- "neo-tree",
+        },
+        right = {
+          { title = "Grug Far", ft = "grug-far", size = { width = 0.4 } },
+        },
+        keys = {
+          -- increase width
+          ["<c-Right>"] = function(win)
+            win:resize("width", 2)
+          end,
+          -- decrease width
+          ["<c-Left>"] = function(win)
+            win:resize("width", -2)
+          end,
+          -- increase height
+          ["<c-Up>"] = function(win)
+            win:resize("height", 2)
+          end,
+          -- decrease height
+          ["<c-Down>"] = function(win)
+            win:resize("height", -2)
+          end,
+        },
+      }
+
+      if Util.has("neo-tree.nvim") then
+        local pos = {
+          filesystem = "left",
+          buffers = "top",
+          git_status = "right",
+          document_symbols = "bottom",
+          diagnostics = "bottom",
+        }
+        local sources = Util.opts("neo-tree.nvim").sources or {}
+        for i, v in ipairs(sources) do
+          table.insert(opts.left, i, {
+            title = "Neo-Tree " .. v:gsub("_", " "):gsub("^%l", string.upper),
+            ft = "neo-tree",
+            filter = function(buf)
+              return vim.b[buf].neo_tree_source == v
+            end,
+            pinned = true,
+            open = function()
+              vim.cmd(("Neotree show position=%s %s dir=%s"):format(pos[v] or "bottom", v, Util.root()))
+            end,
+          })
+        end
+      end
+
+      -- trouble
       for _, pos in ipairs({ "top", "bottom", "left", "right" }) do
         opts[pos] = opts[pos] or {}
         table.insert(opts[pos], {
@@ -428,42 +527,81 @@ return {
           end,
         })
       end
+
+      -- snacks terminal
+      for _, pos in ipairs({ "top", "bottom", "left", "right" }) do
+        opts[pos] = opts[pos] or {}
+        table.insert(opts[pos], {
+          ft = "snacks_terminal",
+          size = { height = 0.4 },
+          title = "%{b:snacks_terminal.id}: %{b:term_title}",
+          filter = function(_buf, win)
+            return vim.w[win].snacks_win
+              and vim.w[win].snacks_win.position == pos
+              and vim.w[win].snacks_win.relative == "editor"
+              and not vim.w[win].trouble_preview
+          end,
+        })
+      end
+      return opts
     end,
   },
-
+  -- use edgy's selection window
   {
     "nvim-telescope/telescope.nvim",
     optional = true,
+    opts = {
+      defaults = {
+        get_selection_window = function()
+          require("edgy").goto_main()
+          return 0
+        end,
+      },
+    },
+  },
+  -- prevent neo-tree from opening files in edgy windows
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    optional = true,
     opts = function(_, opts)
-      local open_with_trouble = require("trouble.sources.telescope").open
-      return vim.tbl_deep_extend("force", opts, {
-        defaults = {
-          mappings = {
-            i = {
-              ["<c-t>"] = open_with_trouble,
-              ["<a-t>"] = open_with_trouble,
-            },
-          },
-        },
-      })
+      opts.open_files_do_not_replace_types = opts.open_files_do_not_replace_types
+        or { "terminal", "Trouble", "qf", "Outline", "trouble" }
+      table.insert(opts.open_files_do_not_replace_types, "edgy")
     end,
   },
-  -- Finds and lists all of the TODO, HACK, BUG, etc comment
-  -- in your project and loads them into a browsable list.
+  -- Fix bufferline offsets when edgy is loaded
   {
-    "folke/todo-comments.nvim",
-    cmd = { "TodoTrouble", "TodoTelescope" },
-    event = "LazyFile",
-    opts = {},
-    -- stylua: ignore
-    keys = {
-      { "]t",         function() require("todo-comments").jump_next() end,              desc = "Next Todo Comment" },
-      { "[t",         function() require("todo-comments").jump_prev() end,              desc = "Previous Todo Comment" },
-      { "<leader>xt", "<cmd>Trouble todo toggle<cr>",                                   desc = "Todo (Trouble)" },
-      { "<leader>xT", "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
-      { "<leader>st", "<cmd>TodoTelescope<cr>",                                         desc = "Todo" },
-      { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>",                 desc = "Todo/Fix/Fixme" },
-    },
+    "akinsho/bufferline.nvim",
+    optional = true,
+    opts = function()
+      local Offset = require("bufferline.offset")
+      if not Offset.edgy then
+        local get = Offset.get
+        Offset.get = function()
+          if package.loaded.edgy then
+            local old_offset = get()
+            local layout = require("edgy.config").layout
+            local ret = { left = "", left_size = 0, right = "", right_size = 0 }
+            for _, pos in ipairs({ "left", "right" }) do
+              local sb = layout[pos]
+              local title = " Sidebar" .. string.rep(" ", sb.bounds.width - 8)
+              if sb and #sb.wins > 0 then
+                ret[pos] = old_offset[pos .. "_size"] > 0 and old_offset[pos]
+                  or pos == "left" and ("%#Bold#" .. title .. "%*" .. "%#BufferLineOffsetSeparator#│%*")
+                  or pos == "right" and ("%#BufferLineOffsetSeparator#│%*" .. "%#Bold#" .. title .. "%*")
+                ret[pos .. "_size"] = old_offset[pos .. "_size"] > 0 and old_offset[pos .. "_size"] or sb.bounds.width
+              end
+            end
+            ret.total_size = ret.left_size + ret.right_size
+            if ret.total_size > 0 then
+              return ret
+            end
+          end
+          return get()
+        end
+        Offset.edgy = true
+      end
+    end,
   },
   {
     "max397574/better-escape.nvim",
@@ -506,16 +644,6 @@ return {
       require("tmux").setup()
     end,
   },
-  {
-    "mbbill/undotree",
-    keys = {
-      {
-        "<leader>uu",
-        vim.cmd.UndotreeToggle,
-        desc = "View Undotree",
-      },
-    },
-  },
   -- better yank/paste
   {
     "gbprod/yanky.nvim",
@@ -526,112 +654,90 @@ return {
       highlight = { timer = 150 },
     },
     keys = {
-      -- stylua: ignore
-      { "<leader>p", function() require("telescope").extensions.yank_history.yank_history({}) end, desc = "Open Yank History" },
       {
-        "y",
-        "<Plug>(YankyYank)",
+        "<leader>p",
+        function()
+          if Util.pick.picker.name == "telescope" then
+            require("telescope").extensions.yank_history.yank_history({})
+          else
+            vim.cmd([[YankyRingHistory]])
+          end
+        end,
         mode = { "n", "x" },
-        desc = "Yank Text",
+        desc = "Open Yank History",
       },
-      {
-        "p",
-        "<Plug>(YankyPutAfter)",
-        mode = { "n", "x" },
-        desc = "Put Yanked Text After Cursor",
-      },
-      {
-        "P",
-        "<Plug>(YankyPutBefore)",
-        mode = { "n", "x" },
-        desc = "Put Yanked Text Before Cursor",
-      },
-      {
-        "gp",
-        "<Plug>(YankyGPutAfter)",
-        mode = { "n", "x" },
-        desc = "Put Yanked Text After Selection",
-      },
-      {
-        "gP",
-        "<Plug>(YankyGPutBefore)",
-        mode = { "n", "x" },
-        desc = "Put Yanked Text Before Selection",
-      },
-      {
-        "[y",
-        "<Plug>(YankyCycleForward)",
-        desc = "Cycle Forward Through Yank History",
-      },
-      {
-        "]y",
-        "<Plug>(YankyCycleBackward)",
-        desc = "Cycle Backward Through Yank History",
-      },
-      {
-        "]p",
-        "<Plug>(YankyPutIndentAfterLinewise)",
-        desc = "Put Indented After Cursor (Linewise)",
-      },
-      {
-        "[p",
-        "<Plug>(YankyPutIndentBeforeLinewise)",
-        desc = "Put Indented Before Cursor (Linewise)",
-      },
-      {
-        "]P",
-        "<Plug>(YankyPutIndentAfterLinewise)",
-        desc = "Put Indented After Cursor (Linewise)",
-      },
-      {
-        "[P",
-        "<Plug>(YankyPutIndentBeforeLinewise)",
-        desc = "Put Indented Before Cursor (Linewise)",
-      },
-      {
-        ">p",
-        "<Plug>(YankyPutIndentAfterShiftRight)",
-        desc = "Put and Indent Right",
-      },
-      {
-        "<p",
-        "<Plug>(YankyPutIndentAfterShiftLeft)",
-        desc = "Put and Indent Left",
-      },
-      {
-        ">P",
-        "<Plug>(YankyPutIndentBeforeShiftRight)",
-        desc = "Put Before and Indent Right",
-      },
-      {
-        "<P",
-        "<Plug>(YankyPutIndentBeforeShiftLeft)",
-        desc = "Put Before and Indent Left",
-      },
-      {
-        "=p",
-        "<Plug>(YankyPutAfterFilter)",
-        desc = "Put After Applying a Filter",
-      },
-      {
-        "=P",
-        "<Plug>(YankyPutBeforeFilter)",
-        desc = "Put Before Applying a Filter",
+        -- stylua: ignore
+    { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank Text" },
+      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put Text After Cursor" },
+      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Cursor" },
+      { "gp", "<Plug>(YankyGPutAfter)", mode = { "n", "x" }, desc = "Put Text After Selection" },
+      { "gP", "<Plug>(YankyGPutBefore)", mode = { "n", "x" }, desc = "Put Text Before Selection" },
+      { "[y", "<Plug>(YankyCycleForward)", desc = "Cycle Forward Through Yank History" },
+      { "]y", "<Plug>(YankyCycleBackward)", desc = "Cycle Backward Through Yank History" },
+      { "]p", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+      { "[p", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+      { "]P", "<Plug>(YankyPutIndentAfterLinewise)", desc = "Put Indented After Cursor (Linewise)" },
+      { "[P", "<Plug>(YankyPutIndentBeforeLinewise)", desc = "Put Indented Before Cursor (Linewise)" },
+      { ">p", "<Plug>(YankyPutIndentAfterShiftRight)", desc = "Put and Indent Right" },
+      { "<p", "<Plug>(YankyPutIndentAfterShiftLeft)", desc = "Put and Indent Left" },
+      { ">P", "<Plug>(YankyPutIndentBeforeShiftRight)", desc = "Put Before and Indent Right" },
+      { "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)", desc = "Put Before and Indent Left" },
+      { "=p", "<Plug>(YankyPutAfterFilter)", desc = "Put After Applying a Filter" },
+      { "=P", "<Plug>(YankyPutBeforeFilter)", desc = "Put Before Applying a Filter" },
+    },
+  },
+  -- Fast and feature-rich surround actions. For text that includes
+  -- surrounding characters like brackets or quotes, this allows you
+  -- to select the text inside, change or modify the surrounding characters,
+  -- and more.
+  {
+    "echasnovski/mini.surround",
+    recommended = true,
+    keys = function(_, keys)
+      -- Populate the keys based on the user's options
+      local opts = Util.opts("mini.surround")
+      local mappings = {
+        { opts.mappings.add, desc = "Add Surrounding", mode = { "n", "v" } },
+        { opts.mappings.delete, desc = "Delete Surrounding" },
+        { opts.mappings.find, desc = "Find Right Surrounding" },
+        { opts.mappings.find_left, desc = "Find Left Surrounding" },
+        { opts.mappings.highlight, desc = "Highlight Surrounding" },
+        { opts.mappings.replace, desc = "Replace Surrounding" },
+        { opts.mappings.update_n_lines, desc = "Update `MiniSurround.config.n_lines`" },
+      }
+      mappings = vim.tbl_filter(function(m)
+        return m[1] and #m[1] > 0
+      end, mappings)
+      return vim.list_extend(mappings, keys)
+    end,
+    opts = {
+      mappings = {
+        add = "gsa", -- Add surrounding in Normal and Visual modes
+        delete = "gsd", -- Delete surrounding
+        find = "gsf", -- Find surrounding (to the right)
+        find_left = "gsF", -- Find surrounding (to the left)
+        highlight = "gsh", -- Highlight surrounding
+        replace = "gsr", -- Replace surrounding
+        update_n_lines = "gsn", -- Update `n_lines`
       },
     },
   },
   {
-    "echasnovski/mini.surround",
-    opts = {
-      mappings = {
-        add = "gsa",
-        delete = "gsd",
-        find = "gsf",
-        find_left = "gsF",
-        highlight = "gsh",
-        replace = "gsr",
-        update_n_lines = "gsn",
-      },
-    },
+    import = "wrightbradley.plugins.extras.editor.fzf",
+    enabled = function()
+      return Util.pick.want() == "fzf"
+    end,
+  },
+  {
+    import = "wrightbradley.plugins.extras.editor.telescope",
+    enabled = function()
+      return Util.pick.want() == "telescope"
+    end,
+  },
+  {
+    import = "wrightbradley.plugins.extras.editor.snacks_picker",
+    enabled = function()
+      return Util.pick.want() == "snacks"
+    end,
   },
 }
