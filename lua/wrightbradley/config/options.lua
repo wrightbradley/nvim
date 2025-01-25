@@ -1,9 +1,53 @@
+-- This file is automatically loaded by plugins.core
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 -- Options are automatically loaded before lazy.nvim startup
 vim.cmd("let g:netrw_liststyle = 3")
+
+-- Set <space> as the leader key
+-- See `:help mapleader`
+--  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
+-- Util auto format
+vim.g.autoformat = true
+
+-- Snacks animations
+-- Set to `false` to globally disable all snacks animations
+vim.g.snacks_animate = true
+
+-- Util picker to use.
+-- Can be one of: telescope, fzf
+-- Leave it to "auto" to automatically use the picker
+-- enabled with `:LazyExtras`
+vim.g.wrightbradley_picker = "snacks_picker"
+
+-- Util completion engine to use.
+-- Can be one of: nvim-cmp, blink.cmp
+-- Leave it to "auto" to automatically use the completion engine
+-- enabled with `:LazyExtras`
+vim.g.wrightbradley_cmp = "blink.cmp"
+
+-- if the completion engine supports the AI source,
+-- use that instead of inline suggestions
+vim.g.ai_cmp = true
+
+-- Util root dir detection
+-- Each entry can be:
+-- * the name of a detector function like `lsp` or `cwd`
+-- * a pattern or array of patterns like `.git` or `lua`.
+-- * a function with signature `function(buf) -> string|string[]`
+vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
+
+-- Optionally setup the terminal to use
+-- This sets `vim.o.shell` and does some additional configuration for:
+-- * pwsh
+-- * powershell
+-- Util.terminal.setup("pwsh")
 
 -- Set LSP servers to be ignored when used with `util.root.detectors.lsp`
 -- for detecting the LSP root
@@ -13,99 +57,25 @@ vim.g.root_lsp_ignore = { "copilot" }
 vim.g.deprecation_warnings = false
 
 -- Show the current document symbols location from Trouble in lualine
+-- You can disable this for a buffer by setting `vim.b.trouble_lualine = false`
 vim.g.trouble_lualine = true
 
 local opt = vim.opt
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
--- Make line numbers default
-opt.number = true
--- Use relative line numbers, for help with jumping.
-opt.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
-opt.mouse = "a"
-
--- Don't show the mode, since it's already in status line
-opt.showmode = false
-
--- See `:help 'clipboard'`
--- only set clipboard if not in ssh, to make sure the OSC 52
--- integration works automatically. Requires Neovim >= 0.10.0
-opt.clipboard = vim.env.SSH_TTY and "" or ""
-
 -- Enable break indent
 opt.breakindent = true
-
--- Save undo history
-opt.undofile = true
-opt.undolevels = 10000
-
--- Case-insensitive searching UNLESS \C or capital in search
-opt.ignorecase = true
-opt.smartcase = true -- Don't ignore case with capitals
-
--- Keep signcolumn on by default
-opt.signcolumn = "yes"
-
 opt.colorcolumn = "80"
-
--- Decrease update time
-opt.updatetime = 250
-opt.timeoutlen = 300
-
--- Configure how new splits should be opened
-opt.splitright = true -- Put new windows right of current
-opt.splitbelow = true -- Put new windows below current
 
 -- Sets how neovim will display certain whitespace in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-opt.list = true -- Show some invisible characters (tabs...
 opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
--- Preview substitutions live, as you type!
-opt.inccommand = "split"
-
--- Show which line your cursor is on
-opt.cursorline = true
-
--- Minimal number of screen lines to keep above and below the cursor.
-opt.scrolloff = 10
-
--- This file is automatically loaded by plugins.core
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
-
--- Enable auto format
-vim.g.autoformat = true
-
--- Util picker to use.
--- Can be one of: telescope, fzf
--- Leave it to "auto" to automatically use the picker
-vim.g.wrightbradley_picker = "fzf"
-
--- Util root dir detection
--- Each entry can be:
--- * the name of a detector function like `lsp` or `cwd`
--- * a pattern or array of patterns like `.git` or `lua`.
--- * a function with signature `function(buf) -> string|string[]`
-vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
-
--- Hide deprecation warnings
-vim.g.deprecation_warnings = false
-
--- Show the current document symbols location from Trouble in lualine
-vim.g.trouble_lualine = true
-
-local opt = vim.opt
-
 opt.autowrite = true -- Enable auto write
+-- See `:help 'clipboard'`
+-- only set clipboard if not in ssh, to make sure the OSC 52
+-- integration works automatically. Requires Neovim >= 0.10.0
+opt.clipboard = vim.env.SSH_TTY and "unnamedplus" or "" -- Do not sync with system clipboard
 opt.completeopt = "menu,menuone,noselect"
 opt.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
 opt.confirm = true -- Confirm to save changes before exiting modified buffer
@@ -135,6 +105,7 @@ opt.number = true -- Print line number
 opt.pumblend = 10 -- Popup blend
 opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true -- Relative line numbers
+opt.ruler = false -- Disable the default ruler
 opt.scrolloff = 4 -- Lines of context
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 opt.shiftround = true -- Round indent
@@ -148,9 +119,9 @@ opt.smartindent = true -- Insert indents automatically
 opt.spelllang = { "en" }
 opt.splitbelow = true -- Put new windows below current
 opt.splitkeep = "screen"
+opt.splitright = true -- Put new windows right of current
 opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
 opt.tabstop = 4 -- Number of spaces tabs count for
-opt.splitright = true -- Put new windows right of current
 opt.termguicolors = true -- True color support
 opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower than default (1000) to quickly trigger which-key
 opt.undofile = true
