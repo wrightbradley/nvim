@@ -1,6 +1,3 @@
-if true then
-  return {}
-end
 ---@type string
 local xdg_config = vim.env.XDG_CONFIG_HOME or vim.env.HOME .. "/.config"
 
@@ -10,6 +7,7 @@ local function have(path)
 end
 
 return {
+  desc = "Language support for dotfiles",
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -29,10 +27,7 @@ return {
   },
   {
     "williamboman/mason.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "shellcheck" })
-    end,
+    opts = { ensure_installed = { "shellcheck" } },
   },
   -- add some stuff to treesitter
   {
@@ -47,17 +42,17 @@ return {
       vim.filetype.add({
         extension = { rasi = "rasi", rofi = "rasi", wofi = "rasi" },
         filename = {
-          [".env"] = "sh",
           ["vifmrc"] = "vim",
         },
         pattern = {
           [".*/waybar/config"] = "jsonc",
           [".*/mako/config"] = "dosini",
-          [".*/kitty/.+%.conf"] = "bash",
+          [".*/kitty/.+%.conf"] = "kitty",
           [".*/hypr/.+%.conf"] = "hyprlang",
           ["%.env%.[%w_.-]+"] = "sh",
         },
       })
+      vim.treesitter.language.register("bash", "kitty")
 
       add("git_config")
 
