@@ -8,8 +8,11 @@ local LazyUtil = require("lazy.core.util")
 ---@field terminal wrightbradley.util.terminal
 ---@field format wrightbradley.util.format
 ---@field plugin wrightbradley.util.plugin
+---@field extras wrightbradley.util.extras
 ---@field inject wrightbradley.util.inject
+---@field plugin wrightbradley.util.json
 ---@field lualine wrightbradley.util.lualine
+---@field mini wrightbradley.util.mini
 ---@field pick wrightbradley.util.pick
 ---@field cmp wrightbradley.util.cmp
 local M = {}
@@ -49,6 +52,14 @@ end
 ---@param plugin string
 function M.has(plugin)
   return M.get_plugin(plugin) ~= nil
+end
+
+---@param extra string
+function M.has_extra(extra)
+  local Config = require("wrightbradley.config")
+  local modname = "wrightbradley.plugins.extras." .. extra
+  return vim.tbl_contains(require("lazy.core.config").spec.modules, modname)
+    or vim.tbl_contains(Config.json.data.extras, modname)
 end
 
 ---@param fn fun()
@@ -251,6 +262,15 @@ function M.memoize(fn)
     end
     return cache[fn][key]
   end
+end
+
+---@return "nvim-cmp" | "blink.cmp"
+function M.cmp_engine()
+  vim.g.wrightbradley_cmp = vim.g.wrightbradley_cmp or "auto"
+  if vim.g.wrightbradley_cmp == "auto" then
+    return Util.has_extra("coding.nvim-cmp") and "nvim-cmp" or "blink.cmp"
+  end
+  return vim.g.wrightbradley_cmp
 end
 
 return M
