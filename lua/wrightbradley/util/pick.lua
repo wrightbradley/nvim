@@ -42,8 +42,14 @@ function M.register(picker)
   return true
 end
 
+---@return "telescope" | "fzf" | "snacks"
 function M.want()
-  vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "fzf"
+  vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "auto"
+  if vim.g.wrightbradley_picker == "auto" then
+    return Util.has_extra("editor.snacks_picker") and "snacks"
+      or Util.has_extra("editor.telescope") and "telescope"
+      or "fzf"
+  end
   return vim.g.wrightbradley_picker
 end
 
