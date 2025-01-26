@@ -21,7 +21,6 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight when yanking (copying) text",
   group = augroup("highlight_yank"),
   callback = function()
     (vim.hl or vim.highlight).on_yank()
@@ -72,7 +71,6 @@ vim.api.nvim_create_autocmd("FileType", {
     "neotest-summary",
     "notify",
     "qf",
-    "snacks_win",
     "spectre_panel",
     "startuptime",
     "tsplayground",
@@ -117,15 +115,6 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   pattern = { "json", "jsonc", "json5" },
   callback = function()
     vim.opt_local.conceallevel = 0
-  end,
-})
-
--- Fix conceallevel for markdown files
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  group = augroup("markdown_conceal"),
-  pattern = { "markdown" },
-  callback = function()
-    vim.opt_local.conceallevel = 1
   end,
 })
 

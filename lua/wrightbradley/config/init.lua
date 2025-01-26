@@ -49,7 +49,7 @@ local defaults = {
       Collapsed     = " ",
       Constant      = "󰏿 ",
       Constructor   = " ",
-      Copilot       = " ",
+      Copilot       = " ",
       Enum          = " ",
       EnumMember    = " ",
       Event         = " ",
@@ -70,9 +70,10 @@ local defaults = {
       Package       = " ",
       Property      = " ",
       Reference     = " ",
-      Snippet       = " ",
+      Snippet       = "󱄽 ",
       String        = " ",
       Struct        = "󰆼 ",
+      Supermaven    = " ",
       TabNine       = "󰏚 ",
       Text          = " ",
       TypeParameter = " ",
@@ -230,12 +231,13 @@ function M.init()
   M.load("options")
   -- defer built-in clipboard handling: "xsel" and "pbcopy" can be slow
   lazy_clipboard = vim.opt.clipboard
+  vim.opt.clipboard = ""
 
-  if vim.g.deprecation_warnings == false then
-    vim.deprecate = function() end
-  end
-
-  Util.plugin.setup()
+  -- Add support for the LazyFile event
+  local Event = require("lazy.core.handler.event")
+  M.lazy_file_events = { "BufReadPost", "BufNewFile", "BufWritePre" }
+  Event.mappings.LazyFile = { id = "LazyFile", event = M.lazy_file_events }
+  Event.mappings["User LazyFile"] = Event.mappings.LazyFile
 end
 
 setmetatable(M, {
