@@ -120,30 +120,6 @@ local defaults = {
   },
 }
 
-M.json = {
-  version = 7,
-  path = vim.g.lazyvim_json or vim.fn.stdpath("config") .. "/lazyvim.json",
-  data = {
-    version = nil, ---@type string?
-    extras = {}, ---@type string[]
-  },
-}
-
-function M.json.load()
-  local f = io.open(M.json.path, "r")
-  if f then
-    local data = f:read("*a")
-    f:close()
-    local ok, json = pcall(vim.json.decode, data, { luanil = { object = true, array = true } })
-    if ok then
-      M.json.data = vim.tbl_deep_extend("force", M.json.data, json or {})
-      if M.json.data.version ~= M.json.version then
-        LazyVim.json.migrate()
-      end
-    end
-  end
-end
-
 ---@type UtilOptions
 local options
 local lazy_clipboard
@@ -257,11 +233,11 @@ function M.init()
   lazy_clipboard = vim.opt.clipboard
   vim.opt.clipboard = ""
 
-  if vim.g.deprecation_warnings == false then
-    vim.deprecate = function() end
-  end
-
-  Util.plugin.setup()
+  -- Add support for the LazyFile event
+  local Event = require("lazy.core.handler.event")
+  M.lazy_file_events = { "BufReadPost", "BufNewFile", "BufWritePre" }
+  Event.mappings.LazyFile = { id = "LazyFile", event = M.lazy_file_events }
+  Event.mappings["User LazyFile"] = Event.mappings.LazyFile
 end
 
 setmetatable(M, {
