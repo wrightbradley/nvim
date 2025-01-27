@@ -7,7 +7,6 @@ local LazyUtil = require("lazy.core.util")
 ---@field root wrightbradley.util.root
 ---@field terminal wrightbradley.util.terminal
 ---@field format wrightbradley.util.format
----@field plugin wrightbradley.util.plugin
 ---@field extras wrightbradley.util.extras
 ---@field inject wrightbradley.util.inject
 ---@field plugin wrightbradley.util.json

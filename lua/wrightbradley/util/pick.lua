@@ -33,9 +33,9 @@ function M.register(picker)
   end
 
   if M.picker and M.picker.name ~= picker.name then
-    Util.warn(
-      "`Util.pick`: picker already set to `" .. M.picker.name .. "`,\nignoring new picker `" .. picker.name .. "`"
-    )
+    -- Util.warn(
+    --   "`Util.pick`: picker already set to `" .. M.picker.name .. "`,\nignoring new picker `" .. picker.name .. "`"
+    -- )
     return false
   end
   M.picker = picker
