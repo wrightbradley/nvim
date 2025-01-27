@@ -9,7 +9,6 @@ local LazyUtil = require("lazy.core.util")
 ---@field format wrightbradley.util.format
 ---@field extras wrightbradley.util.extras
 ---@field inject wrightbradley.util.inject
----@field plugin wrightbradley.util.json
 ---@field lualine wrightbradley.util.lualine
 ---@field mini wrightbradley.util.mini
 ---@field pick wrightbradley.util.pick
@@ -21,12 +20,8 @@ setmetatable(M, {
     if LazyUtil[k] then
       return LazyUtil[k]
     end
-    if k == "lazygit" or k == "toggle" then -- HACK: special case for lazygit
-      return M.deprecated[k]()
-    end
     ---@diagnostic disable-next-line: no-unknown
     t[k] = require("wrightbradley.util." .. k)
-    M.deprecated.decorate(k, t[k])
     return t[k]
   end,
 })
@@ -100,15 +95,6 @@ function M.opts(name)
   end
   local Plugin = require("lazy.core.plugin")
   return Plugin.values(plugin, "opts", false)
-end
-
-function M.deprecate(old, new)
-  M.warn(("`%s` is deprecated. Please use `%s` instead"):format(old, new), {
-    title = "Util",
-    once = true,
-    stacktrace = true,
-    stacklevel = 6,
-  })
 end
 
 -- delay notifications till vim.notify was replaced or after 500ms
