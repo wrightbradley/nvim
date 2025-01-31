@@ -16,15 +16,15 @@ return {
       },
     },
   },
-  {
-    "mfussenegger/nvim-lint",
-    optional = true,
-    opts = {
-      linters_by_ft = {
-        sh = { "dotenv_linter" },
-      },
-    },
-  },
+  -- {
+  --   "mfussenegger/nvim-lint",
+  --   optional = true,
+  --   opts = {
+  --     linters_by_ft = {
+  --       sh = { "dotenv_linter" },
+  --     },
+  --   },
+  -- },
   {
     "williamboman/mason.nvim",
     opts = { ensure_installed = { "shellcheck" } },
