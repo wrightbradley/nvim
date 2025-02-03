@@ -44,7 +44,7 @@ return {
     },
     opts_extend = { "spec" },
     opts = {
-      preset = "helix",
+      -- preset = "helix",
       defaults = {},
       spec = {
         {
