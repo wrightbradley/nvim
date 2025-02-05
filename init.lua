@@ -109,6 +109,14 @@ require("wrightbradley.config").init()
 
 -- Plugins setup
 require("lazy").setup({
+  git = {
+    throttle = {
+      enabled = true, -- not enabled by default
+      -- max 5 ops every 1 seconds
+      rate = 5,
+      duration = 1000, -- in ms
+    },
+  },
   spec = {
     -- Order matters!
     { import = "wrightbradley.plugins" },
