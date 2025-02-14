@@ -94,8 +94,8 @@ return {
     end,
   },
   {
-    -- "polarmutex/git-worktree.nvim",
-    "wrightbradley/git-worktree.nvim",
+    "polarmutex/git-worktree.nvim",
+    -- "wrightbradley/git-worktree.nvim",
     -- version = "^2",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -135,6 +135,32 @@ return {
       },
     },
   },
+  -- {
+  --   "Juksuu/worktrees.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-telescope/telescope.nvim",
+  --   },
+  --   config = function()
+  --     require("worktrees").setup()
+  --   end,
+  --   keys = {
+  --     {
+  --       "<leader>gws",
+  --       function()
+  --         Snacks.picker.worktrees()
+  --       end,
+  --       desc = "Git Worktree switch",
+  --     },
+  --     {
+  --       "<leader>gwc",
+  --       function()
+  --         require("worktrees").new_worktree()
+  --       end,
+  --       desc = "Create new Git Worktree",
+  --     },
+  --   },
+  -- },
   {
     "dlvhdr/gh-addressed.nvim",
     dependencies = {
