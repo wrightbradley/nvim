@@ -34,7 +34,6 @@ end
 
 return {
   desc = "Awesome picker for FZF (alternative to Telescope)",
-  recommended = true,
   {
     "ibhagwan/fzf-lua",
     cmd = "FzfLua",
@@ -280,16 +279,13 @@ return {
   {
     "neovim/nvim-lspconfig",
     opts = function()
-      if Util.pick.want() ~= "fzf" then
-        return
-      end
       local Keys = require("wrightbradley.config.lsp-keymaps").get()
       -- stylua: ignore
       vim.list_extend(Keys, {
-        { "gd", "<cmd>FzfLua lsp_definitions     jump_to_single_result=true ignore_current_line=true<cr>", desc = "Goto Definition", has = "definition" },
-        { "gr", "<cmd>FzfLua lsp_references      jump_to_single_result=true ignore_current_line=true<cr>", desc = "References", nowait = true },
-        { "gI", "<cmd>FzfLua lsp_implementations jump_to_single_result=true ignore_current_line=true<cr>", desc = "Goto Implementation" },
-        { "gy", "<cmd>FzfLua lsp_typedefs        jump_to_single_result=true ignore_current_line=true<cr>", desc = "Goto T[y]pe Definition" },
+        { "gd", "<cmd>FzfLua lsp_definitions     jump1=true ignore_current_line=true<cr>", desc = "Goto Definition", has = "definition" },
+        { "gr", "<cmd>FzfLua lsp_references      jump1=true ignore_current_line=true<cr>", desc = "References", nowait = true },
+        { "gI", "<cmd>FzfLua lsp_implementations jump1=true ignore_current_line=true<cr>", desc = "Goto Implementation" },
+        { "gy", "<cmd>FzfLua lsp_typedefs        jump1=true ignore_current_line=true<cr>", desc = "Goto T[y]pe Definition" },
       })
     end,
   },
