@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-02-10
+## [0.1.2] - 2025-02-18
 ## What's Changed
 
 ### <!-- 0 -->🚀 Features
@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## New Contributors
-* @dependabot[bot] made their first contribution in [#11](https://github.com/wrightbradley/nvim/pull/11)
+* @dependabot[bot] made their first contribution in [#12](https://github.com/wrightbradley/nvim/pull/12)
 * @github-actions[bot] made their first contribution
 
 **Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.1...0.1.2
