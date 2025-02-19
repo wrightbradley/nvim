@@ -2,7 +2,7 @@
 if wrightbradley_docs then
   -- Enable the option to require a Prettier config file
   -- If no prettier config file is found, the formatter will not be used
-  vim.g.wrightbradley_prettier_needs_config = false
+  vim.g.wrightbradley_prettier_needs_config = true
 end
 
 ---@alias ConformCtx {buf: number, filename: string, dirname: string}
