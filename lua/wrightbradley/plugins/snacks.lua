@@ -102,6 +102,8 @@ return {
       return {
         bigfile = { enabled = true },
         indent = { enabled = true },
+        image = {},
+        scratch = {},
         input = { enabled = true },
         notifier = { enabled = true },
         quickfile = { enabled = true },
