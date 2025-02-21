@@ -50,6 +50,10 @@ return {
         {
           mode = { "n", "v" },
           { "<leader><tab>", group = "tabs" },
+          { "<leader>a", group = "ai" },
+          { "<leader>aa", group = "avante" },
+          { "<leader>ac", group = "copilot" },
+          { "<leader>ag", group = "gpt" },
           { "<leader>c", group = "code" },
           { "<leader>d", group = "debug" },
           { "<leader>dp", group = "profiler" },

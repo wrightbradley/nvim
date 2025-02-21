@@ -13,8 +13,17 @@ function M.pick(kind)
       Util.warn("No " .. kind .. " found on the current line")
       return
     end
-    local ok = pcall(require, "fzf-lua")
-    require("CopilotChat.integrations." .. (ok and "fzflua" or "telescope")).pick(items)
+    local map = {
+      telescope = "telescope",
+      fzf = "fzflua",
+      snacks = "snacks",
+    }
+    for _, def in pairs(Util.config.get_defaults()) do
+      if def.enabled and map[def.name] then
+        return require("CopilotChat.integrations." .. map[def.name]).pick(items)
+      end
+    end
+    Snacks.notify.error("No picker found")
   end
 end
 
@@ -36,10 +45,10 @@ return {
       }
     end,
     keys = {
+      { "<leader>ac", group = "copilot" },
       { "<c-s>", "<CR>", ft = "copilot-chat", desc = "Submit Prompt", remap = true },
-      { "<leader>a", "", desc = "+ai", mode = { "n", "v" } },
       {
-        "<leader>aa",
+        "<leader>acc",
         function()
           return require("CopilotChat").toggle()
         end,
@@ -47,7 +56,7 @@ return {
         mode = { "n", "v" },
       },
       {
-        "<leader>ax",
+        "<leader>acx",
         function()
           return require("CopilotChat").reset()
         end,
@@ -55,7 +64,7 @@ return {
         mode = { "n", "v" },
       },
       {
-        "<leader>aq",
+        "<leader>acq",
         function()
           local input = vim.fn.input("Quick Chat: ")
           if input ~= "" then
@@ -66,7 +75,7 @@ return {
         mode = { "n", "v" },
       },
       -- Show prompts actions with telescope
-      { "<leader>ap", M.pick("prompt"), desc = "Prompt Actions (CopilotChat)", mode = { "n", "v" } },
+      { "<leader>acp", M.pick("prompt"), desc = "Prompt Actions (CopilotChat)", mode = { "n", "v" } },
     },
     config = function(_, opts)
       local chat = require("CopilotChat")

@@ -179,6 +179,9 @@ return {
             score_offset = 100, -- show at a higher priority than lsp
           },
         },
+        per_filetype = {
+          codecompanion = { "codecompanion" },
+        },
       },
     },
   },
