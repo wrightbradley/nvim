@@ -18,13 +18,10 @@ local supported = {
   "json",
   "jsonc",
   "less",
-  "markdown",
-  "markdown.mdx",
   "scss",
   "typescript",
   "typescriptreact",
   "vue",
-  "yaml",
 }
 
 --- Checks if a Prettier config file exists for the given context
