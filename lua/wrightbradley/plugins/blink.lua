@@ -159,9 +159,11 @@ return {
   -- add icons
   {
     "saghen/blink.cmp",
+    tag = "v0.12.2",
     opts = function(_, opts)
       opts.appearance = opts.appearance or {}
       opts.appearance.kind_icons = vim.tbl_extend("force", opts.appearance.kind_icons or {}, Util.config.icons.kinds)
+      opts.completion.accept.dot_repeat = false
     end,
   },
 
