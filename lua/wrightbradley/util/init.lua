@@ -12,6 +12,7 @@ local LazyUtil = require("lazy.core.util")
 ---@field lualine wrightbradley.util.lualine
 ---@field mini wrightbradley.util.mini
 ---@field pick wrightbradley.util.pick
+---@field spinner wrightbradley.util.spinner
 ---@field cmp wrightbradley.util.cmp
 local M = {}
 
