@@ -212,4 +212,5 @@ return {
   {
     "lewis6991/gitsigns.nvim",
   },
+  -- { "wakatime/vim-wakatime", lazy = false },
 }
