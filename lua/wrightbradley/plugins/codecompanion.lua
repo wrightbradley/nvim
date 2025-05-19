@@ -11,7 +11,7 @@ local SYSTEM_PROMPT = string.format(
   [[You are an AI programming assistant named "GitHub Copilot".
 You are currently plugged in to the Neovim text editor on a user's machine.
 
-Your tasks include:
+Your tasks can include:
 - Answering general programming questions.
 - Explaining how the code in a Neovim buffer works.
 - Reviewing the selected code in a Neovim buffer.
@@ -125,21 +125,57 @@ return {
   {
     "Davidyz/VectorCode",
     dependencies = { "nvim-lua/plenary.nvim" },
+    event = "VeryLazy",
     cmd = "VectorCode", -- if you're lazy-loading VectorCode
+    opts = {},
   },
   {
     "olimorris/codecompanion.nvim",
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
+      "ravitemer/codecompanion-history.nvim", -- Save and load conversation history
+      "Davidyz/VectorCode",
+      {
+        "ravitemer/mcphub.nvim", -- Manage MCP servers
+        cmd = "MCPHub",
+        build = "npm install -g mcp-hub@latest",
+        config = true,
+      },
       "ibhagwan/fzf-lua", -- For fzf provider, file or buffer picker
-      -- "jellydn/spinner.nvim", -- Show loading spinner when request is started
       "j-hui/fidget.nvim",
     },
     opts = {
+      extensions = {
+        history = {
+          enabled = true,
+          opts = {
+            keymap = "gh",
+            auto_generate_title = true,
+            continue_last_chat = false,
+            delete_on_clearing_chat = false,
+            picker = "fzf-lua",
+            enable_logging = false,
+            dir_to_save = vim.fn.stdpath("data") .. "/codecompanion-history",
+          },
+        },
+        mcphub = {
+          callback = "mcphub.extensions.codecompanion",
+          opts = {
+            make_vars = true,
+            make_slash_commands = true,
+            show_result_in_chat = true,
+          },
+        },
+        vectorcode = {
+          opts = {
+            add_tool = true,
+            add_slash_command = true,
+          },
+        },
+      },
       adapters = {
         opts = {
           show_defaults = false,
+          show_model_choices = true,
         },
         copilot = function()
           return require("codecompanion.adapters").extend("copilot", {
@@ -184,13 +220,17 @@ return {
                 provider = "fzf_lua", -- telescope|mini_pick|fzf_lua
               },
             },
-          },
-          tools = {
-            vectorcode = {
-              description = "Run VectorCode to retrieve the project context.",
+            ["vcheck"] = {
               callback = function()
-                return require("vectorcode.integrations").codecompanion.chat.make_tool()
+                return require("vectorcode").check()
               end,
+              description = "Run VectorCode to retrieve the project context.",
+            },
+            ["vupdate"] = {
+              callback = function()
+                return require("vectorcode").update()
+              end,
+              description = "Run VectorCode to retrieve the project context.",
             },
           },
           keymaps = {
@@ -228,18 +268,21 @@ return {
         layout = "buffer", -- vertical|horizontal|buffer
       },
       display = {
+        action_palette = {
+          provider = "default",
+        },
         chat = {
           -- Change to true to show the current model
-          show_settings = false,
           window = {
             layout = "vertical", -- float|vertical|horizontal|buffer
           },
+          -- show_settings = false,
         },
         diff = {
           enabled = true,
-          close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
           layout = "vertical", -- vertical|horizontal split for default provider
           opts = { "internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120" },
+          -- close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
           provider = "mini_diff", -- default|mini_diff
         },
       },
