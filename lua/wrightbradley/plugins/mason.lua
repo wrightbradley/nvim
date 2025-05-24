@@ -1,7 +1,11 @@
+---@file Mason plugin configuration
+--- This file configures the Mason plugin for managing external tools and LSP servers
+--- in Neovim. It ensures specified tools are installed and sets up Mason to handle
+--- updates and installations.
+
 return {
   -- cmdline tools and lsp servers
   {
-
     "mason-org/mason.nvim",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
@@ -13,13 +17,14 @@ return {
         "shfmt",
       },
     },
+    --- Configures Mason with the specified options.
     ---@param opts MasonSettings | {ensure_installed: string[]}
     config = function(_, opts)
       require("mason").setup(opts)
       local mr = require("mason-registry")
       mr:on("package:install:success", function()
         vim.defer_fn(function()
-          -- trigger FileType event to possibly load this newly installed LSP server
+          -- Trigger FileType event to possibly load this newly installed LSP server
           require("lazy.core.handler.event").trigger({
             event = "FileType",
             buf = vim.api.nvim_get_current_buf(),

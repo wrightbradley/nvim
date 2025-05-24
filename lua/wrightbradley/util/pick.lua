@@ -1,3 +1,8 @@
+---@file Picker abstraction utilities for Neovim
+--- This module provides utility functions for abstracting picker functionality
+--- in Neovim. It allows for integration with different picker plugins like Telescope,
+--- FZF, and Snacks, providing a unified interface for opening and managing pickers.
+
 ---@class wrightbradley.util.pick
 ---@overload fun(command:string, opts?:wrightbradley.util.pick.Opts): fun()
 local M = setmetatable({}, {
@@ -7,22 +12,24 @@ local M = setmetatable({}, {
 })
 
 ---@class wrightbradley.util.pick.Opts: table<string, any>
----@field root? boolean
----@field cwd? string
----@field buf? number
----@field show_untracked? boolean
+---@field root? boolean Whether to use the project root as the working directory.
+---@field cwd? string The current working directory for the picker.
+---@field buf? number The buffer number to use for context.
+---@field show_untracked? boolean Whether to show untracked files in the picker.
 
 ---@class LazyPicker
----@field name string
----@field open fun(command:string, opts?:wrightbradley.util.pick.Opts)
----@field commands table<string, string>
+---@field name string The name of the picker.
+---@field open fun(command:string, opts?:wrightbradley.util.pick.Opts) Function to open the picker.
+---@field commands table<string, string> Table of picker commands.
 
 ---@type LazyPicker?
 M.picker = nil
 
----@param picker LazyPicker
+--- Registers a picker.
+---@param picker LazyPicker The picker to register.
+---@return boolean True if the picker was registered successfully, false otherwise.
 function M.register(picker)
-  -- this only happens when using :LazyExtras
+  -- This only happens when using :LazyExtras
   -- so allow to get the full spec
   if vim.v.vim_did_enter == 1 then
     return true
@@ -42,7 +49,8 @@ function M.register(picker)
   return true
 end
 
----@return "telescope" | "fzf" | "snacks"
+--- Determines the desired picker to use.
+---@return "telescope" | "fzf" | "snacks" The name of the desired picker.
 function M.want()
   vim.g.wrightbradley_picker = vim.g.wrightbradley_picker or "auto"
   if vim.g.wrightbradley_picker == "auto" then
@@ -53,8 +61,9 @@ function M.want()
   return vim.g.wrightbradley_picker
 end
 
----@param command? string
----@param opts? wrightbradley.util.pick.Opts
+--- Opens a picker with a specified command and options.
+---@param command? string The picker command to execute.
+---@param opts? wrightbradley.util.pick.Opts Optional options for the picker.
 function M.open(command, opts)
   if not M.picker then
     return Util.error("Util.pick: picker not set")
@@ -78,8 +87,10 @@ function M.open(command, opts)
   M.picker.open(command, opts)
 end
 
----@param command? string
----@param opts? wrightbradley.util.pick.Opts
+--- Wraps a picker command and options into a function.
+---@param command? string The picker command to wrap.
+---@param opts? wrightbradley.util.pick.Opts Optional options for the picker.
+---@return fun() A function that opens the picker with the specified command and options.
 function M.wrap(command, opts)
   opts = opts or {}
   return function()
@@ -87,6 +98,8 @@ function M.wrap(command, opts)
   end
 end
 
+--- Returns a function to open a picker for configuration files.
+---@return fun() A function that opens the picker for configuration files.
 function M.config_files()
   return M.wrap("files", { cwd = vim.fn.stdpath("config") })
 end

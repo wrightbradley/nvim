@@ -1,7 +1,15 @@
+---@file Mini.nvim integration utilities for Neovim
+--- This module provides utility functions for integrating with the Mini.nvim plugin
+--- in Neovim. It includes functions for handling text objects and configuring which-key
+--- for text objects.
+
 ---@class wrightbradley.util.mini
 local M = {}
 
--- taken from MiniExtra.gen_ai_spec.buffer
+--- Returns a text object for the entire buffer.
+--- Skips first and last blank lines for `i` text object.
+---@param ai_type string The type of text object ('a' for around, 'i' for inside).
+---@return table The text object with line and column positions.
 function M.ai_buffer(ai_type)
   local start_line, end_line = 1, vim.fn.line("$")
   if ai_type == "i" then
@@ -18,8 +26,8 @@ function M.ai_buffer(ai_type)
   return { from = { line = start_line, col = 1 }, to = { line = end_line, col = to_col } }
 end
 
--- register all text objects with which-key
----@param opts table
+--- Registers all text objects with which-key.
+---@param opts table Options for configuring which-key.
 function M.ai_whichkey(opts)
   local objects = {
     { " ", desc = "whitespace" },
@@ -79,7 +87,8 @@ function M.ai_whichkey(opts)
   require("which-key").add(ret, { notify = false })
 end
 
----@param opts {skip_next: string, skip_ts: string[], skip_unbalanced: boolean, markdown: boolean}
+--- Configures Mini Pairs with specific options.
+---@param opts {skip_next: string, skip_ts: string[], skip_unbalanced: boolean, markdown: boolean} Options for configuring Mini Pairs.
 function M.pairs(opts)
   Snacks.toggle({
     name = "Mini Pairs",

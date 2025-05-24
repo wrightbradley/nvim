@@ -1,10 +1,11 @@
--- This file is automatically loaded by plugins.core
-
--- [[ Setting options ]]
+---@file Neovim core options configuration
+--- This file sets up the core Neovim options like indentation, UI behavior,
+--- and other editor preferences. It configures global and buffer-local settings
+--- to customize the Neovim environment.
 -- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
+-- For more options, you can see `:help option-list`
 -- Options are automatically loaded before lazy.nvim startup
+
 vim.cmd("let g:netrw_liststyle = 3")
 
 -- Set <space> as the leader key

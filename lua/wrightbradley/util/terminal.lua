@@ -1,7 +1,13 @@
+---@file Terminal utilities for Neovim
+--- This module provides utility functions for configuring the terminal in Neovim.
+--- It includes functions for setting up the shell and handling specific configurations
+--- for different shell environments, such as PowerShell.
+
 ---@class wrightbradley.util.terminal
 local M = {}
 
----@param shell? string
+--- Configures the terminal shell and handles special cases for PowerShell.
+---@param shell? string The shell to configure. Defaults to the current shell if not provided.
 function M.setup(shell)
   vim.o.shell = shell or vim.o.shell
 

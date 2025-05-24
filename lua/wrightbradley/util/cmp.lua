@@ -1,3 +1,8 @@
+---@file Completion-related utility functions for Neovim
+--- This module provides utility functions for handling snippets and mapping actions
+--- for the completion engine in Neovim. It integrates with LSP for enhanced snippet
+--- documentation and completion capabilities.
+
 ---@class wrightbradley.util.cmp
 local M = {}
 
@@ -5,6 +10,7 @@ local M = {}
 ---@type table<string, wrightbradley.util.cmp.Action>
 M.actions = {
   -- Native Snippets
+  --- Moves forward in a snippet if active.
   snippet_forward = function()
     if vim.snippet.active({ direction = 1 }) then
       vim.schedule(function()
@@ -13,6 +19,7 @@ M.actions = {
       return true
     end
   end,
+  --- Stops the current snippet session.
   snippet_stop = function()
     if vim.snippet then
       vim.snippet.stop()
@@ -20,8 +27,10 @@ M.actions = {
   end,
 }
 
----@param actions string[]
----@param fallback? string|fun()
+--- Maps a sequence of actions to a function.
+---@param actions string[] List of action names to map.
+---@param fallback? string|fun() Fallback action if none of the actions succeed.
+---@return fun() A function that executes the mapped actions.
 function M.map(actions, fallback)
   return function()
     for _, name in ipairs(actions) do
@@ -38,9 +47,10 @@ end
 
 ---@alias Placeholder {n:number, text:string}
 
----@param snippet string
----@param fn fun(placeholder:Placeholder):string
----@return string
+--- Replaces placeholders in a snippet with a custom function.
+---@param snippet string The snippet string containing placeholders.
+---@param fn fun(placeholder:Placeholder):string The function to replace placeholders.
+---@return string The snippet with placeholders replaced.
 function M.snippet_replace(snippet, fn)
   return snippet:gsub("%$%b{}", function(m)
     local n, name = m:match("^%${(%d+):(.+)}$")
@@ -48,9 +58,9 @@ function M.snippet_replace(snippet, fn)
   end) or snippet
 end
 
--- This function resolves nested placeholders in a snippet.
----@param snippet string
----@return string
+--- Resolves nested placeholders in a snippet.
+---@param snippet string The snippet string to resolve.
+---@return string The resolved snippet string.
 function M.snippet_preview(snippet)
   local ok, parsed = pcall(function()
     return vim.lsp._snippet_grammar.parse(snippet)
@@ -61,7 +71,9 @@ function M.snippet_preview(snippet)
     end):gsub("%$0", "")
 end
 
--- This function replaces nested placeholders in a snippet with LSP placeholders.
+--- Replaces nested placeholders in a snippet with LSP placeholders.
+---@param snippet string The snippet string to fix.
+---@return string The fixed snippet string.
 function M.snippet_fix(snippet)
   local texts = {} ---@type table<number, string>
   return M.snippet_replace(snippet, function(placeholder)
@@ -70,7 +82,8 @@ function M.snippet_fix(snippet)
   end)
 end
 
----@param entry cmp.Entry
+--- Automatically adds brackets for function and method completions.
+---@param entry cmp.Entry The completion entry.
 function M.auto_brackets(entry)
   local cmp = require("cmp")
   local Kind = cmp.lsp.CompletionItemKind
@@ -85,9 +98,9 @@ function M.auto_brackets(entry)
   end
 end
 
--- This function adds missing documentation to snippets.
--- The documentation is a preview of the snippet.
----@param window cmp.CustomEntriesView|cmp.NativeEntriesView
+--- Adds missing documentation to snippets.
+--- The documentation is a preview of the snippet.
+---@param window cmp.CustomEntriesView|cmp.NativeEntriesView The completion window.
 function M.add_missing_snippet_docs(window)
   local cmp = require("cmp")
   local Kind = cmp.lsp.CompletionItemKind
@@ -105,11 +118,10 @@ function M.add_missing_snippet_docs(window)
   end
 end
 
--- This is a better implementation of `cmp.confirm`:
---  * check if the completion menu is visible without waiting for running sources
---  * create an undo point before confirming
--- This function is both faster and more reliable.
----@param opts? {select: boolean, behavior: cmp.ConfirmBehavior}
+--- A better implementation of `cmp.confirm`.
+--- This function is both faster and more reliable.
+---@param opts? {select: boolean, behavior: cmp.ConfirmBehavior} Optional confirmation options.
+---@return fun(fallback: fun()) A function to confirm the completion.
 function M.confirm(opts)
   local cmp = require("cmp")
   opts = vim.tbl_extend("force", {
@@ -127,6 +139,8 @@ function M.confirm(opts)
   end
 end
 
+--- Expands a snippet, handling nested sessions.
+---@param snippet string The snippet to expand.
 function M.expand(snippet)
   -- Native sessions don't support nested snippet sessions.
   -- Always use the top-level session.
@@ -158,7 +172,8 @@ function M.expand(snippet)
   end
 end
 
----@param opts cmp.ConfigSchema | {auto_brackets?: string[]}
+--- Sets up the completion engine with specified options.
+---@param opts cmp.ConfigSchema | {auto_brackets?: string[]} The setup options.
 function M.setup(opts)
   for _, source in ipairs(opts.sources) do
     source.group_index = source.group_index or 1

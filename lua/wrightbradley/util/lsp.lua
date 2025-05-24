@@ -1,9 +1,15 @@
+---@file LSP-related utility functions for Neovim
+--- This module provides utility functions for managing Language Server Protocol (LSP)
+--- clients, handling dynamic capabilities, and configuring LSP-related settings in Neovim.
+
 ---@class wrightbradley.util.lsp
 local M = {}
 
 ---@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: lsp.Client):boolean}
 
----@param opts? lsp.Client.filter
+--- Retrieves active LSP clients based on filters.
+---@param opts? lsp.Client.filter Optional filters for retrieving clients.
+---@return vim.lsp.Client[] List of active LSP clients.
 function M.get_clients(opts)
   local ret = {} ---@type vim.lsp.Client[]
   if vim.lsp.get_clients then
@@ -21,8 +27,9 @@ function M.get_clients(opts)
   return opts and opts.filter and vim.tbl_filter(opts.filter, ret) or ret
 end
 
----@param on_attach fun(client:vim.lsp.Client, buffer)
----@param name? string
+--- Sets up an autocmd for LSP attachment.
+---@param on_attach fun(client:vim.lsp.Client, buffer) Callback function for LSP attachment.
+---@param name? string Optional name of the LSP client.
 function M.on_attach(on_attach, name)
   return vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
@@ -38,6 +45,7 @@ end
 ---@type table<string, table<vim.lsp.Client, table<number, boolean>>>
 M._supports_method = {}
 
+--- Initializes LSP-related handlers and capabilities.
 function M.setup()
   local register_capability = vim.lsp.handlers["client/registerCapability"]
   vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
@@ -58,17 +66,19 @@ function M.setup()
   M.on_dynamic_capability(M._check_methods)
 end
 
----@param client vim.lsp.Client
+--- Checks and triggers methods supported by LSP clients.
+---@param client vim.lsp.Client The LSP client.
+---@param buffer number The buffer number.
 function M._check_methods(client, buffer)
-  -- don't trigger on invalid buffers
+  -- Don't trigger on invalid buffers
   if not vim.api.nvim_buf_is_valid(buffer) then
     return
   end
-  -- don't trigger on non-listed buffers
+  -- Don't trigger on non-listed buffers
   if not vim.bo[buffer].buflisted then
     return
   end
-  -- don't trigger on nofile buffers
+  -- Don't trigger on nofile buffers
   if vim.bo[buffer].buftype == "nofile" then
     return
   end
@@ -86,8 +96,9 @@ function M._check_methods(client, buffer)
   end
 end
 
----@param fn fun(client:vim.lsp.Client, buffer):boolean?
----@param opts? {group?: integer}
+--- Registers a callback for dynamic LSP capabilities.
+---@param fn fun(client:vim.lsp.Client, buffer):boolean? The callback function.
+---@param opts? {group?: integer} Optional group for the autocmd.
 function M.on_dynamic_capability(fn, opts)
   return vim.api.nvim_create_autocmd("User", {
     pattern = "LspDynamicCapability",
@@ -102,8 +113,9 @@ function M.on_dynamic_capability(fn, opts)
   })
 end
 
----@param method string
----@param fn fun(client:vim.lsp.Client, buffer)
+--- Registers a callback for when a method is supported by an LSP client.
+---@param method string The method to check for support.
+---@param fn fun(client:vim.lsp.Client, buffer) The callback function.
 function M.on_supports_method(method, fn)
   M._supports_method[method] = M._supports_method[method] or setmetatable({}, { __mode = "k" })
   return vim.api.nvim_create_autocmd("User", {
@@ -118,13 +130,17 @@ function M.on_supports_method(method, fn)
   })
 end
 
----@return _.lspconfig.options
+--- Retrieves the configuration for a specific LSP server.
+---@param server string The name of the LSP server.
+---@return _.lspconfig.options The configuration options for the server.
 function M.get_config(server)
   local configs = require("lspconfig.configs")
   return rawget(configs, server)
 end
 
----@return {default_config:lspconfig.Config}
+--- Retrieves the raw configuration for an LSP server.
+---@param server string The name of the LSP server.
+---@return {default_config:lspconfig.Config} The raw configuration for the server.
 function M.get_raw_config(server)
   local ok, ret = pcall(require, "lspconfig.configs." .. server)
   if ok then
@@ -133,13 +149,17 @@ function M.get_raw_config(server)
   return require("lspconfig.server_configurations." .. server)
 end
 
+--- Checks if an LSP server is enabled.
+---@param server string The name of the LSP server.
+---@return boolean True if the server is enabled, false otherwise.
 function M.is_enabled(server)
   local c = M.get_config(server)
   return c and c.enabled ~= false
 end
 
----@param server string
----@param cond fun( root_dir, config): boolean
+--- Disables an LSP server based on a condition.
+---@param server string The name of the LSP server.
+---@param cond fun(root_dir, config): boolean The condition function.
 function M.disable(server, cond)
   local util = require("lspconfig.util")
   local def = M.get_config(server)
@@ -151,7 +171,9 @@ function M.disable(server, cond)
   end)
 end
 
+--- Configures a formatter for LSP.
 ---@param opts? LazyFormatter| {filter?: (string|lsp.Client.filter)}
+---@return LazyFormatter The configured formatter.
 function M.formatter(opts)
   opts = opts or {}
   local filter = opts.filter or {}
@@ -181,9 +203,8 @@ function M.formatter(opts)
   return Util.merge(ret, opts) --[[@as LazyFormatter]]
 end
 
----@alias lsp.Client.format {timeout_ms?: number, format_options?: table} | lsp.Client.filter
-
----@param opts? lsp.Client.format
+--- Formats the current buffer using LSP.
+---@param opts? lsp.Client.format Optional formatting options.
 function M.format(opts)
   opts = vim.tbl_deep_extend(
     "force",
@@ -193,7 +214,7 @@ function M.format(opts)
     Util.opts("conform.nvim").format or {}
   )
   local ok, conform = pcall(require, "conform")
-  -- use conform for formatting with LSP when available,
+  -- Use conform for formatting with LSP when available,
   -- since it has better format diffing
   if ok then
     opts.formatters = {}
@@ -221,7 +242,8 @@ M.action = setmetatable({}, {
 ---@field open? boolean
 ---@field handler? lsp.Handler
 
----@param opts LspCommand
+--- Executes an LSP command.
+---@param opts LspCommand The command options.
 function M.execute(opts)
   local params = {
     command = opts.command,

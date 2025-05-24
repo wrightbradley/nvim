@@ -1,26 +1,31 @@
+---@file Extra features utilities for Neovim
+--- This module provides utility functions for managing extra features in Neovim.
+--- It includes functions for handling additional modules, displaying extra features,
+--- and integrating with the Lazy plugin manager.
+
 local Float = require("lazy.view.float")
 local LazyConfig = require("lazy.core.config")
 local Plugin = require("lazy.core.plugin")
 local Text = require("lazy.view.text")
 
 ---@class LazyExtraSource
----@field name string
----@field desc? string
----@field module string
+---@field name string The name of the extra source.
+---@field desc? string Optional description of the extra source.
+---@field module string The module path of the extra source.
 
 ---@class LazyExtra
----@field name string
----@field source LazyExtraSource
----@field module string
----@field desc? string
----@field enabled boolean
----@field managed boolean
----@field recommended? boolean
----@field imports string[]
----@field row? number
----@field section? string
----@field plugins string[]
----@field optional string[]
+---@field name string The name of the extra.
+---@field source LazyExtraSource The source of the extra.
+---@field module string The module path of the extra.
+---@field desc? string Optional description of the extra.
+---@field enabled boolean Whether the extra is enabled.
+---@field managed boolean Whether the extra is managed by LazyExtras.
+---@field recommended? boolean Whether the extra is recommended.
+---@field imports string[] List of imported modules.
+---@field row? number The row number in the view.
+---@field section? string The section name in the view.
+---@field plugins string[] List of required plugins.
+---@field optional string[] List of optional plugins.
 
 ---@class wrightbradley.util.extras
 local M = {}
@@ -38,8 +43,9 @@ M.state = nil
 
 ---@alias WantsOpts {ft?: string|string[], root?: string|string[]}
 
----@param opts WantsOpts
----@return boolean
+--- Determines if certain conditions are met for enabling extras.
+---@param opts WantsOpts The conditions to check.
+---@return boolean True if the conditions are met, false otherwise.
 function M.wants(opts)
   if opts.ft then
     opts.ft = type(opts.ft) == "string" and { opts.ft } or opts.ft
@@ -56,7 +62,8 @@ function M.wants(opts)
   return false
 end
 
----@return LazyExtra[]
+--- Retrieves a list of available extras.
+---@return LazyExtra[] List of available extras.
 function M.get()
   M.state = M.state or LazyConfig.spec.modules
   local extras = {} ---@type LazyExtra[]
@@ -80,8 +87,10 @@ function M.get()
   return extras
 end
 
----@param modname string
----@param source LazyExtraSource
+--- Retrieves information about a specific extra.
+---@param source LazyExtraSource The source of the extra.
+---@param modname string The module name of the extra.
+---@return LazyExtra The extra information.
 function M.get_extra(source, modname)
   local enabled = vim.tbl_contains(M.state, modname)
   local spec = Plugin.Spec.new(nil, { optional = true, pkg = false })
@@ -130,13 +139,14 @@ function M.get_extra(source, modname)
 end
 
 ---@class LazyExtraView
----@field float LazyFloat
----@field text Text
----@field extras LazyExtra[]
----@field diag LazyDiagnostic[]
+---@field float LazyFloat The floating window for displaying extras.
+---@field text Text The text object for rendering extras.
+---@field extras LazyExtra[] List of extras to display.
+---@field diag LazyDiagnostic[] List of diagnostics for the view.
 local X = {}
 
----@return LazyExtraView
+--- Creates a new view for displaying extras.
+---@return LazyExtraView The created view.
 function X.new()
   local self = setmetatable({}, { __index = X })
   M.buf = vim.api.nvim_get_current_buf()
@@ -156,6 +166,7 @@ function X:diagnostic(diag)
   table.insert(self.diag, diag)
 end
 
+--- Toggles the enabled state of an extra.
 function X:toggle()
   local pos = vim.api.nvim_win_get_cursor(self.float.win)
   for _, extra in ipairs(self.extras) do
@@ -218,6 +229,7 @@ function X:update()
   )
 end
 
+--- Renders the extras in the view.
 function X:render()
   self.text:nl():nl():append("Util Extras", "LazyH1"):nl():nl()
   self.text
@@ -327,6 +339,8 @@ function X:section(opts)
   end
 end
 
+--- Shows the extras view.
+---@return LazyExtraView The created view.
 function M.show()
   return X.new()
 end

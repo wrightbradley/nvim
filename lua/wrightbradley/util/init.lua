@@ -1,3 +1,9 @@
+---@file Core utility functions for Neovim configuration
+--- This module provides a set of utility functions and lazy-loading mechanisms
+--- for other utility modules. It acts as a central point for accessing various
+--- utilities like UI, LSP, and more. It integrates with the lazy.nvim plugin
+--- manager for efficient loading of plugins and modules.
+
 local LazyUtil = require("lazy.core.util")
 
 ---@class wrightbradley.util: LazyUtilCore
@@ -27,29 +33,39 @@ setmetatable(M, {
   end,
 })
 
+--- Checks if the operating system is Windows.
+---@return boolean True if the OS is Windows, false otherwise.
 function M.is_win()
   return vim.uv.os_uname().sysname:find("Windows") ~= nil
 end
 
----@param name string
+--- Retrieves a plugin configuration by name.
+---@param name string The name of the plugin.
+---@return table|nil The plugin configuration or nil if not found.
 function M.get_plugin(name)
   return require("lazy.core.config").spec.plugins[name]
 end
 
----@param name string
----@param path string?
+--- Gets the path to a plugin.
+---@param name string The name of the plugin.
+---@param path string? Optional subpath within the plugin directory.
+---@return string|nil The full path to the plugin or nil if not found.
 function M.get_plugin_path(name, path)
   local plugin = M.get_plugin(name)
   path = path and "/" .. path or ""
   return plugin and (plugin.dir .. path)
 end
 
----@param plugin string
+--- Checks if a plugin is available.
+---@param plugin string The name of the plugin.
+---@return boolean True if the plugin is available, false otherwise.
 function M.has(plugin)
   return M.get_plugin(plugin) ~= nil
 end
 
----@param extra string
+--- Checks if an extra module is available.
+---@param extra string The name of the extra module.
+---@return boolean True if the extra module is available, false otherwise.
 function M.has_extra(extra)
   local Config = require("wrightbradley.config")
   local modname = "wrightbradley.plugins.extras." .. extra
@@ -57,7 +73,8 @@ function M.has_extra(extra)
     or vim.tbl_contains(Config.json.data.extras, modname)
 end
 
----@param fn fun()
+--- Registers a callback for the "VeryLazy" event.
+---@param fn fun() The callback function to register.
 function M.on_very_lazy(fn)
   vim.api.nvim_create_autocmd("User", {
     pattern = "VeryLazy",
@@ -67,14 +84,13 @@ function M.on_very_lazy(fn)
   })
 end
 
---- This extends a deeply nested list with a key in a table
---- that is a dot-separated string.
+--- Extends a nested list with a key in a table.
 --- The nested list will be created if it does not exist.
 ---@generic T
----@param t T[]
----@param key string
----@param values T[]
----@return T[]?
+---@param t T[] The table to extend.
+---@param key string The dot-separated key string.
+---@param values T[] The values to extend the table with.
+---@return T[]? The extended table or nil if the operation failed.
 function M.extend(t, key, values)
   local keys = vim.split(key, ".", { plain = true })
   for i = 1, #keys do
@@ -88,7 +104,9 @@ function M.extend(t, key, values)
   return vim.list_extend(t, values)
 end
 
----@param name string
+--- Retrieves options for a plugin.
+---@param name string The name of the plugin.
+---@return table The options for the plugin.
 function M.opts(name)
   local plugin = M.get_plugin(name)
   if not plugin then
@@ -98,7 +116,7 @@ function M.opts(name)
   return Plugin.values(plugin, "opts", false)
 end
 
--- delay notifications till vim.notify was replaced or after 500ms
+--- Delays notifications until a certain condition is met.
 function M.lazy_notify()
   local notifs = {}
   local function temp(...)
@@ -135,13 +153,17 @@ function M.lazy_notify()
   timer:start(500, 0, replay)
 end
 
+--- Checks if a plugin is loaded.
+---@param name string The name of the plugin.
+---@return boolean True if the plugin is loaded, false otherwise.
 function M.is_loaded(name)
   local Config = require("lazy.core.config")
   return Config.plugins[name] and Config.plugins[name]._.loaded
 end
 
----@param name string
----@param fn fun(name:string)
+--- Registers a callback for when a plugin is loaded.
+---@param name string The name of the plugin.
+---@param fn fun(name:string) The callback function to register.
 function M.on_load(name, fn)
   if M.is_loaded(name) then
     fn(name)
@@ -158,9 +180,12 @@ function M.on_load(name, fn)
   end
 end
 
--- Wrapper around vim.keymap.set that will
--- not create a keymap if a lazy key handler exists.
--- It will also set `silent` to true by default.
+--- Safely sets a keymap, avoiding conflicts with lazy key handlers.
+--- Sets `silent` to true by default.
+---@param mode string|string[] The mode(s) for the keymap.
+---@param lhs string The left-hand side of the keymap.
+---@param rhs string|function The right-hand side of the keymap.
+---@param opts table? Additional options for the keymap.
 function M.safe_keymap_set(mode, lhs, rhs, opts)
   local keys = require("lazy.core.handler").handlers.keys
   ---@cast keys LazyKeysHandler
@@ -183,9 +208,10 @@ function M.safe_keymap_set(mode, lhs, rhs, opts)
   end
 end
 
+--- Removes duplicates from a list.
 ---@generic T
----@param list T[]
----@return T[]
+---@param list T[] The list to deduplicate.
+---@return T[] The deduplicated list.
 function M.dedup(list)
   local ret = {}
   local seen = {}
@@ -199,6 +225,8 @@ function M.dedup(list)
 end
 
 M.CREATE_UNDO = vim.api.nvim_replace_termcodes("<c-G>u", true, true, true)
+
+--- Creates an undo point in insert mode.
 function M.create_undo()
   if vim.api.nvim_get_mode().mode == "i" then
     vim.api.nvim_feedkeys(M.CREATE_UNDO, "n", false)
@@ -208,9 +236,10 @@ end
 --- Gets a path to a package in the Mason registry.
 --- Prefer this to `get_package`, since the package might not always be
 --- available yet and trigger errors.
----@param pkg string
----@param path? string
----@param opts? { warn?: boolean }
+---@param pkg string The name of the package.
+---@param path string? Optional subpath within the package directory.
+---@param opts table? Additional options.
+---@return string The full path to the package.
 function M.get_pkg_path(pkg, path, opts)
   pcall(require, "mason") -- make sure Mason is loaded. Will fail when generating docs
   local root = vim.env.MASON or (vim.fn.stdpath("data") .. "/mason")
@@ -236,9 +265,10 @@ for _, level in ipairs({ "info", "warn", "error" }) do
 end
 
 local cache = {} ---@type table<(fun()), table<string, any>>
+--- Memoizes a function to cache its results.
 ---@generic T: fun()
----@param fn T
----@return T
+---@param fn T The function to memoize.
+---@return T The memoized function.
 function M.memoize(fn)
   return function(...)
     local key = vim.inspect({ ... })
@@ -250,7 +280,8 @@ function M.memoize(fn)
   end
 end
 
----@return "nvim-cmp" | "blink.cmp"
+--- Determines the completion engine to use.
+---@return string The name of the completion engine.
 function M.cmp_engine()
   vim.g.wrightbradley_cmp = vim.g.wrightbradley_cmp or "auto"
   if vim.g.wrightbradley_cmp == "auto" then

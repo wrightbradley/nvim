@@ -1,3 +1,8 @@
+---@file Main configuration initialization
+--- This file initializes the core Neovim configuration, setting up utilities,
+--- options, keymaps, and autocommands. It acts as the entry point for the
+--- configuration, integrating various modules and setting the colorscheme.
+
 _G.Util = require("wrightbradley.util")
 
 ---@class UtilConfig: UtilOptions
@@ -7,13 +12,13 @@ Util.config = M
 
 ---@class UtilOptions
 local defaults = {
-  -- colorscheme can be a string like `catppuccin` or a function that will load the colorscheme
-  ---@type string|fun()
+  ---@type string|fun() Colorscheme to use
   colorscheme = function()
     require("tokyonight").load()
   end,
   -- icons used by other plugins
   -- stylua: ignore
+  ---@type table<string, table> Icons used by other plugins
   icons = {
     misc = {
       dots = "󰇘",
@@ -82,7 +87,7 @@ local defaults = {
       Variable      = "󰀫 ",
     },
   },
-  ---@type table<string, string[]|boolean>?
+  ---@type table<string, string[]|boolean>? Kind filter for different filetypes
   kind_filter = {
     default = {
       "Class",
@@ -121,14 +126,16 @@ local defaults = {
 }
 
 ---@type UtilOptions
-local options
-local lazy_clipboard
+local options ---@type UtilOptions
+local lazy_clipboard ---@type string|nil
 
----@param opts? UtilOptions
+--- Sets up the configuration with optional overrides.
+---@param opts? UtilOptions Optional configuration overrides.
 function M.setup(opts)
   options = vim.tbl_deep_extend("force", defaults, opts or {}) or {}
 
   -- autocmds can be loaded lazily when not opening a file
+  -- Load autocommands and keymaps
   local lazy_autocmds = vim.fn.argc(-1) == 0
   if not lazy_autocmds then
     M.load("autocmds")
@@ -181,8 +188,9 @@ function M.setup(opts)
   Util.track()
 end
 
----@param buf? number
----@return string[]?
+--- Retrieves the kind filter for a buffer.
+---@param buf? number Buffer number.
+---@return string[]? Kind filter for the buffer.
 function M.get_kind_filter(buf)
   buf = (buf == nil or buf == 0) and vim.api.nvim_get_current_buf() or buf
   local ft = vim.bo[buf].filetype
@@ -199,6 +207,7 @@ function M.get_kind_filter(buf)
   return type(M.kind_filter) == "table" and type(M.kind_filter.default) == "table" and M.kind_filter.default or nil
 end
 
+--- Loads a module from wrightbradley.config
 ---@param name "autocmds" | "options" | "keymaps"
 function M.load(name)
   local function _load(mod)
@@ -216,6 +225,7 @@ function M.load(name)
 end
 
 M.did_init = false
+--- Initializes the configuration.
 function M.init()
   if M.did_init then
     return

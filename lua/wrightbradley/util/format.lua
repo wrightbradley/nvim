@@ -1,3 +1,8 @@
+---@file Code formatting utilities for Neovim
+--- This module provides utility functions for managing code formatters and
+--- handling formatting operations in Neovim. It integrates with LSP and other
+--- formatting tools to provide a seamless formatting experience.
+
 ---@class wrightbradley.util.format
 ---@overload fun(opts?: {force?:boolean})
 local M = setmetatable({}, {
@@ -7,15 +12,16 @@ local M = setmetatable({}, {
 })
 
 ---@class LazyFormatter
----@field name string
----@field primary? boolean
----@field format fun(bufnr:number)
----@field sources fun(bufnr:number):string[]
----@field priority number
+---@field name string The name of the formatter.
+---@field primary? boolean Whether the formatter is primary.
+---@field format fun(bufnr:number) The function to format a buffer.
+---@field sources fun(bufnr:number):string[] The function to get sources for a buffer.
+---@field priority number The priority of the formatter.
 
 M.formatters = {} ---@type LazyFormatter[]
 
----@param formatter LazyFormatter
+--- Registers a new formatter.
+---@param formatter LazyFormatter The formatter to register.
 function M.register(formatter)
   M.formatters[#M.formatters + 1] = formatter
   table.sort(M.formatters, function(a, b)
@@ -23,6 +29,8 @@ function M.register(formatter)
   end)
 end
 
+--- Returns the format expression for the current buffer.
+---@return string The format expression.
 function M.formatexpr()
   if Util.has("conform.nvim") then
     return require("conform").formatexpr()
@@ -30,8 +38,9 @@ function M.formatexpr()
   return vim.lsp.formatexpr({ timeout_ms = 3000 })
 end
 
----@param buf? number
----@return (LazyFormatter|{active:boolean,resolved:string[]})[]
+--- Resolves active formatters for a buffer.
+---@param buf? number The buffer number.
+---@return (LazyFormatter|{active:boolean,resolved:string[]})[] List of resolved formatters.
 function M.resolve(buf)
   buf = buf or vim.api.nvim_get_current_buf()
   local have_primary = false
@@ -47,7 +56,8 @@ function M.resolve(buf)
   end, M.formatters)
 end
 
----@param buf? number
+--- Displays information about the formatters for a buffer.
+---@param buf? number The buffer number.
 function M.info(buf)
   buf = buf or vim.api.nvim_get_current_buf()
   local gaf = vim.g.autoformat == nil or vim.g.autoformat
@@ -80,7 +90,9 @@ function M.info(buf)
   )
 end
 
----@param buf? number
+--- Checks if autoformatting is enabled for a buffer.
+---@param buf? number The buffer number.
+---@return boolean True if autoformatting is enabled, false otherwise.
 function M.enabled(buf)
   buf = (buf == nil or buf == 0) and vim.api.nvim_get_current_buf() or buf
   local gaf = vim.g.autoformat
@@ -95,13 +107,15 @@ function M.enabled(buf)
   return gaf == nil or gaf
 end
 
----@param buf? boolean
+--- Toggles autoformatting for a buffer.
+---@param buf? boolean Whether to toggle for the buffer.
 function M.toggle(buf)
   M.enable(not M.enabled(), buf)
 end
 
----@param enable? boolean
----@param buf? boolean
+--- Enables or disables autoformatting.
+---@param enable? boolean Whether to enable autoformatting.
+---@param buf? boolean Whether to apply to the buffer.
 function M.enable(enable, buf)
   if enable == nil then
     enable = true
@@ -115,7 +129,8 @@ function M.enable(enable, buf)
   M.info()
 end
 
----@param opts? {force?:boolean, buf?:number}
+--- Formats the current buffer using registered formatters.
+---@param opts? {force?:boolean, buf?:number} Optional formatting options.
 function M.format(opts)
   opts = opts or {}
   local buf = opts.buf or vim.api.nvim_get_current_buf()
@@ -138,6 +153,7 @@ function M.format(opts)
   end
 end
 
+--- Checks the health of the formatting setup.
 function M.health()
   local Config = require("lazy.core.config")
   local has_plugin = Config.spec.plugins["none-ls.nvim"]
@@ -155,6 +171,7 @@ function M.health()
   end
 end
 
+--- Sets up the formatting system and related autocommands.
 function M.setup()
   M.health()
 
@@ -177,7 +194,9 @@ function M.setup()
   end, { desc = "Show info about the formatters for the current buffer" })
 end
 
----@param buf? boolean
+--- Toggles snacks formatting for a buffer.
+---@param buf? boolean Whether to toggle for the buffer.
+---@return SnacksToggle The snacks toggle object.
 function M.snacks_toggle(buf)
   return Snacks.toggle({
     name = "Auto Format (" .. (buf and "Buffer" or "Global") .. ")",

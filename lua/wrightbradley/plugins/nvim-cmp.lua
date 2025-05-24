@@ -1,3 +1,7 @@
+---@file nvim-cmp plugin configuration
+--- This file configures the `nvim-cmp` plugin for autocompletion in Neovim.
+--- It sets up sources, mappings, and formatting for the completion engine.
+
 return {
   -- auto completion
   {

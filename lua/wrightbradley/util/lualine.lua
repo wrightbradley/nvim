@@ -1,8 +1,15 @@
+---@file Lualine integration utilities for Neovim
+--- This module provides utility functions for integrating with the Lualine statusline
+--- plugin in Neovim. It includes functions for formatting statusline components and
+--- displaying status indicators.
+
 ---@class wrightbradley.util.lualine
 local M = {}
 
----@param icon string
----@param status fun(): nil|"ok"|"error"|"pending"
+--- Creates a statusline component with a status indicator.
+---@param icon string The icon to display in the statusline.
+---@param status fun(): nil|"ok"|"error"|"pending" Function to determine the status.
+---@return table The statusline component configuration.
 function M.status(icon, status)
   local colors = {
     ok = "Special",
@@ -22,8 +29,10 @@ function M.status(icon, status)
   }
 end
 
----@param name string
----@param icon? string
+--- Creates a statusline component for a completion source.
+---@param name string The name of the completion source.
+---@param icon? string Optional icon to display for the source.
+---@return table The statusline component configuration.
 function M.cmp_source(name, icon)
   icon = icon or Util.config.icons.kinds[name:sub(1, 1):upper() .. name:sub(2)]
   local started = false
@@ -47,10 +56,11 @@ function M.cmp_source(name, icon)
   end)
 end
 
----@param component any
----@param text string
----@param hl_group? string
----@return string
+--- Formats text with a highlight group for a statusline component.
+---@param component any The Lualine component.
+---@param text string The text to format.
+---@param hl_group? string Optional highlight group to apply.
+---@return string The formatted text.
 function M.format(component, text, hl_group)
   text = text:gsub("%%", "%%%%")
   if not hl_group or hl_group == "" then
@@ -78,7 +88,9 @@ function M.format(component, text, hl_group)
   return component:format_hl(lualine_hl_group) .. text .. component:get_default_hl()
 end
 
----@param opts? {relative: "cwd"|"root", modified_hl: string?, directory_hl: string?, filename_hl: string?, modified_sign: string?, readonly_icon: string?, length: number?}
+--- Returns a function to format the current file path for the statusline.
+---@param opts? {relative: "cwd"|"root", modified_hl: string?, directory_hl: string?, filename_hl: string?, modified_sign: string?, readonly_icon: string?, length: number?} Optional options for path formatting.
+---@return fun(): string The function to format the file path.
 function M.pretty_path(opts)
   opts = vim.tbl_extend("force", {
     relative = "cwd",
@@ -137,7 +149,9 @@ function M.pretty_path(opts)
   end
 end
 
----@param opts? {cwd:false, subdirectory: true, parent: true, other: true, icon?:string}
+--- Returns a statusline component for displaying the root directory.
+---@param opts? {cwd:false, subdirectory: true, parent: true, other: true, icon?:string} Optional options for root directory display.
+---@return table The statusline component configuration.
 function M.root_dir(opts)
   opts = vim.tbl_extend("force", {
     cwd = false,

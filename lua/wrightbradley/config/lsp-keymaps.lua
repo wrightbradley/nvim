@@ -1,3 +1,8 @@
+---@file LSP key mappings configuration
+--- This file configures key mappings specifically for LSP-related actions in Neovim.
+--- It integrates with the LSP client to provide shortcuts for features like go-to
+--- definition, references, and code actions.
+
 local M = {}
 
 ---@type LazyKeysLspSpec[]|nil
@@ -6,7 +11,8 @@ M._keys = nil
 ---@alias LazyKeysLspSpec LazyKeysSpec|{has?:string|string[], cond?:fun():boolean}
 ---@alias LazyKeysLsp LazyKeys|{has?:string|string[], cond?:fun():boolean}
 
----@return LazyKeysLspSpec[]
+--- Retrieves the LSP key mappings.
+---@return LazyKeysLspSpec[] List of LSP key mappings.
 function M.get()
   if M._keys then
     return M._keys
@@ -41,7 +47,10 @@ function M.get()
   return M._keys
 end
 
----@param method string|string[]
+--- Checks if a buffer has a specific LSP method.
+---@param buffer number Buffer number.
+---@param method string|string[] LSP method(s) to check.
+---@return boolean True if the buffer has the method, false otherwise.
 function M.has(buffer, method)
   if type(method) == "table" then
     for _, m in ipairs(method) do
@@ -61,7 +70,9 @@ function M.has(buffer, method)
   return false
 end
 
----@return LazyKeysLsp[]
+--- Resolves LSP key mappings for a buffer.
+---@param buffer number Buffer number.
+---@return LazyKeysLsp[] List of resolved LSP key mappings.
 function M.resolve(buffer)
   local Keys = require("lazy.core.handler.keys")
   if not Keys.resolve then
@@ -77,6 +88,9 @@ function M.resolve(buffer)
   return Keys.resolve(spec)
 end
 
+--- Attaches LSP key mappings to a buffer.
+---@param _ any Unused parameter.
+---@param buffer number Buffer number.
 function M.on_attach(_, buffer)
   local Keys = require("lazy.core.handler.keys")
   local keymaps = M.resolve(buffer)

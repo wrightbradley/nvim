@@ -1,3 +1,7 @@
+---@file nvim-treesitter plugin configuration
+--- This file configures the `nvim-treesitter` plugin for syntax highlighting and text objects
+--- in Neovim. It sets up Treesitter parsers and additional modules for enhanced functionality.
+
 return {
   -- Treesitter is a new parser generator tool that we can
   -- use in Neovim to power faster and more accurate

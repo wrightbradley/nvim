@@ -1,3 +1,7 @@
+---@file nvim-lspconfig plugin configuration
+--- This file configures the `nvim-lspconfig` plugin for setting up LSP servers in Neovim.
+--- It sets up diagnostics, inlay hints, and server-specific configurations.
+
 return {
   -- lspconfig
   {

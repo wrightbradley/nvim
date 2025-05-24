@@ -1,3 +1,7 @@
+---@file nvim-lint plugin configuration
+--- This file configures the `nvim-lint` plugin for linting in Neovim.
+--- It sets up linters for various filetypes and configures linting events.
+
 return {
   {
     "mfussenegger/nvim-lint",
@@ -17,7 +21,7 @@ return {
       -- or add custom linters.
       ---@type table<string,table>
       linters = {
-        -- -- Example of using selene only when a selene.toml file is present
+        -- Example of using selene only when a selene.toml file is present
         -- selene = {
         --   -- `condition` is another Util extension that allows you to
         --   -- dynamically enable/disable linters based on the context.

@@ -1,5 +1,10 @@
+---@file FZF Lua plugin configuration
+--- This file configures the FZF Lua plugin for Neovim, providing a fast and modern
+--- file picker. It integrates with other plugins like `trouble.nvim` and sets up
+--- key mappings for various FZF commands.
+
 ---@class FzfLuaOpts: wrightbradley.util.pick.Opts
----@field cmd string?
+---@field cmd string? Optional command to execute.
 
 ---@type LazyPicker
 local picker = {
@@ -8,8 +13,9 @@ local picker = {
     files = "files",
   },
 
-  ---@param command string
-  ---@param opts? FzfLuaOpts
+  --- Opens the FZF picker with the specified command and options.
+  ---@param command string The FZF command to execute.
+  ---@param opts? FzfLuaOpts Optional options for the FZF command.
   open = function(command, opts)
     opts = opts or {}
     if opts.cmd == nil and command == "git_files" and opts.show_untracked then
@@ -18,10 +24,15 @@ local picker = {
     return require("fzf-lua")[command](opts)
   end,
 }
+
 if not Util.pick.register(picker) then
   return {}
 end
 
+--- Filters symbols based on the context.
+---@param entry table The symbol entry.
+---@param ctx table The context for filtering.
+---@return boolean True if the symbol passes the filter, false otherwise.
 local function symbols_filter(entry, ctx)
   if ctx.symbols_filter == nil then
     ctx.symbols_filter = Util.config.get_kind_filter(ctx.bufnr) or false
