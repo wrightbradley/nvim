@@ -142,8 +142,54 @@ return {
       },
       "ibhagwan/fzf-lua", -- For fzf provider, file or buffer picker
       "j-hui/fidget.nvim",
+      "banjo/contextfiles.nvim",
+      {
+        "MeanderingProgrammer/render-markdown.nvim", -- Enhanced markdown rendering
+        ft = { "codecompanion" },
+        opts = {
+          render_modes = { "n", "c", "v" },
+          overrides = {
+            filetype = {
+              codecompanion = {
+                render_modes = { "n", "c", "v" },
+              },
+            },
+          },
+        },
+      },
+      {
+        "HakonHarnes/img-clip.nvim",
+        optional = true,
+        opts = {
+          filetypes = {
+            codecompanion = {
+              prompt_for_file_name = false,
+              template = "[Image]($FILE_PATH)",
+              use_absolute_path = true,
+            },
+          },
+        },
+      },
     },
     opts = {
+      log_level = "DEBUG",
+      system_prompt = SYSTEM_PROMPT,
+      adapters = {
+        opts = {
+          show_defaults = false,
+          show_model_choices = true,
+        },
+        copilot = function()
+          return require("codecompanion.adapters").extend("copilot", {
+            -- opts = { stream = true },
+            schema = {
+              model = {
+                default = "claude-3.7-sonnet",
+              },
+            },
+          })
+        end,
+      },
       extensions = {
         history = {
           enabled = true,
@@ -171,32 +217,32 @@ return {
             add_slash_command = true,
           },
         },
-      },
-      adapters = {
-        opts = {
-          show_defaults = false,
-          show_model_choices = true,
-        },
-        copilot = function()
-          return require("codecompanion.adapters").extend("copilot", {
-            opts = { stream = true },
-            schema = {
-              model = {
-                default = "claude-3.7-sonnet-thought",
-                choices = {
-                  ["o3-mini-2025-01-31"] = { opts = { can_reason = true } },
-                  ["o1-2024-12-17"] = { opts = { can_reason = true } },
-                  ["o1-mini-2024-09-12"] = { opts = { can_reason = true } },
-                  "claude-3.7-sonnet",
-                  "claude-3.5-sonnet",
-                  "claude-3.7-sonnet-thought",
-                  "gpt-4o-2024-08-06",
-                  "gemini-2.0-flash-001",
+        contextfiles = {
+          opts = {
+            {
+              slash_command = {
+                enabled = true,
+                name = "context",
+                ctx_opts = {
+                  context_dir = ".cursor/rules",
+                  root_markers = { ".git" },
+                  enable_local = true,
+                },
+                format_opts = {
+                  ---@param context_file ContextFiles.ContextFile the context file to prepend the prefix
+                  prefix = function(context_file)
+                    return string.format(
+                      "Please follow the rules located at `%s`:",
+                      vim.fn.fnamemodify(context_file.file, ":.")
+                    )
+                  end,
+                  suffix = "",
+                  separator = "",
                 },
               },
             },
-          })
-        end,
+          },
+        },
       },
       strategies = {
         chat = {
@@ -262,7 +308,7 @@ return {
           },
         },
         inline = { adapter = "copilot" },
-        agent = { adapter = "copilot" },
+        cmd = { adapter = "copilot" },
       },
       inline = {
         layout = "buffer", -- vertical|horizontal|buffer
@@ -285,10 +331,6 @@ return {
           -- close_chat_at = 240, -- Close an open chat buffer if the total columns of your display are less than...
           provider = "mini_diff", -- default|mini_diff
         },
-      },
-      opts = {
-        log_level = "DEBUG",
-        system_prompt = SYSTEM_PROMPT,
       },
       prompt_library = {
         -- Custom the default prompt
