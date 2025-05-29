@@ -168,8 +168,6 @@ return {
             bundles = bundles,
           },
           settings = opts.settings,
-          -- enable CMP capabilities
-          capabilities = Util.has("cmp-nvim-lsp") and require("cmp_nvim_lsp").default_capabilities() or nil,
         }, opts.jdtls)
 
         -- Existing server will be reused if the root_dir matches.
