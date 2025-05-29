@@ -96,31 +96,6 @@ return {
       })
     end,
   },
-  {
-    "nvimdev/dashboard-nvim",
-    optional = true,
-    opts = function(_, opts)
-      local projects = {
-        action = pick_chezmoi,
-        desc = "  Config",
-        icon = "",
-        key = "c",
-      }
-
-      projects.desc = projects.desc .. string.rep(" ", 43 - #projects.desc)
-      projects.key_format = "  %s"
-
-      -- remove wrightbradley config property
-      for i = #opts.config.center, 1, -1 do
-        if opts.config.center[i].key == "c" then
-          table.remove(opts.config.center, i)
-        end
-      end
-
-      table.insert(opts.config.center, 5, projects)
-    end,
-  },
-
   -- Filetype icons
   {
     "echasnovski/mini.icons",
