@@ -14,6 +14,7 @@ local LazyUtil = require("lazy.core.util")
 ---@field terminal wrightbradley.util.terminal
 ---@field format wrightbradley.util.format
 ---@field lualine wrightbradley.util.lualine
+---@field escape wrightbradley.util.escape
 ---@field mini wrightbradley.util.mini
 ---@field pick wrightbradley.util.pick
 ---@field spinner wrightbradley.util.spinner
