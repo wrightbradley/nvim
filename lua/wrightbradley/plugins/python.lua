@@ -1,68 +1,77 @@
-if wrightbradley_docs then
-  -- LSP Server to use for Python.
-  -- Set to "basedpyright" to use basedpyright instead of pyright.
-  vim.g.wrightbradley_python_lsp = "pyright"
-  -- Set to "ruff_lsp" to use the old LSP implementation version.
-  vim.g.wrightbradley_python_ruff = "ruff"
-end
+---@file Python language support configuration
+--- This file configures Python-related plugins and tools for Neovim, including LSP,
+--- Treesitter, and DAP. It sets up Python language servers and ensures necessary tools
+--- are installed for Python development.
 
-local lsp = vim.g.wrightbradley_python_lsp or "pyright"
-local ruff = vim.g.wrightbradley_python_ruff or "ruff"
+-- Native LSP configuration for Neovim 0.11+
+
+-- Configure ruff
+vim.lsp.config("ruff", {
+  cmd_env = { RUFF_TRACE = "messages" },
+  init_options = {
+    settings = {
+      logLevel = "error",
+    },
+  },
+})
+
+-- Configure ty
+vim.lsp.config("ty", {
+  cmd = { "uvx", "ty", "server" },
+  filetypes = { "python" },
+  root_dir = vim.fs.dirname(vim.fs.find({ "ty.toml", ".git", "pyproject.toml" }, { upward = true })[1])
+    or vim.fn.getcwd(),
+  capabilities = {
+    textDocument = {
+      publishDiagnostics = {},
+    },
+  },
+  on_attach = function(client, bufnr)
+    -- Disable everything else
+    client.server_capabilities.hoverProvider = false
+    client.server_capabilities.definitionProvider = false
+    client.server_capabilities.referencesProvider = false
+    client.server_capabilities.completionProvider = false
+    client.server_capabilities.renameProvider = false
+    client.server_capabilities.documentSymbolProvider = false
+  end,
+})
+
+-- Configure pyright
+vim.lsp.config("pyright", {})
+
+-- Enable the language servers
+vim.lsp.enable("ruff")
+vim.lsp.enable("ty")
+vim.lsp.enable("pyright")
+
+-- Set up on_attach callbacks
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client.name == "ruff" then
+      -- Disable hover in favor of Pyright
+      client.server_capabilities.hoverProvider = false
+    end
+  end,
+})
+
+-- Add keymaps
+vim.keymap.set("n", "<leader>co", function()
+  vim.lsp.buf.code_action({
+    context = {
+      only = { "source.organizeImports" },
+      diagnostics = {}, -- Add empty diagnostics array to satisfy the type requirement
+    },
+  })
+end, { desc = "Organize Imports" })
 
 return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = { ensure_installed = { "ninja", "rst" } },
   },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        ruff = {
-          cmd_env = { RUFF_TRACE = "messages" },
-          init_options = {
-            settings = {
-              logLevel = "error",
-            },
-          },
-          keys = {
-            {
-              "<leader>co",
-              Util.lsp.action["source.organizeImports"],
-              desc = "Organize Imports",
-            },
-          },
-        },
-        ruff_lsp = {
-          keys = {
-            {
-              "<leader>co",
-              Util.lsp.action["source.organizeImports"],
-              desc = "Organize Imports",
-            },
-          },
-        },
-      },
-      setup = {
-        [ruff] = function()
-          Util.lsp.on_attach(function(client, _)
-            -- Disable hover in favor of Pyright
-            client.server_capabilities.hoverProvider = false
-          end, ruff)
-        end,
-      },
-    },
-  },
-  {
-    "neovim/nvim-lspconfig",
-    opts = function(_, opts)
-      local servers = { "pyright", "basedpyright", "ruff", "ruff_lsp", ruff, lsp }
-      for _, server in ipairs(servers) do
-        opts.servers[server] = opts.servers[server] or {}
-        opts.servers[server].enabled = server == lsp or server == ruff
-      end
-    end,
-  },
+
   {
     "nvim-neotest/neotest",
     optional = true,
@@ -79,15 +88,29 @@ return {
       },
     },
   },
+
   {
     "mfussenegger/nvim-dap",
     optional = true,
     dependencies = {
       "mfussenegger/nvim-dap-python",
-      -- stylua: ignore
       keys = {
-        { "<leader>dPt", function() require('dap-python').test_method() end, desc = "Debug Method", ft = "python" },
-        { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
+        {
+          "<leader>dPt",
+          function()
+            require("dap-python").test_method()
+          end,
+          desc = "Debug Method",
+          ft = "python",
+        },
+        {
+          "<leader>dPc",
+          function()
+            require("dap-python").test_class()
+          end,
+          desc = "Debug Class",
+          ft = "python",
+        },
       },
       config = function()
         if vim.fn.has("win32") == 1 then
