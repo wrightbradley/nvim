@@ -64,20 +64,9 @@ return {
       },
     },
   },
-  -- Ensure Go tools are installed
-  {
-    "mason-org/mason.nvim",
-    opts = { ensure_installed = { "goimports", "gofumpt" } },
-  },
   {
     "nvimtools/none-ls.nvim",
     optional = true,
-    dependencies = {
-      {
-        "mason-org/mason.nvim",
-        opts = { ensure_installed = { "gomodifytags", "impl" } },
-      },
-    },
     opts = function(_, opts)
       local nls = require("null-ls")
       opts.sources = vim.list_extend(opts.sources or {}, {

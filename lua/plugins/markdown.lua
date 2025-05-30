@@ -34,10 +34,6 @@ return {
     },
   },
   {
-    "mason-org/mason.nvim",
-    opts = { ensure_installed = { "markdownlint-cli2", "markdown-toc", "vale-ls" } },
-  },
-  {
     "nvimtools/none-ls.nvim",
     optional = true,
     opts = function(_, opts)
