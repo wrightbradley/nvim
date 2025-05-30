@@ -10,12 +10,18 @@ return {
       -- Event to trigger linters
       events = { "BufWritePost", "BufReadPost", "InsertLeave" },
       linters_by_ft = {
-        fish = { "fish" },
         -- Use the "*" filetype to run linters on all filetypes.
         -- ['*'] = { 'global linter' },
         -- Use the "_" filetype to run linters on filetypes that don't have other linters configured.
         -- ['_'] = { 'fallback linter' },
         -- ["*"] = { "typos" },
+        cue = { "cue" },
+        dockerfile = { "hadolint" },
+        fish = { "fish" },
+        markdown = { "markdownlint-cli2" },
+        sh = { "shellcheck" },
+        terraform = { "terraform_validate" },
+        tf = { "terraform_validate" },
       },
       -- Util extension to easily override linter options
       -- or add custom linters.
