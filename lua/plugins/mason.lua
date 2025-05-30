@@ -14,7 +14,11 @@ return {
     opts = {
       ensure_installed = {
         "stylua",
+        "json-lsp",
         "shfmt",
+        "yaml-language-server",
+        "yamlfmt",
+        "yamllint",
       },
     },
     --- Configures Mason with the specified options.
