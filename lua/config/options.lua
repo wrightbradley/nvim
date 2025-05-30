@@ -27,10 +27,6 @@ vim.g.snacks_animate = true
 -- enabled with `:LazyExtras`
 vim.g.cmp = "blink.cmp"
 
--- if the completion engine supports the AI source,
--- use that instead of inline suggestions
-vim.g.ai_cmp = true
-
 -- Util root dir detection
 -- Each entry can be:
 -- * the name of a detector function like `lsp` or `cwd`

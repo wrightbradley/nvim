@@ -1,21 +1,8 @@
----@diagnostic disable: missing-fields
-if docs then
-  -- set to `true` to follow the main branch
-  -- you need to have a working rust toolchain to build the plugin
-  -- in this case.
-  vim.g.blink_main = false
-end
-
 return {
   {
-    "hrsh7th/nvim-cmp",
-    optional = true,
-    enabled = false,
-  },
-  {
     "saghen/blink.cmp",
-    version = not vim.g.blink_main and "*",
-    build = vim.g.blink_main and "cargo build --release",
+    version = "1.*",
+    -- build = "cargo build --release",
     opts_extend = {
       "sources.completion.enabled_providers",
       "sources.compat",
@@ -23,73 +10,91 @@ return {
     },
     dependencies = {
       "rafamadriz/friendly-snippets",
-      -- add blink.compat to dependencies
       {
         "saghen/blink.compat",
         optional = true, -- make optional so it's only enabled if any extras need it
         opts = {},
-        version = not vim.g.blink_main and "*",
       },
+      "giuxtaposition/blink-cmp-copilot",
     },
     event = "InsertEnter",
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
-    opts = {
-      snippets = {
-        expand = function(snippet, _)
-          return Util.cmp.expand(snippet)
-        end,
-      },
-      appearance = {
-        -- sets the fallback highlight groups to nvim-cmp's highlight groups
-        -- useful for when your theme doesn't support blink.cmp
-        -- will be removed in a future release, assuming themes add support
-        use_nvim_cmp_as_default = false,
-        -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-        -- adjusts spacing to ensure icons are aligned
-        nerd_font_variant = "mono",
-      },
-      completion = {
-        accept = {
-          -- experimental auto-brackets support
-          auto_brackets = {
+    opts = function()
+      return {
+        snippets = {
+          expand = function(snippet, _)
+            return Util.cmp.expand(snippet)
+          end,
+        },
+        appearance = {
+          -- sets the fallback highlight groups to nvim-cmp's highlight groups
+          -- useful for when your theme doesn't support blink.cmp
+          -- will be removed in a future release, assuming themes add support
+          use_nvim_cmp_as_default = false,
+          -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+          -- adjusts spacing to ensure icons are aligned
+          nerd_font_variant = "mono",
+          kind_icons = vim.tbl_extend("force", {}, Util.config.icons.kinds),
+        },
+        completion = {
+          accept = {
+            -- experimental auto-brackets support
+            auto_brackets = { enabled = true },
+            dot_repeat = false,
+          },
+          menu = {
+            draw = {
+              treesitter = { "lsp" },
+            },
+          },
+          documentation = {
+            auto_show = true,
+            auto_show_delay_ms = 200,
+          },
+          ghost_text = {
             enabled = true,
           },
         },
-        menu = {
-          draw = {
-            treesitter = { "lsp" },
+
+        -- experimental signature help support
+        -- signature = { enabled = true },
+
+        sources = {
+          -- adding any nvim-cmp sources here will enable them
+          -- with blink.compat
+          compat = {},
+          default = { "copilot", "lsp", "path", "snippets", "buffer", "lazydev" },
+          providers = {
+            lazydev = {
+              name = "LazyDev",
+              module = "lazydev.integrations.blink",
+              score_offset = 100, -- show at a higher priority than lsp
+            },
+            copilot = {
+              name = "copilot",
+              module = "blink-cmp-copilot",
+              kind = "Copilot",
+              score_offset = 100,
+              async = true,
+            },
+          },
+          per_filetype = {
+            codecompanion = { "codecompanion" },
           },
         },
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 200,
+
+        cmdline = {
+          enabled = false,
         },
-        ghost_text = {
-          enabled = vim.g.ai_cmp,
+
+        keymap = {
+          preset = "enter",
+          ["<C-y>"] = { "select_and_accept" },
         },
-      },
-
-      -- experimental signature help support
-      -- signature = { enabled = true },
-
-      sources = {
-        -- adding any nvim-cmp sources here will enable them
-        -- with blink.compat
-        compat = {},
-        default = { "lsp", "path", "snippets", "buffer" },
-      },
-
-      cmdline = {
-        enabled = false,
-      },
-
-      keymap = {
-        preset = "enter",
-        ["<C-y>"] = { "select_and_accept" },
-      },
-    },
+      }
+    end,
     ---@param opts blink.cmp.Config | { sources: { compat: string[] } }
     config = function(_, opts)
       -- setup compat sources
@@ -143,6 +148,7 @@ return {
             items = transform_items and transform_items(ctx, items) or items
             for _, item in ipairs(items) do
               item.kind = kind_idx or item.kind
+              item.kind_icon = Util.config.icons.kinds[item.kind_name] or item.kind_icon or nil
             end
             return items
           end
@@ -154,37 +160,5 @@ return {
 
       require("blink.cmp").setup(opts)
     end,
-  },
-
-  -- add icons
-  {
-    "saghen/blink.cmp",
-    tag = "v0.12.2",
-    opts = function(_, opts)
-      opts.appearance = opts.appearance or {}
-      opts.appearance.kind_icons = vim.tbl_extend("force", opts.appearance.kind_icons or {}, Util.config.icons.kinds)
-      opts.completion.accept.dot_repeat = false
-    end,
-  },
-
-  -- lazydev
-  {
-    "saghen/blink.cmp",
-    opts = {
-      sources = {
-        -- add lazydev to your completion providers
-        default = { "lazydev" },
-        providers = {
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            score_offset = 100, -- show at a higher priority than lsp
-          },
-        },
-        per_filetype = {
-          codecompanion = { "codecompanion" },
-        },
-      },
-    },
   },
 }
