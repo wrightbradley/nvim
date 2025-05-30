@@ -140,6 +140,16 @@ return {
                 removed = icons.git.removed,
               },
               source = function()
+                -- Check for mini.diff summary first
+                local summary = vim.b.minidiff_summary
+                if summary then
+                  return {
+                    added = summary.add,
+                    modified = summary.change,
+                    removed = summary.delete,
+                  }
+                end
+                -- Fall back to gitsigns if mini.diff is not available
                 local gitsigns = vim.b.gitsigns_status_dict
                 if gitsigns then
                   return {
