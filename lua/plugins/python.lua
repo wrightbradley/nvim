@@ -3,59 +3,6 @@
 --- Treesitter, and DAP. It sets up Python language servers and ensures necessary tools
 --- are installed for Python development.
 
--- Native LSP configuration for Neovim 0.11+
-
--- Configure ruff
-vim.lsp.config("ruff", {
-  cmd_env = { RUFF_TRACE = "messages" },
-  init_options = {
-    settings = {
-      logLevel = "error",
-    },
-  },
-})
-
--- Configure ty
-vim.lsp.config("ty", {
-  cmd = { "uvx", "ty", "server" },
-  filetypes = { "python" },
-  root_dir = vim.fs.dirname(vim.fs.find({ "ty.toml", ".git", "pyproject.toml" }, { upward = true })[1])
-    or vim.fn.getcwd(),
-  capabilities = {
-    textDocument = {
-      publishDiagnostics = {},
-    },
-  },
-  on_attach = function(client, bufnr)
-    -- Disable everything else
-    client.server_capabilities.hoverProvider = false
-    client.server_capabilities.definitionProvider = false
-    client.server_capabilities.referencesProvider = false
-    client.server_capabilities.completionProvider = false
-    client.server_capabilities.renameProvider = false
-    client.server_capabilities.documentSymbolProvider = false
-  end,
-})
-
--- Configure pyright
-vim.lsp.config("pyright", {})
-
--- Enable the language servers
-vim.lsp.enable("ruff")
-vim.lsp.enable("ty")
-vim.lsp.enable("pyright")
-
--- Set up on_attach callbacks
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client.name == "ruff" then
-      -- Disable hover in favor of Pyright
-      client.server_capabilities.hoverProvider = false
-    end
-  end,
-})
-
 -- Add keymaps
 vim.keymap.set("n", "<leader>co", function()
   vim.lsp.buf.code_action({
@@ -66,8 +13,18 @@ vim.keymap.set("n", "<leader>co", function()
   })
 end, { desc = "Organize Imports" })
 
-return {
+-- Enable autocompletion for Python LSP servers
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client and client:supports_method("textDocument/completion") then
+      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    end
+  end,
+  pattern = "*.py",
+})
 
+return {
   {
     "nvim-neotest/neotest",
     optional = true,
@@ -135,15 +92,6 @@ return {
     --  Call config for python files and load the cached venv automatically
     ft = "python",
     keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
-  },
-
-  {
-    "hrsh7th/nvim-cmp",
-    optional = true,
-    opts = function(_, opts)
-      opts.auto_brackets = opts.auto_brackets or {}
-      table.insert(opts.auto_brackets, "python")
-    end,
   },
 
   -- Don't mess up DAP adapters provided by nvim-dap-python
