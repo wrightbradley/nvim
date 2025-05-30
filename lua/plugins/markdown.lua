@@ -14,16 +14,6 @@ return {
       })
     end,
   },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        marksman = {},
-        vale_ls = {},
-      },
-    },
-  },
-
   -- Markdown preview
   {
     "iamcco/markdown-preview.nvim",
