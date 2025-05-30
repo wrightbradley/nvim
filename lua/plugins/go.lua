@@ -78,15 +78,6 @@ return {
     end,
   },
   {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        go = { "goimports", "gofumpt" },
-      },
-    },
-  },
-  {
     "mfussenegger/nvim-dap",
     optional = true,
     dependencies = {
