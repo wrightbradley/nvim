@@ -19,7 +19,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("wrightbradley.config").init()
+require("config").init()
 
 -- Plugins setup
 require("lazy").setup({
@@ -33,8 +33,8 @@ require("lazy").setup({
   },
   spec = {
     -- Order matters!
-    { import = "wrightbradley.plugins" },
-    { import = "wrightbradley.plugins.lsp" },
+    { import = "plugins" },
+    { import = "plugins.lsp" },
   },
   defaults = {
     -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
@@ -71,4 +71,4 @@ require("lazy").setup({
 -- vim.env.PATH = vim.env.HOME .. "/.local/share/mise/shims:" .. vim.env.PATH
 
 -- Setup the custom configuration for NeoVim
-require("wrightbradley.config").setup()
+require("config").setup()
