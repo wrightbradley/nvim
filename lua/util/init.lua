@@ -16,7 +16,6 @@ local LazyUtil = require("lazy.core.util")
 ---@field lualine util.lualine
 ---@field escape util.escape
 ---@field mini util.mini
----@field pick util.pick
 ---@field spinner util.spinner
 ---@field cmp util.cmp
 local M = {}
@@ -277,16 +276,6 @@ function M.memoize(fn)
     end
     return cache[fn][key]
   end
-end
-
---- Determines the completion engine to use.
----@return string The name of the completion engine.
-function M.cmp_engine()
-  vim.g.cmp = vim.g.wrightbradley_cmp or "auto"
-  if vim.g.cmp == "auto" then
-    return "blink.cmp"
-  end
-  return vim.g.cmp
 end
 
 return M

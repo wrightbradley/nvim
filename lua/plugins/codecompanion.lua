@@ -368,7 +368,6 @@ return {
         build = "npm install -g mcp-hub@latest",
         config = true,
       },
-      "ibhagwan/fzf-lua", -- For fzf provider, file or buffer picker
       "j-hui/fidget.nvim",
       "banjo/contextfiles.nvim",
       {
@@ -429,7 +428,7 @@ return {
             auto_generate_title = true,
             continue_last_chat = false,
             delete_on_clearing_chat = false,
-            picker = "fzf-lua",
+            picker = "snacks",
             enable_logging = false,
             dir_to_save = vim.fn.stdpath("data") .. "/codecompanion-history",
           },
@@ -485,7 +484,7 @@ return {
               description = "Insert open buffers",
               opts = {
                 contains_code = true,
-                provider = "fzf_lua", -- default|telescope|mini_pick|fzf_lua
+                provider = "snacks",
               },
             },
             ["file"] = {
@@ -494,7 +493,7 @@ return {
               opts = {
                 contains_code = true,
                 max_lines = 1000,
-                provider = "fzf_lua", -- telescope|mini_pick|fzf_lua
+                provider = "snacks",
               },
             },
             ["vcheck"] = {
