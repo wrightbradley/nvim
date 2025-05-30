@@ -67,10 +67,6 @@ vim.keymap.set("n", "<leader>co", function()
 end, { desc = "Organize Imports" })
 
 return {
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = { ensure_installed = { "ninja", "rst" } },
-  },
 
   {
     "nvim-neotest/neotest",
