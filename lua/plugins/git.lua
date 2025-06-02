@@ -1,17 +1,4 @@
 return {
-  -- TODO: update to use blink
-  -- {
-  --   "hrsh7th/nvim-cmp",
-  --   optional = true,
-  --   dependencies = {
-  --     { "petertriho/cmp-git", opts = {} },
-  --   },
-  --   ---@module 'cmp'
-  --   ---@param opts cmp.ConfigSchema
-  --   opts = function(_, opts)
-  --     table.insert(opts.sources, { name = "git" })
-  --   end,
-  -- },
   {
     "f-person/git-blame.nvim",
     event = "BufRead",
@@ -38,6 +25,23 @@ return {
       default_merge_method = "squash",
       picker = "telescope",
     },
+    config = function(_, opts)
+      require("octo").setup(opts)
+
+      -- Keep some empty windows in sessions
+      vim.api.nvim_create_autocmd("ExitPre", {
+        group = vim.api.nvim_create_augroup("octo_exit_pre", { clear = true }),
+        callback = function()
+          local keep = { "octo" }
+          for _, win in ipairs(vim.api.nvim_list_wins()) do
+            local buf = vim.api.nvim_win_get_buf(win)
+            if vim.tbl_contains(keep, vim.bo[buf].filetype) then
+              vim.bo[buf].buftype = "" -- set buftype to empty to keep the window
+            end
+          end
+        end,
+      })
+    end,
     keys = {
       { "<leader>gi", "<cmd>Octo issue list<CR>", desc = "List Issues (Octo)" },
       { "<leader>gI", "<cmd>Octo issue search<CR>", desc = "Search Issues (Octo)" },
@@ -60,38 +64,8 @@ return {
       { "#", "#<C-x><C-o>", mode = "i", ft = "octo", silent = true },
     },
   },
-  -- Octo Picker
-  {
-    "pwntester/octo.nvim",
-    opts = function(_, opts)
-      vim.treesitter.language.register("markdown", "octo")
-      if Util.has("telescope.nvim") then
-        opts.picker = "telescope"
-      elseif Util.has("fzf-lua") then
-        opts.picker = "fzf-lua"
-      else
-        Util.error("`octo.nvim` requires `telescope.nvim` or `fzf-lua`")
-      end
-
-      -- Keep some empty windows in sessions
-      vim.api.nvim_create_autocmd("ExitPre", {
-        group = vim.api.nvim_create_augroup("octo_exit_pre", { clear = true }),
-        callback = function(ev)
-          local keep = { "octo" }
-          for _, win in ipairs(vim.api.nvim_list_wins()) do
-            local buf = vim.api.nvim_win_get_buf(win)
-            if vim.tbl_contains(keep, vim.bo[buf].filetype) then
-              vim.bo[buf].buftype = "" -- set buftype to empty to keep the window
-            end
-          end
-        end,
-      })
-    end,
-  },
   {
     "polarmutex/git-worktree.nvim",
-    -- "git-worktree.nvim",
-    -- version = "^2",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope.nvim",
