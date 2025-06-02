@@ -4,16 +4,6 @@ Util.on_very_lazy(function()
   })
 end)
 return {
-  {
-    "nvimtools/none-ls.nvim",
-    optional = true,
-    opts = function(_, opts)
-      local nls = require("none-ls")
-      opts.sources = vim.list_extend(opts.sources or {}, {
-        nls.builtins.diagnostics.markdownlint_cli2,
-      })
-    end,
-  },
   -- Markdown preview
   {
     "iamcco/markdown-preview.nvim",
