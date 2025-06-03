@@ -245,7 +245,7 @@ return {
           },
         },
         -- LSP Server Settings
-        ---@type lspconfig.options
+        ---@type table<string, vim.lsp.ClientConfig>
         servers = {
           lua_ls = {
             settings = {
@@ -287,13 +287,6 @@ return {
         -- return true if you don't want this server to be setup with lspconfig
         ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
         setup = {
-          -- example to setup with typescript.nvim
-          -- tsserver = function(_, opts)
-          --   require("typescript").setup({ server = opts })
-          --   return true
-          -- end,
-          -- Specify * to use this function as a fallback for any server
-          -- ["*"] = function(server, opts) end,
           eslint = function()
             local formatter = Util.lsp.formatter({
               name = "eslint: lsp",
@@ -406,7 +399,6 @@ return {
       -- Apply the diagnostic configuration
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
-      local servers = opts.servers
       local has_blink, blink = pcall(require, "blink.cmp")
       local capabilities = vim.tbl_deep_extend(
         "force",
@@ -416,33 +408,33 @@ return {
         opts.capabilities or {}
       )
 
-      local function setup(server)
-        local server_opts = vim.tbl_deep_extend("force", {
-          capabilities = vim.deepcopy(capabilities),
-        }, servers[server] or {})
-        if server_opts.enabled == false then
-          return
-        end
-
-        if opts.setup[server] then
-          if opts.setup[server](server, server_opts) then
-            return
-          end
-        elseif opts.setup["*"] then
-          if opts.setup["*"](server, server_opts) then
-            return
-          end
-        end
-        require("lspconfig")[server].setup(server_opts)
-      end
-
-      -- Directly set up each server
-      for server, server_opts in pairs(servers) do
+      -- Configure each server using the new vim.lsp.config and vim.lsp.enable APIs
+      for server, server_opts in pairs(opts.servers) do
         if server_opts then
+          -- Prepare server options (handle true = {} case)
           server_opts = server_opts == true and {} or server_opts
+
+          -- Skip if explicitly disabled
           if server_opts.enabled ~= false then
-            setup(server)
+            -- Apply capabilities
+            local config_opts = vim.tbl_deep_extend("force", {
+              capabilities = vim.deepcopy(capabilities),
+            }, server_opts)
+
+            -- Handle special server setup cases via the setup table
+            if opts.setup[server] then
+              if opts.setup[server](server, config_opts) then
+                goto continue
+              end
+            elseif opts.setup["*"] and opts.setup["*"](server, config_opts) then
+              goto continue
+            end
+
+            -- Configure and enable the server with the new API
+            vim.lsp.config(server, config_opts)
+            vim.lsp.enable(server)
           end
+          ::continue::
         end
       end
     end,
