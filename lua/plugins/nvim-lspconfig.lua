@@ -2,6 +2,7 @@
 --- This file configures the `nvim-lspconfig` plugin for setting up LSP servers in Neovim.
 --- It sets up diagnostics, inlay hints, and server-specific configurations.
 
+-- Main plugin configuration
 return {
   -- lspconfig
   {
@@ -79,15 +80,174 @@ return {
           formatting_options = nil,
           timeout_ms = nil,
         },
+        -- LSP keymaps configuration
+        keymaps = {
+          -- LSP keymaps configuration
+          mapping = {
+            ["<leader>cl"] = { cmd = "<cmd>LspInfo<cr>", desc = "Lsp Info" },
+            ["gd"] = {
+              handler = function()
+                Snacks.picker.lsp_definitions()
+              end,
+              desc = "Goto Definition",
+              method = "definition",
+            },
+            ["gr"] = {
+              handler = function()
+                Snacks.picker.lsp_references()
+              end,
+              desc = "References",
+              nowait = true,
+            },
+            ["gI"] = {
+              handler = function()
+                Snacks.picker.lsp_implementations()
+              end,
+              desc = "Goto Implementation",
+              method = "implementation",
+            },
+            ["gy"] = {
+              handler = function()
+                Snacks.picker.lsp_type_definitions()
+              end,
+              desc = "Goto T[y]pe Definition",
+              method = "typeDefinition",
+            },
+            ["gD"] = {
+              handler = function()
+                vim.lsp.buf.declaration()
+              end,
+              desc = "Goto Declaration",
+              method = "declaration",
+            },
+            ["K"] = {
+              handler = function()
+                vim.lsp.buf.hover()
+              end,
+              desc = "Hover",
+              method = "hover",
+            },
+            ["gK"] = {
+              handler = function()
+                vim.lsp.buf.signature_help()
+              end,
+              desc = "Signature Help",
+              method = "signatureHelp",
+            },
+            ["<c-k>"] = {
+              handler = function()
+                vim.lsp.buf.signature_help()
+              end,
+              desc = "Signature Help",
+              method = "signatureHelp",
+              mode = "i",
+            },
+            ["<leader>ca"] = {
+              handler = function()
+                vim.lsp.buf.code_action()
+              end,
+              desc = "Code Action",
+              method = "codeAction",
+              mode = { "n", "v" },
+            },
+            ["<leader>cc"] = {
+              handler = function()
+                vim.lsp.codelens.run()
+              end,
+              desc = "Run Codelens",
+              method = "codeLens",
+              mode = { "n", "v" },
+            },
+            ["<leader>cC"] = {
+              handler = function()
+                vim.lsp.codelens.refresh()
+              end,
+              desc = "Refresh & Display Codelens",
+              method = "codeLens",
+              mode = { "n" },
+            },
+            ["<leader>cR"] = {
+              handler = function()
+                Snacks.rename.rename_file()
+              end,
+              desc = "Rename File",
+              method = { "workspace/didRenameFiles", "workspace/willRenameFiles" },
+              mode = { "n" },
+            },
+            ["<leader>cr"] = {
+              handler = function()
+                vim.lsp.buf.rename()
+              end,
+              desc = "Rename",
+              method = "rename",
+            },
+            ["<leader>cA"] = {
+              handler = function()
+                Util.lsp.action.source()
+              end,
+              desc = "Source Action",
+              method = "codeAction",
+            },
+            ["<leader>ss"] = {
+              handler = function()
+                Snacks.picker.lsp_symbols({ filter = Util.config.kind_filter })
+              end,
+              desc = "LSP Symbols",
+              method = "documentSymbol",
+            },
+            ["<leader>sS"] = {
+              handler = function()
+                Snacks.picker.lsp_workspace_symbols({ filter = Util.config.kind_filter })
+              end,
+              desc = "LSP Workspace Symbols",
+              method = "workspace/symbols",
+            },
+            ["]]"] = {
+              handler = function()
+                Snacks.words.jump(vim.v.count1)
+              end,
+              desc = "Next Reference",
+              method = "documentHighlight",
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
+            },
+            ["[["] = {
+              handler = function()
+                Snacks.words.jump(-vim.v.count1)
+              end,
+              desc = "Prev Reference",
+              method = "documentHighlight",
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
+            },
+            ["<a-n>"] = {
+              handler = function()
+                Snacks.words.jump(vim.v.count1, true)
+              end,
+              desc = "Next Reference",
+              method = "documentHighlight",
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
+            },
+            ["<a-p>"] = {
+              handler = function()
+                Snacks.words.jump(-vim.v.count1, true)
+              end,
+              desc = "Prev Reference",
+              method = "documentHighlight",
+              cond = function()
+                return Snacks.words.is_enabled()
+              end,
+            },
+          },
+        },
         -- LSP Server Settings
         ---@type lspconfig.options
         servers = {
           lua_ls = {
-            -- mason = false, -- set to false if you don't want this server to be installed with mason
-            -- Use this to add any additional keymaps
-            -- for specific lsp servers
-            -- ---@type LazyKeysSpec[]
-            -- keys = {},
             settings = {
               Lua = {
                 workspace = {
@@ -163,13 +323,54 @@ return {
       -- setup autoformat
       Util.format.register(Util.lsp.formatter())
 
-      -- setup keymaps
+      -- Setup LSP keymaps
+      local function has_capability(client, method)
+        if not client or not method then
+          return true -- Default to true if no client or method is specified
+        end
+
+        if type(method) == "table" then
+          for _, m in ipairs(method) do
+            if has_capability(client, m) then
+              return true
+            end
+          end
+          return false
+        end
+
+        method = method:find("/") and method or "textDocument/" .. method
+        return client.supports_method(method)
+      end
+
       Util.lsp.on_attach(function(client, buffer)
-        require("config.lsp-keymaps").on_attach(client, buffer)
+        -- Apply keymap for LSP clients
+        for lhs, mapping in pairs(opts.keymaps.mapping) do
+          local method = mapping.method
+          local mode = mapping.mode or "n"
+
+          -- Only set up keymap if client supports the required method (if specified)
+          if has_capability(client, method) then
+            -- Skip if conditional is provided and returns false
+            if mapping.cond == nil or (type(mapping.cond) == "function" and mapping.cond()) then
+              -- Set up the keymap
+              vim.keymap.set(mode, lhs, function()
+                if mapping.cmd then
+                  vim.cmd(mapping.cmd)
+                elseif mapping.handler then
+                  mapping.handler()
+                end
+              end, {
+                buffer = buffer,
+                silent = mapping.silent ~= false,
+                nowait = mapping.nowait,
+                desc = mapping.desc,
+              })
+            end
+          end
+        end
       end)
 
       Util.lsp.setup()
-      Util.lsp.on_dynamic_capability(require("config.lsp-keymaps").on_attach)
 
       -- Define diagnostic signs - Neovim 0.11 doesn't need conditional checks
       for severity, icon in pairs(opts.diagnostics.signs.text) do
