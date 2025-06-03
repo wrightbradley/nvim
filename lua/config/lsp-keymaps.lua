@@ -20,10 +20,14 @@ function M.get()
     -- stylua: ignore
     M._keys =  {
       { "<leader>cl", "<cmd>LspInfo<cr>", desc = "Lsp Info" },
-      { "gd", vim.lsp.buf.definition, desc = "Goto Definition", has = "definition" },
-      { "gr", vim.lsp.buf.references, desc = "References", nowait = true },
-      { "gI", vim.lsp.buf.implementation, desc = "Goto Implementation" },
-      { "gy", vim.lsp.buf.type_definition, desc = "Goto T[y]pe Definition" },
+      -- Using Snacks picker for definition
+      { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition", has = "definition" },
+      -- Using Snacks picker for references
+      { "gr", function() Snacks.picker.lsp_references() end, desc = "References", nowait = true },
+      -- Using Snacks picker for implementations
+      { "gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
+      -- Using Snacks picker for type definitions
+      { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
       { "gD", vim.lsp.buf.declaration, desc = "Goto Declaration" },
       { "K", function() return vim.lsp.buf.hover() end, desc = "Hover" },
       { "gK", function() return vim.lsp.buf.signature_help() end, desc = "Signature Help", has = "signatureHelp" },
@@ -34,6 +38,9 @@ function M.get()
       { "<leader>cR", function() Snacks.rename.rename_file() end, desc = "Rename File", mode ={"n"}, has = { "workspace/didRenameFiles", "workspace/willRenameFiles" } },
       { "<leader>cr", vim.lsp.buf.rename, desc = "Rename", has = "rename" },
       { "<leader>cA", Util.lsp.action.source, desc = "Source Action", has = "codeAction" },
+      -- Add LSP symbols search with Snacks
+      { "<leader>ss", function() Snacks.picker.lsp_symbols({ filter = Util.config.kind_filter }) end, desc = "LSP Symbols", has = "documentSymbol" },
+      { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols({ filter = Util.config.kind_filter }) end, desc = "LSP Workspace Symbols", has = "workspace/symbols" },
       { "]]", function() Snacks.words.jump(vim.v.count1) end, has = "documentHighlight",
         desc = "Next Reference", cond = function() return Snacks.words.is_enabled() end },
       { "[[", function() Snacks.words.jump(-vim.v.count1) end, has = "documentHighlight",
