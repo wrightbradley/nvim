@@ -25,7 +25,7 @@ require("config").init()
 require("lazy").setup({
   git = {
     throttle = {
-      enabled = true, -- not enabled by default
+      enabled = false, -- not enabled by default
       -- max 5 ops every 1 seconds
       rate = 5,
       duration = 1000, -- in ms
