@@ -11,6 +11,7 @@ return {
     lazy = false,
     dependencies = {
       "mason.nvim",
+      "b0o/SchemaStore.nvim",
     },
     -- Enable autocompletion for Go LSP servers
     init = function()
@@ -246,6 +247,7 @@ return {
         },
         -- LSP Server Settings
         ---@type table<string, vim.lsp.ClientConfig>
+        ---@diagnostic disable: missing-fields
         servers = {
           lua_ls = {
             settings = {
@@ -280,8 +282,37 @@ return {
               format = true,
             },
           },
-          -- Helm LSP configuration moved from helm.lua
+          -- Helm LSP configuration
           helm_ls = {},
+          -- YAML Language Server configuration
+          yamlls = {
+            settings = {
+              redhat = { telemetry = { enabled = false } },
+              yaml = {
+                keyOrdering = false,
+                format = {
+                  enable = true,
+                },
+                validate = true,
+                schemaStore = {
+                  -- Must disable built-in schemaStore support to use
+                  -- schemas from SchemaStore.nvim plugin
+                  enable = false,
+                  -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+                  url = "",
+                },
+              },
+            },
+            -- Have to add this for yamlls to understand that we support line folding
+            capabilities = {
+              textDocument = {
+                foldingRange = {
+                  dynamicRegistration = false,
+                  lineFoldingOnly = true,
+                },
+              },
+            },
+          },
         },
         -- you can do any additional lsp server setup here
         -- return true if you don't want this server to be setup with lspconfig
@@ -297,15 +328,42 @@ return {
             -- register the formatter
             Util.format.register(formatter)
           end,
-          -- YAMLls setup for Helm - moved from helm.lua
-          yamlls = function()
+          -- YAMLls setup for Helm and schemastore integration
+          yamlls = function(server, opts)
+            -- Ensure yaml-language-server is available
+            if vim.fn.executable("yaml-language-server") ~= 1 then
+              -- Try using Mason's binary
+              local mason_registry = require("mason-registry")
+              if mason_registry.is_installed("yaml-language-server") then
+                local package = mason_registry.get_package("yaml-language-server")
+                local install_path = package:get_install_path()
+                opts.cmd = { install_path .. "/node_modules/.bin/yaml-language-server", "--stdio" }
+              end
+            end
+
+            -- Load schemas from schemastore
+            local status_ok, schemastore = pcall(require, "schemastore")
+            if status_ok then
+              opts.settings.yaml.schemas =
+                vim.tbl_deep_extend("force", opts.settings.yaml.schemas or {}, schemastore.yaml.schemas())
+            end
+
+            -- Configure and enable the server with the new API
+            vim.lsp.config(server, opts)
+            vim.lsp.enable(server)
+
+            -- Handle Helm files
             Util.lsp.on_attach(function(client, buffer)
               if vim.bo[buffer].filetype == "helm" then
                 vim.schedule(function()
-                  vim.cmd("LspStop ++force yamlls")
+                  -- Stop YAML LS for Helm files to avoid conflicts
+                  client.stop()
                 end)
               end
             end, "yamlls")
+
+            -- Return true to indicate we've handled the configuration
+            return true
           end,
         },
       }
@@ -434,6 +492,7 @@ return {
             vim.lsp.config(server, config_opts)
             vim.lsp.enable(server)
           end
+
           ::continue::
         end
       end
