@@ -2,7 +2,6 @@ return {
   {
     "saghen/blink.cmp",
     version = "1.*",
-    -- build = "cargo build --release",
     opts_extend = {
       "sources.completion.enabled_providers",
       "sources.compat",
@@ -45,6 +44,7 @@ return {
             dot_repeat = false,
           },
           menu = {
+            -- border = "rounded",
             draw = {
               treesitter = { "lsp" },
             },
@@ -52,15 +52,17 @@ return {
           documentation = {
             auto_show = true,
             auto_show_delay_ms = 200,
+            -- window = { border = "rounded" },
           },
           ghost_text = {
             enabled = true,
           },
         },
-
         -- experimental signature help support
-        -- signature = { enabled = true },
-
+        signature = {
+          enabled = true,
+          -- window = { border = "rounded" }
+        },
         sources = {
           -- adding any nvim-cmp sources here will enable them
           -- with blink.compat
