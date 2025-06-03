@@ -22,10 +22,15 @@ return {
           virtual_text = {
             spacing = 4,
             source = "if_many",
-            -- prefix = "●",
-            -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
-            -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
-            prefix = "icons",
+            -- Use function that returns diagnostics icon based on severity
+            prefix = function(diagnostic)
+              local icons = Util.config.icons.diagnostics
+              for d, icon in pairs(icons) do
+                if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+                  return icon
+                end
+              end
+            end,
           },
           severity_sort = true,
           signs = {
@@ -37,18 +42,14 @@ return {
             },
           },
         },
-        -- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
-        -- Be aware that you also will need to properly configure your LSP server to
-        -- provide the inlay hints.
+        -- Inlay hints configuration for Neovim 0.11+
         inlay_hints = {
           enabled = true,
           exclude = { "vue" }, -- filetypes for which you don't want to enable inlay hints
         },
-        -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
-        -- Be aware that you also will need to properly configure your LSP server to
-        -- provide the code lenses.
+        -- Code lens configuration for Neovim 0.11+
         codelens = {
-          enabled = false,
+          enabled = true,
         },
         -- add any global capabilities here
         capabilities = {
@@ -146,55 +147,38 @@ return {
       Util.lsp.setup()
       Util.lsp.on_dynamic_capability(require("config.lsp-keymaps").on_attach)
 
-      -- diagnostics signs
-      if vim.fn.has("nvim-0.10.0") == 0 then
-        if type(opts.diagnostics.signs) ~= "boolean" then
-          for severity, icon in pairs(opts.diagnostics.signs.text) do
-            local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
-            name = "DiagnosticSign" .. name
-            vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+      -- Define diagnostic signs - Neovim 0.11 doesn't need conditional checks
+      for severity, icon in pairs(opts.diagnostics.signs.text) do
+        local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
+        name = "DiagnosticSign" .. name
+        vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
+      end
+
+      -- inlay hints - directly use the 0.11 APIs
+      if opts.inlay_hints.enabled then
+        Util.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+          if
+            vim.api.nvim_buf_is_valid(buffer)
+            and vim.bo[buffer].buftype == ""
+            and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+          then
+            vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
           end
-        end
+        end)
       end
 
-      if vim.fn.has("nvim-0.10") == 1 then
-        -- inlay hints
-        if opts.inlay_hints.enabled then
-          Util.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
-            if
-              vim.api.nvim_buf_is_valid(buffer)
-              and vim.bo[buffer].buftype == ""
-              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
-            then
-              vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
-            end
-          end)
-        end
-
-        -- code lens
-        if opts.codelens.enabled and vim.lsp.codelens then
-          Util.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
-            vim.lsp.codelens.refresh()
-            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-              buffer = buffer,
-              callback = vim.lsp.codelens.refresh,
-            })
-          end)
-        end
+      -- code lens - directly use the 0.11 APIs
+      if opts.codelens.enabled and vim.lsp.codelens then
+        Util.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
+          vim.lsp.codelens.refresh()
+          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+            buffer = buffer,
+            callback = vim.lsp.codelens.refresh,
+          })
+        end)
       end
 
-      if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
-        opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-          or function(diagnostic)
-            local icons = Util.config.icons.diagnostics
-            for d, icon in pairs(icons) do
-              if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-                return icon
-              end
-            end
-          end
-      end
-
+      -- Apply the diagnostic configuration
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
       local servers = opts.servers
@@ -227,17 +211,12 @@ return {
         require("lspconfig")[server].setup(server_opts)
       end
 
-      local ensure_installed = {} ---@type string[]
+      -- Directly set up each server
       for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
           if server_opts.enabled ~= false then
-            -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-            if server_opts.mason == false then
-              setup(server)
-            else
-              ensure_installed[#ensure_installed + 1] = server
-            end
+            setup(server)
           end
         end
       end
