@@ -46,10 +46,4 @@ return {
       debug = true,
     },
   },
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-      ensure_installed = { "http", "graphql" },
-    },
-  },
 }

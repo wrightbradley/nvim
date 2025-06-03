@@ -258,3 +258,10 @@ map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 --     return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
 --   end, { expr = true, desc = "Jump Previous" })
 -- end
+vim.keymap.set('n', '<leader>bi', function()
+  local buf = vim.api.nvim_get_current_buf()
+  print("")
+  print("Buffer number: " .. buf)
+  print("Filetype: " .. vim.bo[buf].filetype)
+  print("File path: " .. vim.api.nvim_buf_get_name(buf))
+end, { desc = "Show Buffer Info" })

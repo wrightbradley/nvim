@@ -26,7 +26,6 @@ return {
       { "<c-space>", desc = "Increment Selection" },
       { "<bs>", desc = "Decrement Selection", mode = "x" },
     },
-    opts_extend = { "ensure_installed" },
     ---@type TSConfig
     ---@diagnostic disable-next-line: missing-fields
     opts = {

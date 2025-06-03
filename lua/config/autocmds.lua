@@ -160,3 +160,18 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   end,
   desc = "Create directory if it doesn't exist when saving a file",
 })
+
+-- function _G.check_filetype(bufnr)
+--   print("Filetype for buffer " .. bufnr .. ": " .. vim.bo[bufnr].filetype)
+-- end
+--
+-- vim.api.nvim_create_autocmd("BufEnter", {
+--   callback = function(args)
+--     print("BufEnter: buffer", args.buf, "filetype", vim.bo[args.buf].filetype)
+--   end,
+-- })
+-- vim.api.nvim_create_autocmd("FileType", {
+--   callback = function(args)
+--     print("FileType: filetype", args.match, "buffer", args.buf)
+--   end,
+-- })

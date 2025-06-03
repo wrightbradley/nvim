@@ -34,12 +34,6 @@ vim.g.cmp = "blink.cmp"
 -- * a function with signature `function(buf) -> string|string[]`
 vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
 
--- Optionally setup the terminal to use
--- This sets `vim.o.shell` and does some additional configuration for:
--- * pwsh
--- * powershell
--- Util.terminal.setup("pwsh")
-
 -- Set LSP servers to be ignored when used with `util.root.detectors.lsp`
 -- for detecting the LSP root
 vim.g.root_lsp_ignore = { "copilot" }
