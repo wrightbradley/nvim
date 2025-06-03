@@ -108,6 +108,8 @@ return {
               format = true,
             },
           },
+          -- Helm LSP configuration moved from helm.lua
+          helm_ls = {},
         },
         -- you can do any additional lsp server setup here
         -- return true if you don't want this server to be setup with lspconfig
@@ -129,6 +131,16 @@ return {
             })
             -- register the formatter
             Util.format.register(formatter)
+          end,
+          -- YAMLls setup for Helm - moved from helm.lua
+          yamlls = function()
+            Util.lsp.on_attach(function(client, buffer)
+              if vim.bo[buffer].filetype == "helm" then
+                vim.schedule(function()
+                  vim.cmd("LspStop ++force yamlls")
+                end)
+              end
+            end, "yamlls")
           end,
         },
       }
