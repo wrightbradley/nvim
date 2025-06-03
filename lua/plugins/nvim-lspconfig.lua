@@ -6,10 +6,10 @@ return {
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
-    event = "LazyFile",
+    -- event = "LazyFile",
+    lazy = false,
     dependencies = {
       "mason.nvim",
-      { "mason-org/mason-lspconfig.nvim", config = function() end },
     },
     opts = function()
       ---@class PluginLspOpts
@@ -22,10 +22,10 @@ return {
           virtual_text = {
             spacing = 4,
             source = "if_many",
-            prefix = "●",
+            -- prefix = "●",
             -- this will set set the prefix to a function that returns the diagnostics icon based on the severity
             -- this only works on a recent 0.10.0 build. Will be set to "●" when not supported
-            -- prefix = "icons",
+            prefix = "icons",
           },
           severity_sort = true,
           signs = {
@@ -120,35 +120,12 @@ return {
           -- Specify * to use this function as a fallback for any server
           -- ["*"] = function(server, opts) end,
           eslint = function()
-            local function get_client(buf)
-              return Util.lsp.get_clients({ name = "eslint", bufnr = buf })[1]
-            end
-
             local formatter = Util.lsp.formatter({
               name = "eslint: lsp",
               primary = false,
               priority = 200,
               filter = "eslint",
             })
-
-            -- Use EslintFixAll on Neovim < 0.10.0
-            if not pcall(require, "vim.lsp._dynamic") then
-              formatter.name = "eslint: EslintFixAll"
-              formatter.sources = function(buf)
-                local client = get_client(buf)
-                return client and { "eslint" } or {}
-              end
-              formatter.format = function(buf)
-                local client = get_client(buf)
-                if client then
-                  local diag = vim.diagnostic.get(buf, { namespace = vim.lsp.diagnostic.get_namespace(client.id) })
-                  if #diag > 0 then
-                    vim.cmd("EslintFixAll")
-                  end
-                end
-              end
-            end
-
             -- register the formatter
             Util.format.register(formatter)
           end,
@@ -221,13 +198,11 @@ return {
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
       local servers = opts.servers
-      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       local has_blink, blink = pcall(require, "blink.cmp")
       local capabilities = vim.tbl_deep_extend(
         "force",
         {},
         vim.lsp.protocol.make_client_capabilities(),
-        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
         has_blink and blink.get_lsp_capabilities() or {},
         opts.capabilities or {}
       )
@@ -252,49 +227,19 @@ return {
         require("lspconfig")[server].setup(server_opts)
       end
 
-      -- get all the servers that are available through mason-lspconfig
-      local have_mason, mlsp = pcall(require, "mason-lspconfig")
-      local all_mslp_servers = {}
-      if have_mason then
-        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig").get_mappings().lspconfig_to_package)
-        -- all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-      end
-
       local ensure_installed = {} ---@type string[]
       for server, server_opts in pairs(servers) do
         if server_opts then
           server_opts = server_opts == true and {} or server_opts
           if server_opts.enabled ~= false then
             -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+            if server_opts.mason == false then
               setup(server)
             else
               ensure_installed[#ensure_installed + 1] = server
             end
           end
         end
-      end
-
-      if have_mason then
-        mlsp.setup({
-          ensure_installed = vim.tbl_deep_extend(
-            "force",
-            ensure_installed,
-            Util.opts("mason-lspconfig.nvim").ensure_installed or {}
-          ),
-          handlers = { setup },
-        })
-      end
-
-      if Util.lsp.is_enabled("denols") and Util.lsp.is_enabled("vtsls") then
-        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-        Util.lsp.disable("vtsls", is_deno)
-        Util.lsp.disable("denols", function(root_dir, config)
-          if not is_deno(root_dir) then
-            config.settings.deno.enable = false
-          end
-          return false
-        end)
       end
     end,
   },
