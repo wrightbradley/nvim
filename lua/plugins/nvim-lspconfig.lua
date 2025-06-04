@@ -15,6 +15,10 @@ return {
     dependencies = {
       "mason.nvim",
       "b0o/SchemaStore.nvim",
+      {
+        "imroc/kubeschema.nvim",
+        opts = {},
+      },
     },
     -- Enable autocompletion for Go LSP servers
     init = function()
@@ -308,6 +312,32 @@ return {
           helm_ls = {},
           -- YAML Language Server configuration
           yamlls = {
+            -- use on_init hook to defer the schema load as third-party plugins are not loaded
+            -- before_init = function(_, client)
+            --   client.settings.yaml = vim.tbl_deep_extend("force", client.settings.yaml, {
+            --     schemaStore = {
+            --       -- You must disable built-in schemaStore support if you want to use
+            --       -- this plugin and its advanced options like `ignore`.
+            --       enable = false,
+            --       -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+            --       url = "",
+            --     },
+            --     schemas = require("schemastore").yaml.schemas(),
+            --   })
+            -- end,
+            -- IMPORTANT!!! Set kubeschema's on_attch to yamlls so that kubeschema can dynamically and accurately match the
+            -- corresponding schema file based on the yaml file content (APIVersion and Kind).
+            on_attach = function(client, bufnr)
+              -- Ensure client has the workspace notification method before kubeschema tries to use it
+              if not client.workspace_did_change_configuration then
+                client.workspace_did_change_configuration = function(settings)
+                  client.notify("workspace/didChangeConfiguration", { settings = settings or nil })
+                end
+              end
+
+              -- Then attach kubeschema
+              require("kubeschema").on_attach(client, bufnr)
+            end,
             settings = {
               redhat = { telemetry = { enabled = false } },
               yaml = {
@@ -316,13 +346,6 @@ return {
                   enable = true,
                 },
                 validate = true,
-                schemaStore = {
-                  -- Must disable built-in schemaStore support to use
-                  -- schemas from SchemaStore.nvim plugin
-                  enable = false,
-                  -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-                  url = "",
-                },
               },
             },
             -- Have to add this for yamlls to understand that we support line folding
@@ -331,6 +354,14 @@ return {
                 foldingRange = {
                   dynamicRegistration = false,
                   lineFoldingOnly = true,
+                },
+              },
+              workspace = {
+                didChangeConfiguration = {
+                  -- kubeschema.nvim relies on workspace.didChangeConfiguration to implement dynamic schema loading of yamlls.
+                  -- It is recommended to enable dynamicRegistration (it's also OK not to enable it, but warning logs will be
+                  -- generated from LspLog, but it will not affect the function of kubeschema.nvim)
+                  dynamicRegistration = true,
                 },
               },
             },
@@ -470,6 +501,7 @@ return {
           },
           jsonls = {
             -- cmd = { "vscode-json-language-server", "--stdio" },
+            -- use on_init hook to defer the schema load as third-party plugins are not loaded
             filetypes = { "json", "jsonc" },
             init_options = {
               provideFormatter = true,
@@ -483,9 +515,8 @@ return {
               },
             },
             root_markers = { ".git" },
-            on_new_config = function(new_config)
-              new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-              vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
+            before_init = function(_, client)
+              client.settings.json.schemas = require("schemastore").json.schemas()
             end,
           },
           pyright = {
@@ -664,7 +695,7 @@ return {
         },
         -- you can do any additional lsp server setup here
         -- return true if you don't want this server to be setup with lspconfig
-        ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
+        ---@type table<string, fun(server:string, opts:table):boolean?>
         setup = {
           eslint = function()
             local formatter = Util.lsp.formatter({
@@ -675,43 +706,6 @@ return {
             })
             -- register the formatter
             Util.format.register(formatter)
-          end,
-          -- YAMLls setup for Helm and schemastore integration
-          yamlls = function(server, opts)
-            -- Ensure yaml-language-server is available
-            if vim.fn.executable("yaml-language-server") ~= 1 then
-              -- Try using Mason's binary
-              local mason_registry = require("mason-registry")
-              if mason_registry.is_installed("yaml-language-server") then
-                local package = mason_registry.get_package("yaml-language-server")
-                local install_path = package:get_install_path()
-                opts.cmd = { install_path .. "/node_modules/.bin/yaml-language-server", "--stdio" }
-              end
-            end
-
-            -- Load schemas from schemastore
-            local status_ok, schemastore = pcall(require, "schemastore")
-            if status_ok then
-              opts.settings.yaml.schemas =
-                vim.tbl_deep_extend("force", opts.settings.yaml.schemas or {}, schemastore.yaml.schemas())
-            end
-
-            -- Configure and enable the server with the new API
-            vim.lsp.config(server, opts)
-            vim.lsp.enable(server)
-
-            -- Handle Helm files
-            Util.lsp.on_attach(function(client, buffer)
-              if vim.bo[buffer].filetype == "helm" then
-                vim.schedule(function()
-                  -- Stop YAML LS for Helm files to avoid conflicts
-                  client.stop()
-                end)
-              end
-            end, "yamlls")
-
-            -- Return true to indicate we've handled the configuration
-            return true
           end,
         },
       }
