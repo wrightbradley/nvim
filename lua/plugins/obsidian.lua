@@ -1,6 +1,6 @@
 return {
   {
-    "epwalsh/obsidian.nvim",
+    "obsidian-nvim/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
     lazy = true,
     -- ft = "markdown",
@@ -33,12 +33,6 @@ return {
     dependencies = {
       -- Required.
       "nvim-lua/plenary.nvim",
-      "hrsh7th/nvim-cmp",
-      "nvim-telescope/telescope.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "epwalsh/pomo.nvim",
-
-      -- see below for full list of optional dependencies 👇
     },
     keys = {
       { "<leader>oo", ":cd /Users/bwright/Projects/writing/obsidian-vault/<cr>", desc = "Navigate to Obsidian Vault" },
@@ -61,7 +55,7 @@ return {
     opts = {
       workspaces = {
         {
-          name = ",
+          name = "Personal",
           path = "~/Projects/writing/obsidian-vault",
         },
         -- {
