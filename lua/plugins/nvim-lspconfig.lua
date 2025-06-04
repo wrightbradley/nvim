@@ -4,6 +4,10 @@
 
 -- Main plugin configuration
 return {
+  {
+    "dnlhc/glance.nvim",
+    cmd = "Glance",
+  },
   -- lspconfig
   {
     "neovim/nvim-lspconfig",
@@ -85,7 +89,7 @@ return {
         keymaps = {
           -- LSP keymaps configuration
           mapping = {
-            ["<leader>cl"] = { cmd = "<cmd>LspInfo<cr>", desc = "Lsp Info" },
+            ["<leader>cl"] = { cmd = "LspInfo", desc = "Lsp Info" },
             ["gd"] = {
               handler = function()
                 Snacks.picker.lsp_definitions()
@@ -93,11 +97,20 @@ return {
               desc = "Goto Definition",
               method = "definition",
             },
+            ["gE"] = {
+              cmd = "Glance definitions",
+              desc = "Glance D[e]finition",
+            },
             ["gr"] = {
               handler = function()
                 Snacks.picker.lsp_references()
               end,
               desc = "References",
+              nowait = true,
+            },
+            ["gR"] = {
+              cmd = "Glance references",
+              desc = "Glance References",
               nowait = true,
             },
             ["gI"] = {
@@ -107,12 +120,22 @@ return {
               desc = "Goto Implementation",
               method = "implementation",
             },
+            ["gM"] = {
+              cmd = "Glance implementations",
+              desc = "Glance I[m]plementation",
+              method = "implementation",
+            },
             ["gy"] = {
               handler = function()
                 Snacks.picker.lsp_type_definitions()
               end,
               desc = "Goto T[y]pe Definition",
               method = "typeDefinition",
+            },
+            ["gY"] = {
+              cmd = "Glance type_definitions",
+              desc = "Glances T[y]pe Definitions",
+              nowait = true,
             },
             ["gD"] = {
               handler = function()
