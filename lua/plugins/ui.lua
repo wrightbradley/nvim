@@ -224,6 +224,7 @@ return {
         hover = {
           silent = true,
         },
+        signature = { enabled = true },
       },
       routes = {
         {
