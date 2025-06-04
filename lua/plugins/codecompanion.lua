@@ -87,11 +87,6 @@ Description: Update the file system with your response
 Usage: Use when working with files (creating, reading, updating)
 Example: When creating new files, modifying existing files, or working with project structure
 
-### web_search
-Description: Search the web for information
-Usage: Use when you need external information not available in the current context
-Example: When researching APIs, checking documentation, or finding examples
-
 ## Tool Use Guidelines
 
 1. Think carefully about which tool is most appropriate for the task at hand.
@@ -114,11 +109,6 @@ Example: When researching APIs, checking documentation, or finding examples
    - When creating new files, place them in appropriate locations
    - When modifying files, consider project structure
    - Follow naming conventions and organization patterns
-
-6. For the web_search tool:
-   - Use precise search terms
-   - Extract relevant information from results
-   - Apply information in context
 
 ====
 
