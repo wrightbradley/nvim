@@ -2,7 +2,6 @@
 --- This file configures the `nvim-lspconfig` plugin for setting up LSP servers in Neovim.
 --- It sets up diagnostics, inlay hints, and server-specific configurations.
 
--- Main plugin configuration
 return {
   {
     "dnlhc/glance.nvim",
@@ -335,6 +334,332 @@ return {
                 },
               },
             },
+          },
+          ty = {
+            -- cmd = { "ty", "server" },
+            filetypes = { "python" },
+            root_markers = { "ty.toml", "pyproject.toml", ".git" },
+          },
+          jqls = {
+            -- cmd = { "jq-lsp" },
+            filetypes = { "jq" },
+            root_markers = { ".git" },
+          },
+          ruff = {
+            -- cmd = { "ruff", "server" },
+            filetypes = { "python" },
+            root_markers = { "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" },
+            settings = {},
+            on_attach = function(client, _)
+              -- Disable hover in favor of Pyright
+              client.server_capabilities.hoverProvider = false
+            end,
+          },
+          gopls = {
+            -- cmd = { "gopls" },
+            filetypes = { "go", "gomod", "gowork", "gotmpl" },
+            settings = {
+              gopls = {
+                gofumpt = true,
+                codelenses = {
+                  gc_details = false,
+                  generate = true,
+                  regenerate_cgo = true,
+                  run_govulncheck = true,
+                  test = true,
+                  tidy = true,
+                  upgrade_dependency = true,
+                  vendor = true,
+                },
+                hints = {
+                  assignVariableTypes = true,
+                  compositeLiteralFields = true,
+                  compositeLiteralTypes = true,
+                  constantValues = true,
+                  functionTypeParameters = true,
+                  parameterNames = true,
+                  rangeVariableTypes = true,
+                },
+                analyses = {
+                  fieldalignment = true,
+                  nilness = true,
+                  unusedparams = true,
+                  unusedwrite = true,
+                  useany = true,
+                },
+                usePlaceholders = true,
+                completeUnimported = true,
+                staticcheck = true,
+                directoryFilters = { "-.git", "-.vscode", "-.idea", "-.vscode-test", "-node_modules" },
+                semanticTokens = true,
+              },
+            },
+            on_attach = function(client, _)
+              -- workaround for gopls not supporting semanticTokensProvider
+              if not client.server_capabilities.semanticTokensProvider then
+                local semantic = client.config.capabilities.textDocument.semanticTokens
+                client.server_capabilities.semanticTokensProvider = {
+                  full = true,
+                  legend = {
+                    tokenTypes = semantic.tokenTypes,
+                    tokenModifiers = semantic.tokenModifiers,
+                  },
+                  range = true,
+                }
+              end
+            end,
+          },
+          taplo = {
+            -- cmd = { "taplo", "lsp", "stdio" },
+            filetypes = { "toml" },
+            root_markers = { ".taplo.toml", "taplo.toml", ".git" },
+          },
+          vtsls = {
+            -- cmd = { "vtsls", "--stdio" },
+            filetypes = {
+              "javascript",
+              "javascriptreact",
+              "javascript.jsx",
+              "typescript",
+              "typescriptreact",
+              "typescript.tsx",
+            },
+            root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
+            settings = {
+              complete_function_calls = true,
+              vtsls = {
+                enableMoveToFileCodeAction = true,
+                autoUseWorkspaceTsdk = true,
+                experimental = {
+                  maxInlayHintLength = 30,
+                  completion = {
+                    enableServerSideFuzzyMatch = true,
+                  },
+                },
+              },
+              typescript = {
+                updateImportsOnFileMove = { enabled = "always" },
+                suggest = {
+                  completeFunctionCalls = true,
+                },
+                inlayHints = {
+                  enumMemberValues = { enabled = true },
+                  functionLikeReturnTypes = { enabled = true },
+                  parameterNames = { enabled = "literals" },
+                  parameterTypes = { enabled = true },
+                  propertyDeclarationTypes = { enabled = true },
+                  variableTypes = { enabled = false },
+                },
+              },
+            },
+          },
+          bashls = {
+            -- cmd = { "bash-language-server", "start" },
+            settings = {
+              bashIde = {
+                globPattern = vim.env.GLOB_PATTERN or "*@(.sh|.inc|.bash|.command)",
+              },
+            },
+            filetypes = { "bash", "sh" },
+            root_markers = { ".git" },
+          },
+          dagger = {
+            -- cmd = { "cuelsp" },
+            filetypes = { "cue" },
+            root_markers = { "cue.mod", ".git" },
+          },
+          jsonls = {
+            -- cmd = { "vscode-json-language-server", "--stdio" },
+            filetypes = { "json", "jsonc" },
+            init_options = {
+              provideFormatter = true,
+            },
+            settings = {
+              json = {
+                format = {
+                  enable = true,
+                },
+                validate = { enable = true },
+              },
+            },
+            root_markers = { ".git" },
+            on_new_config = function(new_config)
+              new_config.settings.json.schemas = new_config.settings.json.schemas or {}
+              vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
+            end,
+          },
+          pyright = {
+            -- cmd = { "pyright-langserver", "--stdio" },
+            filetypes = { "python" },
+            root_markers = {
+              "pyproject.toml",
+              "setup.py",
+              "setup.cfg",
+              "requirements.txt",
+              "Pipfile",
+              "pyrightconfig.json",
+              ".git",
+            },
+            settings = {
+              python = {
+                analysis = {
+                  autoSearchPaths = true,
+                  useLibraryCodeForTypes = true,
+                  diagnosticMode = "openFilesOnly",
+                },
+              },
+            },
+          },
+          tofu_ls = {
+            -- cmd = { "tofu-ls", "serve" },
+            filetypes = { "opentofu", "opentofu-vars" },
+            root_markers = { ".terraform", ".git" },
+          },
+          vale_ls = {
+            -- cmd = { "vale-ls" },
+            filetypes = { "markdown", "text", "tex", "rst" },
+            root_markers = { ".vale.ini" },
+          },
+          dockerls = {
+            -- cmd = { "docker-langserver", "--stdio" },
+            filetypes = { "dockerfile" },
+            root_markers = { "Dockerfile" },
+          },
+          marksman = {
+            -- cmd = { "marksman", "server" },
+            filetypes = { "markdown", "markdown.mdx" },
+            root_markers = { ".marksman.toml", ".git" },
+          },
+          ansiblels = {
+            -- cmd = { "ansible-language-server", "--stdio" },
+            settings = {
+              ansible = {
+                python = {
+                  interpreterPath = "python",
+                },
+                ansible = {
+                  path = "ansible",
+                },
+                executionEnvironment = {
+                  enabled = false,
+                },
+                validation = {
+                  enabled = true,
+                  lint = {
+                    enabled = true,
+                    path = "ansible-lint",
+                  },
+                },
+              },
+            },
+            filetypes = { "yaml.ansible" },
+            root_markers = { "ansible.cfg", ".ansible-lint" },
+          },
+          tailwindcss = {
+            -- cmd = { "tailwindcss-language-server", "--stdio" },
+            filetypes = {
+              -- html
+              "aspnetcorerazor",
+              "astro",
+              "astro-markdown",
+              "blade",
+              "clojure",
+              "django-html",
+              "htmldjango",
+              "edge",
+              "eelixir", -- vim ft
+              "elixir",
+              "ejs",
+              "erb",
+              "eruby", -- vim ft
+              "gohtml",
+              "gohtmltmpl",
+              "haml",
+              "handlebars",
+              "hbs",
+              "html",
+              "htmlangular",
+              "html-eex",
+              "heex",
+              "jade",
+              "leaf",
+              "liquid",
+              "markdown",
+              "mdx",
+              "mustache",
+              "njk",
+              "nunjucks",
+              "php",
+              "razor",
+              "slim",
+              "twig",
+              -- css
+              "css",
+              "less",
+              "postcss",
+              "sass",
+              "scss",
+              "stylus",
+              "sugarss",
+              -- js
+              "javascript",
+              "javascriptreact",
+              "reason",
+              "rescript",
+              "typescript",
+              "typescriptreact",
+              -- mixed
+              "vue",
+              "svelte",
+              "templ",
+            },
+            settings = {
+              tailwindCSS = {
+                validate = true,
+                lint = {
+                  cssConflict = "warning",
+                  invalidApply = "error",
+                  invalidScreen = "error",
+                  invalidVariant = "error",
+                  invalidConfigPath = "error",
+                  invalidTailwindDirective = "error",
+                  recommendedVariantOrder = "warning",
+                },
+                classAttributes = {
+                  "class",
+                  "className",
+                  "class:list",
+                  "classList",
+                  "ngClass",
+                },
+                includeLanguages = {
+                  eelixir = "html-eex",
+                  elixir = "phoenix-heex",
+                  eruby = "erb",
+                  heex = "phoenix-heex",
+                  htmlangular = "html",
+                  templ = "html",
+                },
+              },
+            },
+            workspace_required = true,
+            root_markers = {
+              "tailwind.config.js",
+              "tailwind.config.cjs",
+              "tailwind.config.mjs",
+              "tailwind.config.ts",
+              "postcss.config.js",
+              "postcss.config.cjs",
+              "postcss.config.mjs",
+              "postcss.config.ts",
+              "package.json",
+              ".git",
+            },
+          },
+          terraformls = {
+            -- cmd = { "terraform-ls", "serve" },
+            filetypes = { "terraform", "terraform-vars" },
+            root_markers = { ".terraform", ".git" },
           },
         },
         -- you can do any additional lsp server setup here
