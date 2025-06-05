@@ -340,18 +340,17 @@ return {
       })
     end,
   },
-  {
-    "Davidyz/VectorCode",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    event = "VeryLazy",
-    cmd = "VectorCode", -- if you're lazy-loading VectorCode
-    opts = {},
-  },
+  -- {
+  --   "Davidyz/VectorCode",
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   event = "VeryLazy",
+  --   cmd = "VectorCode", -- if you're lazy-loading VectorCode
+  --   opts = {},
+  -- },
   {
     "olimorris/codecompanion.nvim",
     dependencies = {
       "ravitemer/codecompanion-history.nvim", -- Save and load conversation history
-      "Davidyz/VectorCode",
       {
         "ravitemer/mcphub.nvim", -- Manage MCP servers
         cmd = "MCPHub",
@@ -431,12 +430,12 @@ return {
             show_result_in_chat = true,
           },
         },
-        vectorcode = {
-          opts = {
-            add_tool = true,
-            add_slash_command = true,
-          },
-        },
+        -- vectorcode = {
+        --   opts = {
+        --     add_tool = true,
+        --     add_slash_command = true,
+        --   },
+        -- },
         contextfiles = {
           opts = {
             {
@@ -486,18 +485,18 @@ return {
                 provider = "snacks",
               },
             },
-            ["vcheck"] = {
-              callback = function()
-                return require("vectorcode").check()
-              end,
-              description = "Run VectorCode to retrieve the project context.",
-            },
-            ["vupdate"] = {
-              callback = function()
-                return require("vectorcode").update()
-              end,
-              description = "Run VectorCode to retrieve the project context.",
-            },
+            -- ["vcheck"] = {
+            --   callback = function()
+            --     return require("vectorcode").check()
+            --   end,
+            --   description = "Run VectorCode to retrieve the project context.",
+            -- },
+            -- ["vupdate"] = {
+            --   callback = function()
+            --     return require("vectorcode").update()
+            --   end,
+            --   description = "Run VectorCode to retrieve the project context.",
+            -- },
           },
           keymaps = {
             send = {
