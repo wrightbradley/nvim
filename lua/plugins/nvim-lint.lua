@@ -22,6 +22,7 @@ return {
         sh = { "shellcheck" },
         terraform = { "terraform_validate" },
         tf = { "terraform_validate" },
+        yaml = { "yamllint" },
       },
       -- Util extension to easily override linter options
       -- or add custom linters.
