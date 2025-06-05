@@ -340,13 +340,13 @@ return {
       })
     end,
   },
-  {
-    "Davidyz/VectorCode",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    event = "VeryLazy",
-    cmd = "VectorCode", -- if you're lazy-loading VectorCode
-    opts = {},
-  },
+  -- {
+  --   "Davidyz/VectorCode",
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   event = "VeryLazy",
+  --   cmd = "VectorCode", -- if you're lazy-loading VectorCode
+  --   opts = {},
+  -- },
   {
     "olimorris/codecompanion.nvim",
     dependencies = {
