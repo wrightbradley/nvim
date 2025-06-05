@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-06-05
+## What's Changed
+
+### <!-- 0 -->🚀 Features
+
+- Add yanky  by @wrightbradley - ([e913737](e9137370ee9880795fc60b367647da3e927dd5d0))
+- Configure yamllint  by @wrightbradley - ([2b75e30](2b75e3030b06b65ea916b274343a7a7ee508a1c1))
+
+### <!-- 8 -->🧹 Miscellaneous Tasks
+
+- Disable vectorcode  by @wrightbradley - ([1779cd4](1779cd490e9f458ef0d01cd6593bf4382edf3996))
+- Update dependencies  by @wrightbradley - ([b75d174](b75d17438b0cad2a12623ee44d4d45fbc4000418))
+
+
+**Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.2...0.1.3
+
 ## [0.1.2] - 2025-06-04
 ## What's Changed
 
