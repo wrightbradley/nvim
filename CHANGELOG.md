@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.3] - 2025-06-06
+## [0.1.3] - 2025-06-09
 ## What's Changed
 
 ### <!-- 0 -->🚀 Features
 
 - Add yanky  by @wrightbradley - ([e913737](e9137370ee9880795fc60b367647da3e927dd5d0))
 - Configure yamllint  by @wrightbradley - ([2b75e30](2b75e3030b06b65ea916b274343a7a7ee508a1c1))
+- Enhance codecompanion with custom prompts and structure  by @wrightbradley - ([66b1bbc](66b1bbc10f8e4f945839274518bf947f692af439))
 
 ### <!-- 8 -->🧹 Miscellaneous Tasks
 
