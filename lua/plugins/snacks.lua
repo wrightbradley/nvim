@@ -15,6 +15,7 @@ local excluded = {
   ".vite/",
   ".git/",
   ".gitlab/",
+  ".venv/",
   "build/",
   "target/",
   "dadbod_ui/tmp/",
