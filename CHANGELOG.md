@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-06-12
+## What's Changed
+
+### <!-- 0 -->🚀 Features
+
+- Enhance codecompanion with custom prompts and structure  by @wrightbradley - ([66b1bbc](66b1bbc10f8e4f945839274518bf947f692af439))
+- Configure snacks picker  by @wrightbradley - ([da47827](da47827953406ed9cf8aaf787e872875b6f5149c))
+
+### <!-- 12 -->💼 Other
+
+- Add renovate.json  by @renovate[bot] in [#14](https://github.com/wrightbradley/nvim/pull/14) - ([47bcfb7](47bcfb7e0039fe974c73803aa3ce5a209f8e7ba0))
+
+### <!-- 8 -->🧹 Miscellaneous Tasks
+
+- Update dependencies  by @wrightbradley - ([69388ae](69388aef3c1f008af84363f12502ee561b0cb79d))
+
+### <!-- 9 -->🤖 CI
+
+- Do not run release on push to main  by @wrightbradley - ([b8f3712](b8f3712f788b49dff5c7f13df7a4519a195811ee))
+- Update versions for renovate compat  by @wrightbradley - ([85cb144](85cb144f108058af975617928e0296af9241867b))
+
+
+## New Contributors
+* @renovate[bot] made their first contribution in [#14](https://github.com/wrightbradley/nvim/pull/14)
+
+**Full Changelog**: https://github.com/wrightbradley/nvim/compare/0.1.3...0.1.4
+
 ## [0.1.3] - 2025-06-06
 ## What's Changed
 
