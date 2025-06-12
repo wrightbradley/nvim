@@ -8,6 +8,103 @@ local function term_nav(dir)
   end
 end
 
+local excluded = {
+  "node_modules/",
+  "dist/",
+  ".next/",
+  ".vite/",
+  ".git/",
+  ".gitlab/",
+  "build/",
+  "target/",
+  "dadbod_ui/tmp/",
+  "dadbod_ui/dev/",
+
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+}
+
+local root_patterns = {
+  -- directories
+  "client",
+  "server",
+
+  -- version control systems
+  "_darcs",
+  ".hg",
+  ".bzr",
+  ".svn",
+  ".git",
+
+  -- build tools
+  "Makefile",
+  "CMakeLists.txt",
+  "build.gradle",
+  "build.gradle.kts",
+  "pom.xml",
+  "build.xml",
+
+  -- node.js and javascript
+  "package.json",
+  "package-lock.json",
+  "yarn.lock",
+  ".nvmrc",
+  "gulpfile.js",
+  "Gruntfile.js",
+
+  -- python
+  "requirements.txt",
+  "Pipfile",
+  "pyproject.toml",
+  "setup.py",
+  "tox.ini",
+
+  -- rust
+  "Cargo.toml",
+
+  -- go
+  "go.mod",
+
+  -- elixir
+  "mix.exs",
+
+  -- configuration files
+  ".prettierrc",
+  ".prettierrc.json",
+  ".prettierrc.yaml",
+  ".prettierrc.yml",
+  ".eslintrc",
+  ".eslintrc.json",
+  ".eslintrc.js",
+  ".eslintrc.cjs",
+  ".eslintignore",
+  ".stylelintrc",
+  ".stylelintrc.json",
+  ".stylelintrc.yaml",
+  ".stylelintrc.yml",
+  ".editorconfig",
+  ".gitignore",
+
+  -- html projects
+  "index.html",
+
+  -- miscellaneous
+  "README.md",
+  "README.rst",
+  "LICENSE",
+  "Vagrantfile",
+  "Procfile",
+  ".env",
+  ".env.example",
+  "config.yaml",
+  "config.yml",
+  ".terraform",
+  "terraform.tfstate",
+  ".kitchen.yml",
+  "Berksfile",
+}
+vim.g.root_spec = { root_patterns, "lsp", "cwd" }
 return {
   desc = "Fast and modern file picker with explorer",
   {
@@ -44,6 +141,42 @@ return {
           },
         },
         picker = {
+          sources = {
+            explorer = {
+              hidden = true,
+              ignored = true,
+              include = excluded,
+            },
+            files = {
+              hidden = true,
+              ignored = true,
+              exclude = excluded,
+            },
+            -- HACK: snacks.nvim/discussions/1581
+            -- check later if better solution appears to filter
+            -- out excluded directories & files inside excluded directories
+            recent = {
+              filter = {
+                filter = function(item)
+                  local function is_excluded(file)
+                    for _, pattern in ipairs(excluded) do
+                      if string.match(file, pattern) then
+                        return true
+                      end
+                    end
+                    return false
+                  end
+
+                  return not is_excluded(item.file)
+                end,
+              },
+            },
+          },
+          -- show hidden files like .env
+          hidden = true,
+          -- show files ignored by git like node_modules
+          ignored = true,
+          exclude = excluded,
           win = {
             input = {
               keys = {
