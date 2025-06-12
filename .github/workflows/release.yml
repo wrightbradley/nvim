@@ -12,13 +12,13 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ env.GITHUB_TOKEN }}
       - name: Generate changelog
         id: git-cliff-next-version
-        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # 4.4.2
+        uses: orhun/git-cliff-action@v4.4.2
         with:
           config: cliff.toml
           args: --verbose --bump
@@ -47,7 +47,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ env.GITHUB_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
           git checkout main
           git pull origin main
       - name: Generate a release note
-        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # 4.4.2
+        uses: orhun/git-cliff-action@v4.4.2
         id: git-cliff-release
         with:
           config: cliff.toml
@@ -66,7 +66,7 @@ jobs:
           OUTPUT: RELEASE.md
           GITHUB_REPO: ${{ github.repository }}
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # 2.3.2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           body_path: RELEASE.md
           tag_name: "${{ steps.git-cliff-release.outputs.version }}"
