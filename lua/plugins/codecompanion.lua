@@ -21,6 +21,7 @@ return {
   -- },
   {
     "olimorris/codecompanion.nvim",
+    branch = "main",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "ravitemer/codecompanion-history.nvim",
