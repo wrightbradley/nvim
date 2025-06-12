@@ -2,11 +2,6 @@
 name: Publish release
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    tags:
-      - '*.*.*'
 jobs:
   changelog:
     name: Generate changelog and tag
@@ -74,7 +69,7 @@ jobs:
         uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # 2.3.2
         with:
           body_path: RELEASE.md
-          tag_name: '${{ steps.git-cliff-release.outputs.version }}'
+          tag_name: "${{ steps.git-cliff-release.outputs.version }}"
       - name: Clean up md files
         run: |
           set +e
