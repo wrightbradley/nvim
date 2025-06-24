@@ -155,6 +155,10 @@ return {
                 provider = "snacks",
               },
             },
+            ["chat-edit-live"] = {
+              keymap_picker = "gE", -- Default: picker mode
+              keymap_quick = "gO", -- Default: quick removal
+            },
             -- ["vcheck"] = {
             --   callback = function()
             --     return require("vectorcode").check()
@@ -226,6 +230,7 @@ return {
     },
     config = function(_, options)
       require("codecompanion").setup(options)
+      require("ai.extensions.context-management").setup()
       Util.spinner.init()
     end,
     keys = {
