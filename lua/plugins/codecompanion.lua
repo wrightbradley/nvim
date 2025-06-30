@@ -137,6 +137,12 @@ return {
         chat = {
           adapter = "copilot",
           roles = { llm = "  Copilot Chat", user = "wrightbradley" },
+          tools = {
+            opts = {
+              auto_submit_errors = true, -- Send any errors to the LLM automatically?
+              auto_submit_success = true, -- Send any successful output to the LLM automatically?
+            },
+          },
           slash_commands = {
             ["buffer"] = {
               callback = "strategies.chat.slash_commands.buffer",
@@ -231,6 +237,7 @@ return {
     config = function(_, options)
       require("codecompanion").setup(options)
       require("ai.extensions.context-management").setup()
+      require("ai.extensions.rules").setup()
       Util.spinner.init()
     end,
     keys = {
