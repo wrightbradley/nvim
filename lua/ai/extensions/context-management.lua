@@ -341,10 +341,12 @@ local function setup(opts)
   register_strategy_keymaps(opts and opts.keymap_picker or "gE", opts and opts.keymap_quick or "gO")
 end
 
-return {
+local Extension = {
   setup = setup,
   exports = {
     remove_chat_messages = remove_chat_messages,
     remove_last_user = remove_last_user,
   },
 }
+
+return Extension

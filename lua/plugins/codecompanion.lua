@@ -92,45 +92,49 @@ return {
             dir_to_save = vim.fn.stdpath("data") .. "/codecompanion-history",
           },
         },
-        mcphub = {
-          callback = "mcphub.extensions.codecompanion",
-          opts = {
-            make_vars = true,
-            make_slash_commands = true,
-            show_result_in_chat = true,
-          },
-        },
+        -- mcphub = {
+        --   callback = "mcphub.extensions.codecompanion",
+        --   opts = {
+        --     make_vars = true,
+        --     make_slash_commands = true,
+        --     show_result_in_chat = true,
+        --   },
+        -- },
         -- vectorcode = {
         --   opts = {
         --     add_tool = true,
         --     add_slash_command = true,
         --   },
         -- },
-        contextfiles = {
+        ["chat-model-toggle"] = {
+          enabled = true,
           opts = {
-            {
-              slash_command = {
-                enabled = true,
-                name = "context",
-                ctx_opts = {
-                  context_dir = ".cursor/rules",
-                  root_markers = { ".git" },
-                  enable_local = true,
-                },
-                format_opts = {
-                  ---@param context_file ContextFiles.ContextFile the context file to prepend the prefix
-                  prefix = function(context_file)
-                    return string.format(
-                      "Please follow the rules located at `%s`:",
-                      vim.fn.fnamemodify(context_file.file, ":.")
-                    )
-                  end,
-                  suffix = "",
-                  separator = "",
-                },
-              },
-            },
+            keymap = "gM", -- or "<S-Tab>", or any key you want
+            copilot = "o4-mini", -- alternate model for copilot adapter
+            -- openai = "gpt-4o", -- alternate model for openai adapter
           },
+          callback = function()
+            return require("ai.extensions.chat-model-toggle")
+          end,
+        },
+        rules = {
+          enabled = true,
+          opts = {
+            -- your rules config here if needed
+          },
+          callback = function()
+            return require("ai.extensions.rules")
+          end,
+        },
+        context_management = {
+          enabled = true,
+          opts = {
+            -- keymap_picker = "gE",
+            -- keymap_quick = "gO",
+          },
+          callback = function()
+            return require("ai.extensions.context-management")
+          end,
         },
       },
       strategies = {
@@ -165,18 +169,6 @@ return {
               keymap_picker = "gE", -- Default: picker mode
               keymap_quick = "gO", -- Default: quick removal
             },
-            -- ["vcheck"] = {
-            --   callback = function()
-            --     return require("vectorcode").check()
-            --   end,
-            --   description = "Run VectorCode to retrieve the project context.",
-            -- },
-            -- ["vupdate"] = {
-            --   callback = function()
-            --     return require("vectorcode").update()
-            --   end,
-            --   description = "Run VectorCode to retrieve the project context.",
-            -- },
           },
           keymaps = {
             send = {
@@ -236,8 +228,6 @@ return {
     },
     config = function(_, options)
       require("codecompanion").setup(options)
-      require("ai.extensions.context-management").setup()
-      require("ai.extensions.rules").setup()
       Util.spinner.init()
     end,
     keys = {
