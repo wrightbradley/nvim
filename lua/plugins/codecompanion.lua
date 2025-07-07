@@ -362,7 +362,7 @@ return {
           enabled = true,
           opts = {
             keymap = "gM", -- or "<S-Tab>", or any key you want
-            copilot = "o4-mini", -- alternate model for copilot adapter
+            copilot = "gemini-2.5-pro", -- alternate model for copilot adapter
             -- openai = "gpt-4o", -- alternate model for openai adapter
           },
           callback = function()
