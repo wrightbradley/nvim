@@ -1,5 +1,6 @@
 --=============================================================================
 --  CodeCompanion-Rules  –  manage rule files via chat.refs only
+--=============================================================================
 
 ---@class CodeCompanionChatMessage
 ---@field content? string
@@ -54,11 +55,11 @@ local function log(msg)
   end
 end
 
--- local function notify(msg, level)
---   vim.schedule(function()
---     vim.notify("[CodeCompanionRules] " .. msg, level or vim.log.levels.INFO, { title = "CodeCompanionRules" })
---   end)
--- end
+local function notify(msg, level)
+  vim.schedule(function()
+    vim.notify("[CodeCompanionRules] " .. msg, level or vim.log.levels.INFO, { title = "CodeCompanionRules" })
+  end)
+end
 
 local function normalize(p)
   return vim.fn.fnamemodify(p, ":p"):gsub("/$", "")
