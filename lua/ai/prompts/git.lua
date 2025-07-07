@@ -9,7 +9,7 @@ return {
           role = "user",
           content = [[
 ### Goal
-Based on the following task description, generate a descriptive git branch name and then create it using the `@cmd_runner` tool.
+Based on the following task description, generate a descriptive git branch name and then create it using the `@{cmd_runner}` tool.
 ### Branch Naming Convention
 - Use the format `type/short-description`.
 - `type` should be one of: `feature`, `bugfix`, `chore`, `refactor`.
@@ -18,7 +18,7 @@ Based on the following task description, generate a descriptive git branch name 
 <task_description>
 ### Plan
 1.  Generate a branch name.
-2.  Use `@cmd_runner` to execute `git checkout -b <generated_branch_name>`.
+2.  Use `@{cmd_runner}` to execute `git checkout -b <generated_branch_name>`.
 ]],
         },
       },

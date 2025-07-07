@@ -19,13 +19,13 @@ As a user, I want to be able to... <feature_description>
 **Phase 1: Planning & Scaffolding**
 1.  Based on the user story and your knowledge of the project (from the workspace context), determine the necessary files to create or modify (e.g., components, services, test files).
 2.  Announce the file structure you will create.
-3.  Use the `@files` tool to create the directory structure and empty files.
+3.  Use the `@{files}` tool to create the directory structure and empty files.
 
 **Phase 2: Test-Driven Development Cycle**
-4.  Select the first component to implement and write a failing unit test for it using `@editor`.
-5.  Run the tests using `@cmd_runner #test` to confirm it fails.
-6.  Write the minimal implementation code with `@editor` to make the test pass.
-7.  Run the tests again with `@cmd_runner #test` to confirm it passes.
+4.  Select the first component to implement and write a failing unit test for it using `@{editor}`.
+5.  Run the tests using `@{cmd_runner} #test` to confirm it fails.
+6.  Write the minimal implementation code with `@{editor}` to make the test pass.
+7.  Run the tests again with `@{cmd_runner} #test` to confirm it passes.
 8.  Refactor the code and tests for clarity.
 9.  Repeat steps 4-8 for all necessary components and logic.
 
@@ -61,12 +61,12 @@ Let's begin. Please start with Phase 1, step 1.
 You are a dependency management bot. Your goal is to safely upgrade the package: `<package_name>`.
 
 ### Plan
-1.  Use `@cmd_runner` to run `npm install <package_name>@latest`.
-2.  After the installation, run the entire test suite using `@cmd_runner #test`.
+1.  Use `@{cmd_runner}` to run `npm install <package_name>@latest`.
+2.  After the installation, run the entire test suite using `@{cmd_runner} #test`.
 3.  **If tests pass:** Announce the successful upgrade.
 4.  **If tests fail:**
     a. Announce the failure and show the test error output.
-    b. Use `@cmd_runner` to run `git restore package.json package-lock.json` and `npm install` to revert the change.
+    b. Use `@{cmd_runner}` to run `git restore package.json package-lock.json` and `npm install` to revert the change.
     c. Announce that the project has been reverted to its original state.
 
 Begin with step 1.
@@ -92,9 +92,9 @@ How does <feature_or_concept> work in this project?
 
 ### Plan
 1.  Formulate a search strategy. What keywords, file names, or function names are relevant to the question?
-2.  Use `@cmd_runner` with `rg` (ripgrep) or `grep` to search for these keywords across the codebase.
+2.  Use `@{cmd_runner}` with `rg` (ripgrep) or `grep` to search for these keywords across the codebase.
 3.  Based on the search results, identify the key files involved.
-4.  Use the `@files` tool to read the contents of these key files.
+4.  Use the `@{files}` tool to read the contents of these key files.
 5.  Analyze the code from the files you've read.
 6.  Synthesize your findings into a clear, step-by-step explanation. Include relevant code snippets in your final answer.
 
@@ -121,11 +121,11 @@ I want to implement the following feature: <feature_description>
 You are an expert pair programmer specializing in Test-Driven Development.
 1.  **Understand**: Ask clarifying questions if the feature description is ambiguous.
 2.  **Test Plan**: Outline the test cases you will write (unit, integration, edge cases).
-3.  **Write Failing Test**: Use the `@editor` to write the first failing test.
-4.  **Run Tests**: Use the `@cmd_runner` with the `#test` command from the workspace to confirm it fails.
-5.  **Implement**: Use the `@editor` to write the minimal code required to make the test pass.
-6.  **Run Tests Again**: Use `@cmd_runner #test` to confirm it passes.
-7.  **Refactor**: Use `@editor` to refactor the implementation code and the test code for clarity and efficiency.
+3.  **Write Failing Test**: Use the `@{editor}` to write the first failing test.
+4.  **Run Tests**: Use the `@{cmd_runner}` with the `#test` command from the workspace to confirm it fails.
+5.  **Implement**: Use the `@{editor}` to write the minimal code required to make the test pass.
+6.  **Run Tests Again**: Use `@{cmd_runner} #test` to confirm it passes.
+7.  **Refactor**: Use `@{editor}` to refactor the implementation code and the test code for clarity and efficiency.
 8.  **Repeat**: Continue this cycle for all test cases in your plan.
 
 Let's begin. Please outline the test plan for my feature.
@@ -160,11 +160,11 @@ Let's begin. Please outline the test plan for my feature.
 The following code has compilation errors. Diagnose the root cause, propose a fix, and implement it.
 
 ### Plan
-1.  **Analyze**: Review the error messages and the provided code context from the `#buffer`.
+1.  **Analyze**: Review the error messages and the provided code context from the `#{buffer}`.
 2.  **Hypothesize**: Form a hypothesis about the root cause.
 3.  **Propose Fix**: Describe the changes you will make.
-4.  **Implement**: Use the `@editor` tool to apply the fix directly to the buffer.
-5.  **Verify**: Use the `@cmd_runner #build` command to verify that the fix has resolved the compilation errors.
+4.  **Implement**: Use the `@{editor}` tool to apply the fix directly to the buffer.
+5.  **Verify**: Use the `@{cmd_runner} #build` command to verify that the fix has resolved the compilation errors.
 
 ### Error Output
 <paste_error_output_here>
@@ -215,7 +215,7 @@ Your goal is to take a user's initial, high-level story and guide them through a
 
 3.  **Generate Acceptance Tests**: Once the story is well-defined, generate a list of acceptance tests to confirm its requirements. These tests should be based on the details from your conversation  and should include success paths, failure paths, and edge cases.
 
-4.  **Finalize and Document**: Propose a file path for the finalized story (e.g., `stories/new-feature.md`). Once the user approves, use the `@files` and `@editor` tools to write the final story title, description, and acceptance criteria into the new file.
+4.  **Finalize and Document**: Propose a file path for the finalized story (e.g., `stories/new-feature.md`). Once the user approves, use the `@{files}` and `@{editor}` tools to write the final story title, description, and acceptance criteria into the new file.
 ]],
           opts = { visible = false },
         },
@@ -289,12 +289,12 @@ Let's begin the refinement process. Please start with the INVEST analysis.
             -- Some clear instructions for the LLM to follow
             return [[### Instructions Steps to Follow
 
-@files You are instructed to strictly follow the guidelines below to execute the task:
+@{files} You are instructed to strictly follow the guidelines below to execute the task:
 
-1. @files Create the corresponding component folder and files in the components folder using appropriate naming.
-2. @files Create a test page in the `app/playground/ + component folder name` directory and import the component. And adjust the layout and styling to make it visually appealing and user-friendly. The page will adopt a clean and simple design.
+1. @{files} Create the corresponding component folder and files in the components folder using appropriate naming.
+2. @{files} Create a test page in the `app/playground/ + component folder name` directory and import the component. And adjust the layout and styling to make it visually appealing and user-friendly. The page will adopt a clean and simple design.
 3. Print the test URL for the user to view the result. The URL is typically `http://localhost:3000/playground/ + component name`.
-4. I'm using mac, so @cmd_runner just call `open + URL` to open the browser.
+4. I'm using mac, so @{cmd_runner} just call `open + URL` to open the browser.
 
 Don't help me install dependencies, just remind me that I need them, and I'll install them by myself.
 ]]
@@ -520,7 +520,7 @@ Before presenting the final PRD, verify:
           content = function()
             vim.g.codecompanion_auto_tool_mode = true
             return [[
-Create a product requirements document as `PRD.md` using the @files tool based on the following:
+Create a product requirements document as `PRD.md` using the @{files} tool based on the following:
 
 This project is ... ]]
           end,
