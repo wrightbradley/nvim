@@ -25,6 +25,7 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "ravitemer/codecompanion-history.nvim",
+      "kkharji/sqlite.lua",
       {
         "ravitemer/mcphub.nvim",
         cmd = "MCPHub",
@@ -80,6 +81,257 @@ return {
         end,
       },
       extensions = {
+        analytics = {
+          enabled = true,
+          callback = function()
+            return require("ai.extensions.analytics.analytics")
+          end,
+          opts = {
+            keymap = "gA",
+            retention_days = 365,
+            -- To show only specific queries in a specific order, uncomment below:
+            -- default_queries = {
+            --   "Copilot Premium Requests",
+            --   "Copilot Premium Requests by Model"
+            -- }
+            queries = {
+              ["Copilot Premium Requests"] = {
+                name = "Copilot Premium Requests",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT SUM(CASE json_extract(payload, '$.adapter.model')
+            WHEN 'gpt-4.5' THEN 50
+            WHEN 'gpt-4.1' THEN 0
+            WHEN 'gpt-4o' THEN 0
+            WHEN 'claude-sonnet-3.5' THEN 1
+            WHEN 'claude-sonnet-3.7' THEN 1
+            WHEN 'claude-sonnet-3.7-thinking' THEN 1.25
+            WHEN 'claude-sonnet-4' THEN 1
+            WHEN 'claude-opus' THEN 4
+            WHEN 'gemini-2.0-flash' THEN 0.25
+            WHEN 'gemini-2.5-pro' THEN 1
+            WHEN 'o1' THEN 10
+            WHEN 'o3' THEN 1
+            WHEN 'o3-mini' THEN 0.33
+            WHEN 'o4-mini' THEN 0.33
+            ELSE 0 END) AS premium_requests
+          FROM metrics
+          WHERE event_type = 'CodeCompanionRequestStarted'
+            AND json_extract(payload, '$.adapter.name') = 'copilot'
+            AND json_extract(payload, '$.adapter.model') IN (
+              'gpt-4.1','gpt-4o','gpt-4.5',
+              'claude-sonnet-3.5','claude-sonnet-3.7','claude-sonnet-3.7-thinking','claude-sonnet-4','claude-opus',
+              'gemini-2.0-flash','gemini-2.5-pro','o1','o3','o3-mini','o4-mini'
+            )
+            AND %s;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, dimension)
+                  return string.format("- **Premium Requests (%s):** %s", dimension.label, row.premium_requests or "0")
+                end,
+              },
+              ["Copilot Premium Requests by Model"] = {
+                name = "Copilot Premium Requests by Model",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT json_extract(payload, '$.adapter.model') AS model,
+                     SUM(CASE json_extract(payload, '$.adapter.model')
+                       WHEN 'gpt-4.5' THEN 50
+                       WHEN 'claude-sonnet-3.5' THEN 1
+                       WHEN 'claude-sonnet-3.7' THEN 1
+                       WHEN 'claude-sonnet-3.7-thinking' THEN 1.25
+                       WHEN 'claude-sonnet-4' THEN 1
+                       WHEN 'claude-opus' THEN 4
+                       WHEN 'gemini-2.0-flash' THEN 0.25
+                       WHEN 'gemini-2.5-pro' THEN 1
+                       WHEN 'o1' THEN 10
+                       WHEN 'o3' THEN 1
+                       WHEN 'o3-mini' THEN 0.33
+                       WHEN 'o4-mini' THEN 0.33
+                       ELSE 0 END) AS premium_requests
+           FROM metrics
+           WHERE event_type = 'CodeCompanionRequestStarted'
+             AND json_extract(payload, '$.adapter.name') = 'copilot'
+             AND json_extract(payload, '$.adapter.model') IN (
+               'gpt-4.5',
+               'claude-sonnet-3.5','claude-sonnet-3.7','claude-sonnet-3.7-thinking','claude-sonnet-4','claude-opus',
+               'gemini-2.0-flash','gemini-2.5-pro','o1','o3','o3-mini','o4-mini'
+             )
+             AND %s
+           GROUP BY model;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- `%s`: **%s** premium requests", row.model or "?", row.premium_requests or "0")
+                end,
+              },
+              ["Requests Per Day"] = {
+                name = "Requests Per Day",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT date(ts, 'unixepoch') AS day, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY day
+                      ORDER BY day DESC;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %s: **%s** requests", row.day or "?", row.count or "0")
+                end,
+              },
+              ["Requests By User"] = {
+                name = "Requests By User",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT json_extract(payload, '$.user') AS user, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY user
+                      ORDER BY count DESC;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %s: **%s** requests", row.user or "?", row.count or "0")
+                end,
+              },
+              ["Requests By Command"] = {
+                name = "Requests By Command",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT json_extract(payload, '$.command') AS command, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY command
+                      ORDER BY count DESC;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %s: **%s** requests", row.command or "?", row.count or "0")
+                end,
+              },
+              ["Average Response Time"] = {
+                name = "Average Response Time (seconds)",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT AVG(json_extract(payload, '$.response_time')) AS avg_response_time
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- Average: **%.2f** seconds", tonumber(row.avg_response_time) or 0)
+                end,
+              },
+              ["Requests By Adapter"] = {
+                name = "Requests By Adapter",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT json_extract(payload, '$.adapter.name') AS adapter, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY adapter
+                      ORDER BY count DESC;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %s: **%s** requests", row.adapter or "?", row.count or "0")
+                end,
+              },
+              ["Requests By Filetype"] = {
+                name = "Requests By Filetype",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT json_extract(payload, '$.filetype') AS filetype, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY filetype
+                      ORDER BY count DESC;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %s: **%s** requests", row.filetype or "?", row.count or "0")
+                end,
+              },
+              ["Requests By Hour"] = {
+                name = "Requests By Hour",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT hour, COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestStarted'
+                        AND %s
+                      GROUP BY hour
+                      ORDER BY hour;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- %02d:00: **%s** requests", tonumber(row.hour) or 0, row.count or "0")
+                end,
+              },
+              ["Failed Requests"] = {
+                name = "Failed Requests",
+                sql = function(dimension)
+                  return string.format(
+                    [[SELECT COUNT(*) AS count
+                      FROM metrics
+                      WHERE event_type = 'CodeCompanionRequestFailed'
+                        AND %s;]],
+                    dimension.filter
+                  )
+                end,
+                title_formatter = function(name, dimension)
+                  return string.format("### %s (%s)", name, dimension.label)
+                end,
+                row_formatter = function(row, _)
+                  return string.format("- **%s** failed requests", row.count or "0")
+                end,
+              },
+            },
+          },
+        },
         history = {
           enabled = true,
           opts = {
