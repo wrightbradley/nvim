@@ -43,8 +43,13 @@ M.config = {
 --──────────────────────────────────────────────────────────────────────────────
 --  Per-buffer caches
 --──────────────────────────────────────────────────────────────────────────────
+
 local enabled = {} ---@type table<number,boolean>
 local fingerprint = {} ---@type table<number,string>
+
+local function is_codecompanion_chat_buffer(bufnr)
+  return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].filetype == "codecompanion"
+end
 
 --──────────────────────────────────────────────────────────────────────────────
 --  Small helpers
@@ -102,6 +107,10 @@ end
 --──────────────────────────────────────────────────────────────────────────────
 local function collect_paths(bufnr)
   if not M.config.enabled then
+    return {}
+  end
+  if not is_codecompanion_chat_buffer(bufnr) then
+    log("collect_paths: bufnr " .. tostring(bufnr) .. " is not a codecompanion chat buffer")
     return {}
   end
   local chat = require("codecompanion.strategies.chat").buf_get_chat(bufnr)
@@ -359,6 +368,10 @@ local function process(bufnr)
   if not M.config.enabled then
     return
   end
+  if not is_codecompanion_chat_buffer(bufnr) then
+    log("process: bufnr " .. tostring(bufnr) .. " is not a codecompanion chat buffer")
+    return
+  end
   log("process -> begin")
   local paths = collect_paths(bufnr)
   local fp = hash(paths)
@@ -380,6 +393,10 @@ local function on_mode(bufnr)
   if not M.config.enabled then
     return
   end
+  if not is_codecompanion_chat_buffer(bufnr) then
+    log("on_mode: bufnr " .. tostring(bufnr) .. " is not a codecompanion chat buffer")
+    return
+  end
   enabled[bufnr] = true
   process(bufnr)
 end
@@ -387,10 +404,18 @@ local function on_submit(bufnr)
   if not M.config.enabled then
     return
   end
+  if not is_codecompanion_chat_buffer(bufnr) then
+    log("on_submit: bufnr " .. tostring(bufnr) .. " is not a codecompanion chat buffer")
+    return
+  end
   process(bufnr)
 end
 local function on_tool(bufnr)
   if not M.config.enabled then
+    return
+  end
+  if not is_codecompanion_chat_buffer(bufnr) then
+    log("on_tool: bufnr " .. tostring(bufnr) .. " is not a codecompanion chat buffer")
     return
   end
   process(bufnr)
