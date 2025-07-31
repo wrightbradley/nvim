@@ -1,7 +1,13 @@
+---@file AI System Prompts Configuration
+--- This module provides system prompts for AI assistants, specifically optimized
+--- for code generation, analysis, and programming assistance within Neovim.
+--- The prompts are based on GitHub Copilot and enhanced for development workflows.
+
+---@class AISystemPrompts
 local M = {}
 
--- This is custom system prompt for Copilot adapter
--- Base on https://github.com/olimorris/codecompanion.nvim/blob/e7d931ae027f9fdca2bd7c53aa0a8d3f8d620256/lua/codecompanion/config.lua#L639 and https://github.com/CopilotC-Nvim/CopilotChat.nvim/blob/d43fab67c328946fbf8e24fdcadfdb5410517e1f/lua/CopilotChat/prompts.lua#L5
+-- Custom system prompt for Copilot adapter optimized for coding tasks
+-- Based on GitHub Copilot and CopilotChat prompts with Neovim-specific enhancements
 local SYSTEM_PROMPT = string.format(
   [[You are an AI programming assistant named "GitHub Copilot".
 You are currently plugged in to the Neovim text editor on a user's machine.

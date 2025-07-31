@@ -1,30 +1,35 @@
----@file nvim-lspconfig plugin configuration
---- This file configures the `nvim-lspconfig` plugin for setting up LSP servers in Neovim.
---- It sets up diagnostics, inlay hints, and server-specific configurations.
+---@file LSP Configuration and Server Setup
+--- This file configures the Language Server Protocol (LSP) integration for Neovim.
+--- It sets up LSP servers, diagnostics, inlay hints, and server-specific configurations
+--- for multiple programming languages. It also provides keybindings and UI enhancements
+--- for LSP functionality.
 
 return {
   {
+    -- Glance plugin for better LSP navigation with preview windows
     "dnlhc/glance.nvim",
     cmd = "Glance",
   },
-  -- lspconfig
+
+  -- Main LSP configuration plugin
   {
     "neovim/nvim-lspconfig",
-    -- event = "LazyFile",
-    lazy = false,
+    lazy = false, -- Load immediately for LSP functionality
     dependencies = {
-      "mason.nvim",
-      "b0o/SchemaStore.nvim",
+      "mason.nvim",              -- LSP server installer
+      "b0o/SchemaStore.nvim",    -- JSON schema validation
       {
-        "imroc/kubeschema.nvim",
+        "imroc/kubeschema.nvim", -- Kubernetes schema support
         opts = {},
       },
     },
-    -- Enable autocompletion for Go LSP servers
+
+    -- Initialize Go LSP completion support
     init = function()
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(ev)
           local client = vim.lsp.get_client_by_id(ev.data.client_id)
+          -- Enable enhanced completion for Go language server
           if client and client.name == "gopls" and client:supports_method("textDocument/completion") then
             vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
           end

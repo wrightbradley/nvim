@@ -1,8 +1,15 @@
+---@file CodeCompanion AI Assistant Configuration
+--- This file configures the primary AI assistant (CodeCompanion) with GitHub Copilot
+--- integration, custom prompts, analytics, and extensive language model support.
+--- It provides comprehensive AI-powered coding assistance with usage tracking.
+
+-- Environment variable to control Copilot availability
 local copilot_enabled = os.getenv("NVIM_ENABLE_COPILOT")
 if copilot_enabled == "false" then
   return {}
 end
 
+-- Key mapping prefix for all CodeCompanion commands
 local mapping_key_prefix = "<leader>ap"
 
 return {

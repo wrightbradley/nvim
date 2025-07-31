@@ -1,13 +1,25 @@
+---@file AI Analytics Extension for CodeCompanion
+--- This module provides comprehensive analytics and usage tracking for AI interactions.
+--- It tracks requests, models used, premium usage, response times, and provides
+--- detailed reports with configurable time dimensions and queries.
+
+---@class AIAnalyticsExtension
 local AnalyticsExtension = {}
 
+--- Get the analytics data store module
+---@return table The analytics store module
 local function get_store()
   return require("ai.extensions.analytics.analytics_store")
 end
 
+--- Get the Snacks UI utility module
+---@return table The Snacks module for UI operations
 local function get_snacks()
   return require("snacks")
 end
 
+--- Time-based filter dimensions for analytics queries
+---@type table<string, {label: string, filter: string}>
 local DIMENSIONS = {
   daily = {
     label = "Daily",
@@ -23,7 +35,10 @@ local DIMENSIONS = {
   },
 }
 
+--- Default analytics queries available in the system
+---@type table<string, {name: string, sql: function, title_formatter: function, row_formatter: function}>
 local DEFAULT_QUERIES = {
+  -- Query to count events by type (requests, completions, errors, etc.)
   event_type = {
     name = "Event Counts by Type",
     sql = function(dimension)
@@ -39,6 +54,8 @@ local DEFAULT_QUERIES = {
       return string.format("- `%s`: **%d**", row.event_type or "?", row.count or 0)
     end,
   },
+
+  -- Query to analyze requests by adapter and model combination
   adapter_model = {
     name = "Requests Started by Adapter/Model",
     sql = function(dimension)

@@ -1,4 +1,9 @@
--- Terminal Mappings
+---@file Snacks.nvim Configuration - Quality of Life Plugins Collection
+--- This file configures Snacks.nvim, which provides a collection of quality-of-life
+--- plugins including file picker, terminal management, notifications, and various
+--- UI enhancements. It serves as a modern alternative to several individual plugins.
+
+-- Terminal navigation helper for floating vs non-floating terminals
 local function term_nav(dir)
   ---@param self snacks.terminal
   return function(self)
@@ -8,7 +13,9 @@ local function term_nav(dir)
   end
 end
 
+-- File and directory patterns to exclude from searches and file operations
 local excluded = {
+  -- Build and dependency directories
   "node_modules/",
   "dist/",
   ".next/",
@@ -18,27 +25,32 @@ local excluded = {
   ".venv/",
   "build/",
   "target/",
+
+  -- Database UI temporary files
   "dadbod_ui/tmp/",
   "dadbod_ui/dev/",
 
+  -- Lock files (usually large and not useful to edit)
   "package-lock.json",
   "pnpm-lock.yaml",
   "yarn.lock",
 }
 
+-- Patterns used to detect project root directories
+-- These are used by the file picker and project management features
 local root_patterns = {
-  -- directories
+  -- Project structure directories
   "client",
   "server",
 
-  -- version control systems
+  -- Version control systems
   "_darcs",
   ".hg",
   ".bzr",
   ".svn",
   ".git",
 
-  -- build tools
+  -- Build tool configuration files
   "Makefile",
   "CMakeLists.txt",
   "build.gradle",
@@ -46,7 +58,7 @@ local root_patterns = {
   "pom.xml",
   "build.xml",
 
-  -- node.js and javascript
+  -- Node.js and JavaScript project files
   "package.json",
   "package-lock.json",
   "yarn.lock",

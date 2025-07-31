@@ -1,28 +1,33 @@
---- CodeCompanion Model Toggle Extension
---- Provides quick model switching for chat buffers.
--- extensions = {
---   ["chat-model-toggle"] = {
---     opts = {
---       keymap = "<S-Tab>", -- or any other keymap you prefer
---       copilot = "o4-mini", -- adapter = alternate model
---       openai = "gpt-4o",
---     }
---   }
--- }
----@alias ModelName string
+---@file CodeCompanion Model Toggle Extension
+--- This extension provides quick model switching functionality for CodeCompanion chat buffers.
+--- It allows users to toggle between a primary model and an alternate model per adapter,
+--- which is useful for comparing responses or switching between cost/performance tiers.
+---
+--- Usage in CodeCompanion configuration:
+--- extensions = {
+---   ["chat-model-toggle"] = {
+---     opts = {
+---       keymap = "gM",              -- Keymap to toggle models
+---       copilot = "gemini-2.5-pro", -- Alternate model for copilot adapter
+---       openai = "gpt-4o",          -- Alternate model for openai adapter
+---     }
+---   }
+--- }
 
----@class ModelToggleOpts
----@field keymap string?   Keymap to toggle models (default: "gM")
+---@alias ModelName string The name of a language model
 
----@class ModelToggleConfig
----@field [adapter_name: string] ModelName  Alternate model per adapter
+---@class ModelToggleOpts Configuration options for the model toggle extension
+---@field keymap string? Keymap to toggle models (default: "gM")
 
----@type table<integer, ModelName>
+---@class ModelToggleConfig Adapter-specific alternate model configuration
+---@field [adapter_name: string] ModelName Alternate model per adapter (e.g., copilot = "o1")
+
+---@type table<integer, ModelName> Cache of original models per buffer
 local original_models = {}
 
----Get the active CodeCompanion chat instance for a buffer.
----@param bufnr integer
----@return CodeCompanion.Chat|nil
+--- Get the active CodeCompanion chat instance for a buffer
+---@param bufnr integer Buffer number to get chat instance for
+---@return CodeCompanion.Chat|nil The chat instance or nil if not found
 local function get_chat_for_buffer(bufnr)
   -- Directly require the chat strategy module
   local chat_strategy = require("codecompanion.strategies.chat")

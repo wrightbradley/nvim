@@ -1,3 +1,8 @@
+---@file OpenCode AI Integration Configuration
+--- This file configures the OpenCode plugin for additional AI coding assistance.
+--- It provides an alternative AI interface with context-aware prompts and
+--- specialized commands for code explanation, optimization, and testing.
+
 return {
   {
     "NickvanDyke/opencode.nvim",
@@ -6,7 +11,8 @@ return {
     },
     ---@type opencode.Config
     opts = {
-      -- Your configuration, if any
+      -- Configuration options for OpenCode
+      -- Add any specific OpenCode settings here if needed
     },
     -- stylua: ignore
     keys = {
@@ -21,7 +27,7 @@ return {
       { '<leader>Of', function() require('opencode').prompt('Fix these @diagnostics') end, desc = 'Fix errors', },
       { '<leader>Oo', function() require('opencode').prompt('Optimize @selection for performance and readability') end, desc = 'Optimize selection', mode = 'v', },
       { '<leader>Od', function() require('opencode').prompt('Add documentation comments for @selection') end, desc = 'Document selection', mode = 'v', },
-      { '<leader>Ot', function() require('opencode').prompt('Add tests for @selection') end, desc = 'Test selection', mode = 'v', },
+      { '<leader>OT', function() require('opencode').prompt('Add tests for @selection') end, desc = 'Test selection', mode = 'v', },
     },
   },
 }
