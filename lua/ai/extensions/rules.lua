@@ -274,6 +274,11 @@ local function sync_refs(bufnr, rule_files)
     return
   end
 
+  -- Ensure chat.refs is initialized
+  if not chat.refs then
+    chat.refs = {}
+  end
+
   ---------------------------------------------------------------------------
   -- 1. desired refs  ▸  keyed by project-relative path
   ---------------------------------------------------------------------------
