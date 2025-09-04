@@ -32,12 +32,16 @@ return {
   -- add ai_accept action
   {
     "zbirenbaum/copilot.lua",
-    opts = function()
-      Util.cmp.actions.ai_accept = function()
-        if require("copilot.suggestion").is_visible() then
-          Util.create_undo()
-          require("copilot.suggestion").accept()
-          return true
+    event = "VeryLazy", -- Load after other plugins
+    config = function()
+      -- Ensure ai_accept action is available
+      if not Util.cmp.actions.ai_accept then
+        Util.cmp.actions.ai_accept = function()
+          if require("copilot.suggestion").is_visible() then
+            Util.create_undo()
+            require("copilot.suggestion").accept()
+            return true
+          end
         end
       end
     end,
