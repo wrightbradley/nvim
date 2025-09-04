@@ -7,8 +7,8 @@
         "path": "./lua.json"
       },
       {
-        "language": "all",
-        "path": "./all.json"
+        "language": ["sh", "bash", "zsh"],
+        "path": "./bash.json"
       },
       {
         "language": "python",
