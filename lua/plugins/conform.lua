@@ -35,8 +35,8 @@ return {
   {
     "stevearc/conform.nvim",
     dependencies = { "mason.nvim" }, -- Mason for formatter installation
-    lazy = true,                     -- Load on demand
-    cmd = "ConformInfo",            -- Load when ConformInfo command is used
+    lazy = true, -- Load on demand
+    cmd = "ConformInfo", -- Load when ConformInfo command is used
     keys = {
       {
         "<leader>cF",
@@ -55,8 +55,8 @@ return {
       Util.on_very_lazy(function()
         Util.format.register({
           name = "conform.nvim",
-          priority = 100,        -- High priority formatter
-          primary = true,        -- This is the primary formatting system
+          priority = 100, -- High priority formatter
+          primary = true, -- This is the primary formatting system
           format = function(buf)
             require("conform").format({ bufnr = buf })
           end,
@@ -99,6 +99,7 @@ return {
           tf = { "terraform_fmt" },
           yaml = { "yamlfmt", "dprint" },
           go = { "goimports", "gofumpt" },
+          python = { "ruff_format", "ruff_fix" },
         },
         -- The options you set here will be merged with the builtin formatters.
         -- You can also define any custom formatters here.
@@ -118,6 +119,16 @@ return {
           injected = { options = { ignore_errors = true } },
           yamlfmt = {
             command = "yamlfmt",
+          },
+          ruff_format = {
+            command = "ruff",
+            args = { "format", "--stdin-filename", "$FILENAME", "-" },
+            stdin = true,
+          },
+          ruff_fix = {
+            command = "ruff",
+            args = { "check", "--fix", "--stdin-filename", "$FILENAME", "-" },
+            stdin = true,
           },
           ["markdown-toc"] = {
             condition = function(_, ctx)
