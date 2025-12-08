@@ -18,6 +18,7 @@ return {
         cue = { "cue" },
         dockerfile = { "hadolint" },
         fish = { "fish" },
+        go = { "golangcilint" },
         markdown = { "markdownlint-cli2" },
         sh = { "shellcheck" },
         terraform = { "terraform_validate" },

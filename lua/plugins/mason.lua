@@ -28,6 +28,7 @@ return {
         "eslint-lsp",
         "gofumpt",
         "goimports",
+        "golangci-lint",
         "gopls",
         "gomodifytags",
         "hadolint",
