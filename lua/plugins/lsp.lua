@@ -277,6 +277,20 @@ return {
                 return Snacks.words.is_enabled()
               end,
             },
+            ["gai"] = {
+              handler = function()
+                Snacks.picker.lsp_incoming_calls()
+              end,
+              desc = "C[a]lls Incoming",
+              method = "callHierarchy/incomingCalls",
+            },
+            ["gao"] = {
+              handler = function()
+                Snacks.picker.lsp_outgoing_calls()
+              end,
+              desc = "C[a]lls Outgoing",
+              method = "callHierarchy/outgoingCalls",
+            },
           },
         },
         -- LSP Server Settings (using native vim.lsp.config)
