@@ -130,46 +130,7 @@ function M.on_supports_method(method, fn)
   })
 end
 
---- Retrieves the configuration for a specific LSP server.
----@param server string The name of the LSP server.
----@return _.lspconfig.options The configuration options for the server.
-function M.get_config(server)
-  local configs = require("lspconfig.configs")
-  return rawget(configs, server)
-end
 
---- Retrieves the raw configuration for an LSP server.
----@param server string The name of the LSP server.
----@return {default_config:lspconfig.Config} The raw configuration for the server.
-function M.get_raw_config(server)
-  local ok, ret = pcall(require, "lspconfig.configs." .. server)
-  if ok then
-    return ret
-  end
-  return require("lspconfig.server_configurations." .. server)
-end
-
---- Checks if an LSP server is enabled.
----@param server string The name of the LSP server.
----@return boolean True if the server is enabled, false otherwise.
-function M.is_enabled(server)
-  local c = M.get_config(server)
-  return c and c.enabled ~= false
-end
-
---- Disables an LSP server based on a condition.
----@param server string The name of the LSP server.
----@param cond fun(root_dir, config): boolean The condition function.
-function M.disable(server, cond)
-  local util = require("lspconfig.util")
-  local def = M.get_config(server)
-  ---@diagnostic disable-next-line: undefined-field
-  def.document_config.on_new_config = util.add_hook_before(def.document_config.on_new_config, function(config, root_dir)
-    if cond(root_dir, config) then
-      config.enabled = false
-    end
-  end)
-end
 
 --- Configures a formatter for LSP.
 ---@param opts? LazyFormatter| {filter?: (string|lsp.Client.filter)}
@@ -210,7 +171,7 @@ function M.format(opts)
     "force",
     {},
     opts or {},
-    Util.opts("nvim-lspconfig").format or {},
+    Util.opts("native-lsp").format or {},
     Util.opts("conform.nvim").format or {}
   )
   local ok, conform = pcall(require, "conform")
