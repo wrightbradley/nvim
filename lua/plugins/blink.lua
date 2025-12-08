@@ -179,9 +179,15 @@ return {
           },
         },
 
-        -- Command line completion disabled (can cause conflicts)
+        -- Command line completion (LazyVim v15+ default)
         cmdline = {
-          enabled = false,
+          enabled = true,
+          keymap = { preset = "cmdline", ["<Right>"] = false, ["<Left>"] = false },
+          completion = {
+            list = { selection = { preselect = false } },
+            menu = { auto_show = function(ctx) return vim.fn.getcmdtype() == ":" end },
+            ghost_text = { enabled = true },
+          },
         },
 
         -- Keymaps optimized for workflow
