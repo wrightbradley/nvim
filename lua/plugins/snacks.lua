@@ -248,10 +248,10 @@ return {
       { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
 
       -- Explorer keys
-      { "<leader>fe", function() Snacks.explorer({ cwd = Util.root() }) end, desc = "Explorer Snacks (root dir)" },
-      { "<leader>fE", function() Snacks.explorer() end, desc = "Explorer Snacks (cwd)" },
-      { "<leader>e", "<leader>fe", desc = "Explorer Snacks (root dir)", remap = true },
-      { "<leader>E", "<leader>fE", desc = "Explorer Snacks (cwd)", remap = true },
+      { "<leader>fe", function() Snacks.explorer() end, desc = "Explorer Snacks (cwd)" },
+      { "<leader>fE", function() Snacks.explorer({ cwd = Util.root() }) end, desc = "Explorer Snacks (root dir)" },
+      { "<leader>e", "<leader>fe", desc = "Explorer Snacks (cwd)", remap = true },
+      { "<leader>E", "<leader>fE", desc = "Explorer Snacks (root dir)", remap = true },
 
       -- Basic finder keys
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
