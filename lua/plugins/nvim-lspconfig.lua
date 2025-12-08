@@ -58,6 +58,8 @@ return {
               end
             end,
           },
+          -- Neovim 0.11+ virtual_lines: show detailed diagnostics on current line only
+          virtual_lines = { only_current_line = true },
           severity_sort = true,
           signs = {
             text = {
