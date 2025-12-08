@@ -1,7 +1,8 @@
 return {
-  -- correctly setup lspconfig
+  -- TypeScript/JavaScript LSP configuration using native APIs
   {
     "neovim/nvim-lspconfig",
+    optional = true,
     opts = {
       -- make sure mason installs the server
       servers = {
