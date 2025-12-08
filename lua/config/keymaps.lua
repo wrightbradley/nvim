@@ -125,9 +125,9 @@ map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 --- Keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
---- Better indenting
-map("v", "<", "<gv")
-map("v", ">", ">gv")
+--- Better indenting (x = visual mode only, excludes select mode)
+map("x", "<", "<gv")
+map("x", ">", ">gv")
 
 --- Commenting
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
@@ -145,17 +145,19 @@ map("n", "<leader>xq", "<cmd>copen<cr>", { desc = "Quickfix List" })
 map("n", "[q", vim.cmd.cprev, { desc = "Previous Quickfix" })
 map("n", "]q", vim.cmd.cnext, { desc = "Next Quickfix" })
 
---- Formatting
-map({ "n", "v" }, "<leader>cf", function()
+--- Formatting (x = visual mode only, excludes select mode)
+map({ "n", "x" }, "<leader>cf", function()
   Util.format({ force = true })
 end, { desc = "Format" })
 
---- Diagnostic
+--- Diagnostic (Neovim 0.11+ API with vim.diagnostic.jump)
 local diagnostic_goto = function(next, severity)
-  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
-  severity = severity and vim.diagnostic.severity[severity] or nil
   return function()
-    go({ severity = severity })
+    vim.diagnostic.jump({
+      count = (next and 1 or -1) * vim.v.count1,
+      severity = severity and vim.diagnostic.severity[severity] or nil,
+      float = true,
+    })
   end
 end
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
@@ -265,3 +267,6 @@ vim.keymap.set('n', '<leader>bi', function()
   print("Filetype: " .. vim.bo[buf].filetype)
   print("File path: " .. vim.api.nvim_buf_get_name(buf))
 end, { desc = "Show Buffer Info" })
+
+--- Lua development - run selection or file
+map({"n", "x"}, "<localleader>r", function() Snacks.debug.run() end, { desc = "Run Lua" })
