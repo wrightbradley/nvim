@@ -11,8 +11,9 @@ vim.cmd("let g:netrw_liststyle = 3")
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
+-- Leader keys are set in init.lua to ensure they're loaded first
+-- vim.g.mapleader = " "
+-- vim.g.maplocalleader = " "
 
 -- Util auto format
 vim.g.autoformat = true
