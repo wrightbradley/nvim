@@ -48,10 +48,10 @@ return {
     },
   },
 
-  -- Configure nvim-lspconfig to install the server automatically via mason, but
+  -- Configure native-lsp to install the server automatically via mason, but
   -- defer actually starting it to our configuration of nvim-jtdls below.
   {
-    "neovim/nvim-lspconfig",
+    "native-lsp",
     opts = {
       -- make sure mason installs the server
       servers = {
@@ -78,9 +78,14 @@ return {
         table.insert(cmd, string.format("--jvm-arg=-javaagent:%s", lombok_jar))
       end
       return {
-        -- How to find the root dir for a given filename. The default comes from
-        -- lspconfig which provides a function specifically for java projects.
-        root_dir = Util.lsp.get_raw_config("jdtls").default_config.root_dir,
+        -- How to find the root dir for a given filename. Use native helper function.
+        root_dir = require("util.lsp_helpers").root_pattern({
+          -- from jdtls default config
+          ".git",
+          "pom.xml",
+          "build.gradle",
+          "build.gradle.kts",
+        }),
 
         -- How to find the project name for a given root dir.
         project_name = function(root_dir)
