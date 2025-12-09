@@ -199,6 +199,29 @@ M.action = setmetatable({}, {
   end,
 })
 
+--- Convert root marker patterns to root_dir function for native LSP config.
+--- Similar to lspconfig.util.root_pattern but uses vim.fs.root.
+---@param patterns string|string[] Root marker patterns (e.g., ".git", "package.json")
+---@return fun(fname: string): string|nil Function that returns root directory
+function M.root_pattern(patterns)
+  if type(patterns) == "string" then
+    patterns = { patterns }
+  end
+
+  return function(fname)
+    return vim.fs.root(fname, patterns)
+  end
+end
+
+--- Merge LSP capabilities with optional extensions.
+--- Useful for adding completion, snippet, or other capability extensions.
+---@param ... table Additional capability tables to merge
+---@return table Merged capabilities
+function M.merge_capabilities(...)
+  local base = vim.lsp.protocol.make_client_capabilities()
+  return vim.tbl_deep_extend("force", base, ...)
+end
+
 ---@class LspCommand: lsp.ExecuteCommandParams
 ---@field open? boolean
 ---@field handler? lsp.Handler

@@ -79,7 +79,7 @@ return {
       end
       return {
         -- How to find the root dir for a given filename. Use native helper function.
-        root_dir = require("util.lsp_helpers").root_pattern({
+        root_dir = Util.lsp.root_pattern({
           -- from jdtls default config
           ".git",
           "pom.xml",

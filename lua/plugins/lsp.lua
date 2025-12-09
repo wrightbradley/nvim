@@ -2,7 +2,7 @@
 --- This file configures Language Server Protocol (LSP) using native Neovim 0.11+ APIs.
 --- It replaces nvim-lspconfig with vim.lsp.config() and vim.lsp.enable() for all LSP servers.
 
-local helpers = require("util.lsp_helpers")
+-- Use Util.lsp for LSP helper functions (root_pattern, merge_capabilities)
 
 return {
   {
@@ -17,8 +17,8 @@ return {
     lazy = false, -- Load immediately for LSP functionality
     dir = vim.fn.stdpath("config"), -- Dummy plugin for lazy.nvim
     dependencies = {
-      "mason.nvim",              -- LSP server installer
-      "b0o/SchemaStore.nvim",    -- JSON schema validation
+      "mason.nvim", -- LSP server installer
+      "b0o/SchemaStore.nvim", -- JSON schema validation
       {
         "imroc/kubeschema.nvim", -- Kubernetes schema support
         opts = {},
@@ -377,15 +377,15 @@ return {
           },
           ty = {
             filetypes = { "python" },
-            root_dir = helpers.root_pattern({ "ty.toml", "pyproject.toml", ".git" }),
+            root_dir = Util.lsp.root_pattern({ "ty.toml", "pyproject.toml", ".git" }),
           },
           jqls = {
             filetypes = { "jq" },
-            root_dir = helpers.root_pattern(".git"),
+            root_dir = Util.lsp.root_pattern(".git"),
           },
           ruff = {
             filetypes = { "python" },
-            root_dir = helpers.root_pattern({ "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" }),
+            root_dir = Util.lsp.root_pattern({ "pyproject.toml", "ruff.toml", ".ruff.toml", ".git" }),
             settings = {},
             on_attach = function(client, _)
               -- Disable hover in favor of Pyright
@@ -447,7 +447,7 @@ return {
           },
           taplo = {
             filetypes = { "toml" },
-            root_dir = helpers.root_pattern({ ".taplo.toml", "taplo.toml", ".git" }),
+            root_dir = Util.lsp.root_pattern({ ".taplo.toml", "taplo.toml", ".git" }),
           },
           vtsls = {
             filetypes = {
@@ -458,7 +458,7 @@ return {
               "typescriptreact",
               "typescript.tsx",
             },
-            root_dir = helpers.root_pattern({ "tsconfig.json", "package.json", "jsconfig.json", ".git" }),
+            root_dir = Util.lsp.root_pattern({ "tsconfig.json", "package.json", "jsconfig.json", ".git" }),
             settings = {
               complete_function_calls = true,
               vtsls = {
@@ -494,11 +494,11 @@ return {
               },
             },
             filetypes = { "bash", "sh" },
-            root_dir = helpers.root_pattern(".git"),
+            root_dir = Util.lsp.root_pattern(".git"),
           },
           dagger = {
             filetypes = { "cue" },
-            root_dir = helpers.root_pattern({ "cue.mod", ".git" }),
+            root_dir = Util.lsp.root_pattern({ "cue.mod", ".git" }),
           },
           jsonls = {
             filetypes = { "json", "jsonc" },
@@ -513,14 +513,14 @@ return {
                 validate = { enable = true },
               },
             },
-            root_dir = helpers.root_pattern(".git"),
+            root_dir = Util.lsp.root_pattern(".git"),
             before_init = function(_, client)
               client.settings.json.schemas = require("schemastore").json.schemas()
             end,
           },
           pyright = {
             filetypes = { "python" },
-            root_dir = helpers.root_pattern({
+            root_dir = Util.lsp.root_pattern({
               "pyproject.toml",
               "setup.py",
               "setup.cfg",
@@ -541,19 +541,19 @@ return {
           },
           tofu_ls = {
             filetypes = { "opentofu", "opentofu-vars" },
-            root_dir = helpers.root_pattern({ ".terraform", ".git" }),
+            root_dir = Util.lsp.root_pattern({ ".terraform", ".git" }),
           },
           vale_ls = {
             filetypes = { "markdown", "text", "tex", "rst" },
-            root_dir = helpers.root_pattern(".vale.ini"),
+            root_dir = Util.lsp.root_pattern(".vale.ini"),
           },
           dockerls = {
             filetypes = { "dockerfile" },
-            root_dir = helpers.root_pattern("Dockerfile"),
+            root_dir = Util.lsp.root_pattern("Dockerfile"),
           },
           marksman = {
             filetypes = { "markdown", "markdown.mdx" },
-            root_dir = helpers.root_pattern({ ".marksman.toml", ".git" }),
+            root_dir = Util.lsp.root_pattern({ ".marksman.toml", ".git" }),
           },
           ansiblels = {
             settings = {
@@ -577,7 +577,7 @@ return {
               },
             },
             filetypes = { "yaml.ansible" },
-            root_dir = helpers.root_pattern({ "ansible.cfg", ".ansible-lint" }),
+            root_dir = Util.lsp.root_pattern({ "ansible.cfg", ".ansible-lint" }),
           },
           tailwindcss = {
             filetypes = {
@@ -668,7 +668,7 @@ return {
             -- Custom root_dir that returns nil if no workspace markers found
             -- This prevents tailwindcss from starting in non-tailwind projects
             root_dir = function(fname)
-              local root = helpers.root_pattern({
+              local root = Util.lsp.root_pattern({
                 "tailwind.config.js",
                 "tailwind.config.cjs",
                 "tailwind.config.mjs",
@@ -686,7 +686,7 @@ return {
           },
           terraformls = {
             filetypes = { "terraform", "terraform-vars" },
-            root_dir = helpers.root_pattern({ ".terraform", ".git" }),
+            root_dir = Util.lsp.root_pattern({ ".terraform", ".git" }),
           },
         },
         -- you can do any additional lsp server setup here
