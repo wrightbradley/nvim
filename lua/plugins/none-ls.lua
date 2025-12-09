@@ -18,8 +18,7 @@ return {
       table.insert(opts.sources, nls.builtins.code_actions.impl)
       table.insert(opts.sources, nls.builtins.code_actions.goimports)
       table.insert(opts.sources, nls.builtins.code_actions.gofumpt)
-      -- markdown
-      table.insert(opts.sources, nls.builtins.diagnostics.markdownlint_cli2)
+      -- markdown linting handled by nvim-lint
     end,
   },
 }
