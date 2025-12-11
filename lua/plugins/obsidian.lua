@@ -1,101 +1,264 @@
+local VAULTS = {
+  { name = "Notes", path = "~/Projects/writing/notes" },
+  { name = "Personal", path = "~/Projects/writing/obsidian-vault" },
+}
+
+local function select_vault_and_execute(action)
+  vim.ui.select(VAULTS, {
+    prompt = "Select Obsidian Vault:",
+    format_item = function(item)
+      return item.name
+    end,
+  }, function(choice)
+    if choice then
+      action(vim.fn.expand(choice.path))
+    end
+  end)
+end
+
 return {
   {
     "obsidian-nvim/obsidian.nvim",
-    version = "*", -- recommended, use latest release instead of latest commit
+    version = "*",
     lazy = true,
-    -- ft = "markdown",
-    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
     event = {
-      -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
-      -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
-      "BufReadPre "
-        .. vim.fn.expand("~")
-        .. "Projects/writing/obsidian-vault/**.md",
-      "BufNewFile " .. vim.fn.expand("~") .. "Projects/writing/obsidian-vault/**.md",
+      "BufReadPre " .. vim.fn.expand("~") .. "/Projects/writing/notes/**.md",
+      "BufNewFile " .. vim.fn.expand("~") .. "/Projects/writing/notes/**.md",
+      "BufReadPre " .. vim.fn.expand("~") .. "/Projects/writing/obsidian-vault/**.md",
+      "BufNewFile " .. vim.fn.expand("~") .. "/Projects/writing/obsidian-vault/**.md",
     },
     cmd = {
-      "ObsidianBacklinks",
-      "ObsidianFollowLink",
-      "ObsidianLink",
-      "ObsidianLinkNew",
-      "ObsidianNew",
-      "ObsidianOpen",
-      "ObsidianPasteImg",
-      "ObsidianQuickSwitch",
-      "ObsidianRename",
-      "ObsidianSearch",
-      "ObsidianTemplate",
-      "ObsidianToday",
-      "ObsidianTomorrow",
-      "ObsidianWorkspace",
-      "ObsidianYesterday",
+      "Obsidian",
     },
     dependencies = {
-      -- Required.
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { "<leader>oo", ":cd /Users/bwright/Projects/writing/obsidian-vault/<cr>", desc = "Navigate to Obsidian Vault" },
+      {
+        "<leader>oo",
+        function()
+          select_vault_and_execute(function(path)
+            vim.cmd("cd " .. path)
+          end)
+        end,
+        desc = "Navigate to Obsidian Vault",
+      },
       {
         "<leader>on",
-        ":ObsidianTemplate note<cr> :lua vim.cmd([[1,/^\\S/s/^\\n\\{1,}//]])<cr>",
-        desc = "Convert note to template and remove leading white space",
+        ":Obsidian template note<cr> :lua vim.cmd([[1,/^\\S/s/^\\n\\{1,}//]])<cr>",
+        desc = "Insert template and remove leading whitespace",
       },
       {
         "<leader>os",
-        ':Telescope find_files search_dirs={"/Users/alex/library/Mobile\\ Documents/iCloud~md~obsidian/Documents/ZazenCodes/notes"}<cr>',
+        function()
+          select_vault_and_execute(function(path)
+            Snacks.picker.files({ cwd = path })
+          end)
+        end,
         desc = "Find files in Obsidian Vault",
       },
       {
         "<leader>oz",
-        ':Telescope live_grep search_dirs={"/Users/alex/library/Mobile\\ Documents/iCloud~md~obsidian/Documents/ZazenCodes/notes"}<cr>',
-        desc = "Grep files in Obsidian Vault",
+        function()
+          select_vault_and_execute(function(path)
+            Snacks.picker.grep({ cwd = path })
+          end)
+        end,
+        desc = "Grep in Obsidian Vault",
+      },
+      -- Quick operations (without vault selection)
+      { "<leader>oq", "<cmd>Obsidian quick_switch<cr>", desc = "Quick switch notes" },
+      { "<leader>of", "<cmd>Obsidian search<cr>", desc = "Search notes" },
+      { "<leader>ob", "<cmd>Obsidian backlinks<cr>", desc = "Show backlinks" },
+      { "<leader>ol", "<cmd>Obsidian links<cr>", desc = "Show links" },
+      { "<leader>ot", "<cmd>Obsidian tags<cr>", desc = "Search tags" },
+      -- Note operations
+      { "<leader>oN", "<cmd>Obsidian new<cr>", desc = "New note" },
+      { "<leader>or", "<cmd>Obsidian rename<cr>", desc = "Rename note" },
+      -- Daily notes
+      { "<leader>od", "<cmd>Obsidian today<cr>", desc = "Today's note" },
+      { "<leader>oy", "<cmd>Obsidian yesterday<cr>", desc = "Yesterday's note" },
+      { "<leader>oD", "<cmd>Obsidian dailies<cr>", desc = "Browse daily notes" },
+      -- Template-based creation with proper organization
+      {
+        "<leader>op",
+        function()
+          vim.ui.select(
+            { "professional", "friend", "family", "acquaintance" },
+            { prompt = "Category: " },
+            function(category)
+              if category then
+                vim.ui.input({ prompt = "Person name: " }, function(name)
+                  if name then
+                    local vault_path = vim.fn.expand("~/Projects/writing/notes")
+                    local subdir = "people/" .. category .. "s"
+                    local dir_path = vault_path .. "/" .. subdir
+
+                    vim.fn.mkdir(dir_path, "p")
+
+                    local file_path = vault_path .. "/" .. subdir .. "/" .. name .. ".md"
+
+                    vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+                    vim.cmd("read " .. vault_path .. "/templates/person.md")
+                    vim.cmd("1delete")
+                    vim.cmd([[%s/^category: $/category: ]] .. category .. [[/e]])
+                    vim.cmd("write")
+                    vim.cmd("normal! gg")
+                  end
+                end)
+              end
+            end
+          )
+        end,
+        desc = "New person note",
+      },
+      {
+        "<leader>om",
+        function()
+          vim.ui.input({ prompt = "Meeting title: " }, function(title)
+            if title then
+              local vault_path = vim.fn.expand("~/Projects/writing/notes")
+              local subdir = "meetings"
+              local dir_path = vault_path .. "/" .. subdir
+
+              vim.fn.mkdir(dir_path, "p")
+
+              local date = os.date("%Y-%m-%d")
+              local file_path = vault_path .. "/" .. subdir .. "/" .. date .. " - " .. title .. ".md"
+
+              vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+              vim.cmd("read " .. vault_path .. "/templates/meeting.md")
+              vim.cmd("1delete")
+              vim.cmd("write")
+              vim.cmd("normal! gg")
+            end
+          end)
+        end,
+        desc = "New meeting note",
+      },
+      {
+        "<leader>oP",
+        function()
+          vim.ui.input({ prompt = "Project name: " }, function(name)
+            if name then
+              local vault_path = vim.fn.expand("~/Projects/writing/notes")
+              local subdir = "projects"
+              local dir_path = vault_path .. "/" .. subdir
+
+              vim.fn.mkdir(dir_path, "p")
+
+              local file_path = vault_path .. "/" .. subdir .. "/" .. name .. ".md"
+
+              vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+              vim.cmd("read " .. vault_path .. "/templates/project.md")
+              vim.cmd("1delete")
+              vim.cmd("write")
+              vim.cmd("normal! gg")
+            end
+          end)
+        end,
+        desc = "New project note",
+      },
+      {
+        "<leader>oO",
+        function()
+          vim.ui.input({ prompt = "Organization name: " }, function(name)
+            if name then
+              local vault_path = vim.fn.expand("~/Projects/writing/notes")
+              local subdir = "organizations"
+              local dir_path = vault_path .. "/" .. subdir
+
+              vim.fn.mkdir(dir_path, "p")
+
+              local file_path = vault_path .. "/" .. subdir .. "/" .. name .. ".md"
+
+              vim.cmd("edit " .. vim.fn.fnameescape(file_path))
+              vim.cmd("read " .. vault_path .. "/templates/organization.md")
+              vim.cmd("1delete")
+              vim.cmd("write")
+              vim.cmd("normal! gg")
+            end
+          end)
+        end,
+        desc = "New organization note",
       },
     },
     opts = {
-      workspaces = {
-        {
-          name = "Personal",
-          path = "~/Projects/writing/obsidian-vault",
-        },
-        -- {
-        --   name = "work",
-        --   path = "~/vaults/work",
-        -- },
+      workspaces = VAULTS,
+      legacy_commands = false,
+
+      frontmatter = {
+        enabled = false,
+        -- Optional: Enable sorting of frontmatter properties
+        -- sort = true,
       },
-      -- see below for full list of options 👇
-      disable_frontmatter = true,
+
       templates = {
-        subdir = "templates",
+        folder = "templates",
         date_format = "%Y-%m-%d",
         time_format = "%H:%M:%S",
-      },
-      -- key mappings, below are the defaults
-      mappings = {
-        -- overrides the 'gf' mapping to work on markdown/wiki links within your vault
-        ["gf"] = {
-          action = function()
-            return require("obsidian").util.gf_passthrough()
+        substitutions = {
+          yesterday = function()
+            return os.date("%Y-%m-%d", os.time() - 86400)
           end,
-          opts = { noremap = false, expr = true, buffer = true },
+          category = function()
+            return vim.fn.input("Category (professional/friend/family/acquaintance): ")
+          end,
         },
-        -- toggle check-boxes
-        -- ["<leader>ch"] = {
-        --   action = function()
-        --     return require("obsidian").util.toggle_checkbox()
-        --   end,
-        --   opts = { buffer = true },
-        -- },
       },
+
+      daily_notes = {
+        folder = "daily",
+        date_format = "%Y-%m-%d",
+        alias_format = "%B %-d, %Y",
+        default_tags = { "daily-notes" },
+        template = "daily",
+      },
+
       completion = {
-        nvim_cmp = true,
+        blink = true,
         min_chars = 2,
+        create_new = true,
       },
+
+      picker = {
+        name = "snacks",
+      },
+
+      search = {
+        max_links = nil,
+        sort_by = "modified",
+        sort_reversed = true,
+      },
+
+      attachments = {
+        img_folder = "attachments",
+        -- Customize image name generation
+        img_name_func = function()
+          return string.format("%s-", os.time())
+        end,
+        confirm_img_paste = true,
+      },
+
+      footer = {
+        enabled = true,
+      },
+
       ui = {
-        -- Disable some things below here because I set these manually for all Markdown files using treesitter
-        checkboxes = {},
-        bullets = {},
+        enable = false,
+        checkboxes = {
+          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
+          ["x"] = { char = "", hl_group = "ObsidianDone" },
+          [">"] = { char = "", hl_group = "ObsidianRightArrow" },
+          ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
+          ["!"] = { char = "", hl_group = "ObsidianImportant" },
+          order = { " ", "x", ">", "~", "!" },
+        },
       },
+
+      -- Optional: Customize link formatting
+      -- preferred_link_style = "wiki",
+      -- new_notes_location = "current_dir",
     },
     config = function(_, opts)
       require("obsidian").setup(opts)
