@@ -166,7 +166,7 @@ function M.setup(opts)
         local plugins = require("lazy").plugins()
         local loaded = {}
         local not_loaded = {}
-        
+
         for _, p in ipairs(plugins) do
           if p._.loaded then
             table.insert(loaded, p.name)
@@ -174,10 +174,10 @@ function M.setup(opts)
             table.insert(not_loaded, p.name)
           end
         end
-        
+
         table.sort(loaded)
         table.sort(not_loaded)
-        
+
         local lines = {
           "# Loaded Plugins (" .. #loaded .. "/" .. #plugins .. ")",
           "",
@@ -185,14 +185,14 @@ function M.setup(opts)
         for _, name in ipairs(loaded) do
           table.insert(lines, "✓ " .. name)
         end
-        
+
         table.insert(lines, "")
         table.insert(lines, "# Not Loaded (" .. #not_loaded .. ")")
         table.insert(lines, "")
         for _, name in ipairs(not_loaded) do
           table.insert(lines, "○ " .. name)
         end
-        
+
         -- Create a new buffer and display the results
         local buf = vim.api.nvim_create_buf(false, true)
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -200,7 +200,7 @@ function M.setup(opts)
         vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
         vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
         vim.api.nvim_buf_set_option(buf, "modifiable", false)
-        
+
         -- Open in a split
         vim.cmd("split")
         vim.api.nvim_win_set_buf(0, buf)
