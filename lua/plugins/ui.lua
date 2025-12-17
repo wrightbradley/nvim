@@ -56,9 +56,6 @@ return {
       })
     end,
   },
-  {
-    "Bekaboo/deadcolumn.nvim",
-  },
   -- statusline
   {
     "nvim-lualine/lualine.nvim",
