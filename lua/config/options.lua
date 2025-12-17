@@ -6,8 +6,6 @@
 -- For more options, you can see `:help option-list`
 -- Options are automatically loaded before lazy.nvim startup
 
-vim.cmd("let g:netrw_liststyle = 3")
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
