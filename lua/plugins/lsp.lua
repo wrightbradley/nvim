@@ -17,11 +17,11 @@ return {
     lazy = false, -- Load immediately for LSP functionality
     dir = vim.fn.stdpath("config"), -- Dummy plugin for lazy.nvim
     dependencies = {
-      "mason.nvim", -- LSP server installer
-      "b0o/SchemaStore.nvim", -- JSON schema validation
+      -- mason.nvim removed from dependencies - configured separately to avoid loading at startup
+      -- kubeschema.nvim removed from dependencies - configured separately to load only for YAML files
       {
-        "imroc/kubeschema.nvim", -- Kubernetes schema support
-        opts = {},
+        "b0o/SchemaStore.nvim", -- JSON and YAML schema validation
+        ft = { "json", "jsonc", "yaml", "yml" }, -- Load for JSON and YAML files
       },
     },
 
@@ -344,8 +344,15 @@ return {
                 end
               end
 
-              -- Then attach kubeschema
-              require("kubeschema").on_attach(client, bufnr)
+              -- Lazy-load kubeschema only when yamlls attaches (i.e., when a YAML file is opened)
+              local has_kubeschema, kubeschema = pcall(require, "kubeschema")
+              if has_kubeschema then
+                kubeschema.on_attach(client, bufnr)
+              end
+            end,
+            before_init = function(_, client)
+              -- Add SchemaStore schemas for common YAML files (GitHub Actions, docker-compose, etc.)
+              client.settings.yaml.schemas = require("schemastore").yaml.schemas()
             end,
             settings = {
               redhat = { telemetry = { enabled = false } },
@@ -355,6 +362,7 @@ return {
                   enable = false,
                 },
                 validate = true,
+                schemas = {}, -- Will be populated by SchemaStore in before_init
               },
             },
             -- Have to add this for yamlls to understand that we support line folding
