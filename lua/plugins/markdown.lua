@@ -43,10 +43,6 @@ return {
     },
     ft = { "markdown", "norg", "rmd", "org" },
     config = function(_, opts)
-      -- -- Check if the current buffer's filetype is 'chatgpt-input'
-      -- if vim.bo.filetype == "chatgpt-input" then
-      --   return -- Exit the function if the filetype is 'chatgpt-input'
-      -- end
       require("render-markdown").setup(opts)
       Snacks.toggle({
         name = "Render Markdown",

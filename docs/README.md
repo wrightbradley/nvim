@@ -1,6 +1,7 @@
 # Neovim Configuration Documentation
 
-This directory contains comprehensive documentation for this Neovim configuration.
+This directory contains comprehensive documentation for this Neovim
+configuration.
 
 ## Quick Start
 
@@ -11,18 +12,26 @@ This directory contains comprehensive documentation for this Neovim configuratio
 ## Core Documentation
 
 ### Essential Guides
+
 - **[Installation Guide](installation.md)** - Complete setup instructions
-- **[Keybindings Reference](keybindings.md)** - All keyboard shortcuts and commands
-- **[AI Setup Guide](ai-setup.md)** - Configure ChatGPT, CodeCompanion, and OpenCode
+- **[Keybindings Reference](keybindings.md)** - All keyboard shortcuts and
+  commands
+- **[AI Setup Guide](ai-setup.md)** - Configure CodeCompanion and OpenCode
 
 ### Usage and Development
-- **[Development Workflow](development-workflow.md)** - How to use this config for development
-- **[Language Support](language-support.md)** - Language-specific features and setup
-- **[Customization Guide](customization.md)** - How to customize and extend the configuration
+
+- **[Development Workflow](development-workflow.md)** - How to use this config
+  for development
+- **[Language Support](language-support.md)** - Language-specific features and
+  setup
+- **[Customization Guide](customization.md)** - How to customize and extend the
+  configuration
 
 ### Reference and Troubleshooting
+
 - **[Troubleshooting Guide](troubleshooting.md)** - Common issues and solutions
-- **[Plugin Catalog](nvim-plugin-catalog.md)** - Complete list of included plugins
+- **[Plugin Catalog](nvim-plugin-catalog.md)** - Complete list of included
+  plugins
 - **[Startup Flow](startup-flow.md)** - Technical startup process documentation
 
 ## Configuration Overview
@@ -39,12 +48,13 @@ This is a LazyVim-based Neovim configuration with extensive customizations:
 ## Key Features
 
 ### AI-Powered Development
+
 - **CodeCompanion**: Primary AI assistant with GitHub Copilot integration
-- **ChatGPT**: Direct OpenAI integration with custom prompts
 - **OpenCode**: Additional AI coding assistance
 - **Analytics**: Track AI usage and optimize workflows
 
 ### Development Tools
+
 - **LSP**: Full language server support with Mason.nvim
 - **Debugging**: Complete DAP setup for multiple languages
 - **Testing**: Integrated testing frameworks
@@ -52,6 +62,7 @@ This is a LazyVim-based Neovim configuration with extensive customizations:
 - **Linting**: Comprehensive linting with nvim-lint
 
 ### Project Management
+
 - **File Management**: Advanced fuzzy finding with Snacks.nvim
 - **Git Integration**: Comprehensive git workflow tools
 - **Session Management**: Persistent sessions and workspaces
@@ -73,4 +84,5 @@ This is a LazyVim-based Neovim configuration with extensive customizations:
 
 ---
 
-> **Note**: This configuration is optimized for professional software development with an emphasis on AI assistance and code quality.
+> **Note**: This configuration is optimized for professional software
+> development with an emphasis on AI assistance and code quality.
