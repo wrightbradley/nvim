@@ -19,7 +19,7 @@ return {
         dockerfile = { "hadolint" },
         fish = { "fish" },
         go = { "golangcilint" },
-        markdown = { "markdownlint-cli2" },
+        -- markdown linting handled by conform.nvim (markdownlint-cli2)
         sh = { "shellcheck" },
         terraform = { "terraform_validate" },
         tf = { "terraform_validate" },
