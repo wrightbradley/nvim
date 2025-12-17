@@ -34,13 +34,13 @@ repos:
           - --exclude-secrets
           - "[0-9a-f]{40}" # commit shas
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.28.0
+    rev: v8.30.0
     hooks:
       - id: gitleaks
   ##############################################################################
   ################################ YAML Checks #################################
   - repo: https://github.com/google/yamlfmt
-    rev: v0.17.2
+    rev: v0.20.0
     hooks:
       - id: yamlfmt
   - repo: https://github.com/adrienverge/yamllint
