@@ -24,6 +24,12 @@
 
 local map = vim.keymap.set
 
+--- Simple escape sequences
+map("i", "jk", "<Esc>", { noremap = true, desc = "Exit insert mode" })
+map("i", "jj", "<Esc>", { noremap = true, desc = "Exit insert mode" })
+map("c", "jk", "<C-c>", { noremap = true, desc = "Exit command mode" })
+map("v", "jk", "<Esc>", { noremap = true, desc = "Exit visual mode" })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.

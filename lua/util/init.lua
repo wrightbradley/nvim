@@ -14,7 +14,6 @@ local LazyUtil = require("lazy.core.util")
 ---@field terminal util.terminal
 ---@field format util.format
 ---@field lualine util.lualine
----@field escape util.escape
 ---@field mini util.mini
 ---@field spinner util.spinner
 ---@field cmp util.cmp

@@ -156,34 +156,6 @@ function M.setup(opts)
 
       Util.format.setup()
       Util.root.setup()
-      Util.escape.setup({
-        timeout = vim.o.timeoutlen,
-        default_mappings = false,
-        mappings = {
-          i = {
-            j = {
-              k = "<Esc>",
-              j = "<Esc>",
-            },
-          },
-          c = {
-            j = {
-              k = "<Esc>",
-              j = "<Esc>",
-            },
-          },
-          v = {
-            j = {
-              k = "<Esc>",
-            },
-          },
-          s = {
-            j = {
-              k = "<Esc>",
-            },
-          },
-        },
-      })
 
       vim.api.nvim_create_user_command("LazyHealth", function()
         vim.cmd([[Lazy! load all]])
