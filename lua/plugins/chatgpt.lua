@@ -6,7 +6,7 @@
 return {
   {
     "jackMort/ChatGPT.nvim",
-    event = "VeryLazy",
+    lazy = true, -- Load only when keys are pressed
     config = function()
       local home = vim.fn.expand("$HOME")
       require("chatgpt").setup({
