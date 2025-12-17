@@ -79,11 +79,11 @@ return {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
-  -- yaml schema support
+  -- Kubernetes YAML schema support - lazy loads only for YAML files
   {
-    "b0o/SchemaStore.nvim",
-    lazy = true,
-    version = false, -- last release is way too old
+    "imroc/kubeschema.nvim",
+    ft = { "yaml", "yml" },
+    opts = {},
   },
   {
     "hat0uma/csvview.nvim",
