@@ -1,6 +1,7 @@
 # Development Workflow Guide
 
-This guide covers how to effectively use this Neovim configuration for software development, including debugging, testing, formatting, and project management.
+This guide covers how to effectively use this Neovim configuration for software
+development, including debugging, testing, formatting, and project management.
 
 ## Project Management
 
@@ -13,6 +14,7 @@ The configuration automatically detects project roots using multiple strategies:
 - Configuration files (`.prettierrc`, `.eslintrc`, etc.)
 
 #### Changing Project Root
+
 ```
 <leader>fp  -- Project picker
 ```
@@ -20,6 +22,7 @@ The configuration automatically detects project roots using multiple strategies:
 ### 2. File and Buffer Management
 
 #### Finding Files
+
 ```
 <leader><space>  -- Find files in project
 <leader>ff       -- Find files (root dir)
@@ -30,6 +33,7 @@ The configuration automatically detects project roots using multiple strategies:
 ```
 
 #### Buffer Management
+
 ```
 <leader>,        -- Switch buffers
 <leader>bp       -- Pin buffer
@@ -38,6 +42,7 @@ The configuration automatically detects project roots using multiple strategies:
 ```
 
 #### File Explorer
+
 ```
 <leader>e        -- Toggle file explorer (root)
 <leader>E        -- Toggle file explorer (cwd)
@@ -48,6 +53,7 @@ The configuration automatically detects project roots using multiple strategies:
 ### 1. Language Server Protocol (LSP)
 
 #### LSP Actions
+
 ```
 gd               -- Go to definition
 gD               -- Go to declaration
@@ -60,6 +66,7 @@ K                -- Show hover documentation
 ```
 
 #### Diagnostics
+
 ```
 ]d               -- Next diagnostic
 [d               -- Previous diagnostic
@@ -70,12 +77,14 @@ K                -- Show hover documentation
 ### 2. Code Completion
 
 #### Blink.cmp Features
+
 - **Intelligent completion** with context awareness
 - **Snippet expansion** with tab navigation
 - **LSP integration** for accurate suggestions
 - **AI completion** via Copilot integration
 
 #### Completion Controls
+
 ```
 <Tab>            -- Accept completion / expand snippet
 <S-Tab>          -- Previous completion item
@@ -86,17 +95,21 @@ K                -- Show hover documentation
 ### 3. Code Formatting
 
 #### Format on Save
+
 The configuration automatically formats code on save using:
+
 - **conform.nvim** for primary formatting
 - **LSP formatters** as fallback
 
 #### Manual Formatting
+
 ```
 <leader>cf       -- Format current buffer
 <leader>cF       -- Format with specific formatter
 ```
 
 #### Supported Formatters
+
 - **Lua**: stylua
 - **Python**: black, isort
 - **JavaScript/TypeScript**: prettier
@@ -109,6 +122,7 @@ The configuration automatically formats code on save using:
 ### 1. Debug Adapter Protocol (DAP)
 
 #### Debug Controls
+
 ```
 <F5>             -- Start/continue debugging
 <F10>            -- Step over
@@ -121,6 +135,7 @@ The configuration automatically formats code on save using:
 ```
 
 #### Debug UI
+
 ```
 <leader>du       -- Toggle debug UI
 <leader>dh       -- Hover variables
@@ -130,6 +145,7 @@ The configuration automatically formats code on save using:
 ### 2. Language-Specific Debugging
 
 #### Python Debugging
+
 ```python
 # Set up pytest debugging
 pytest --pdb test_file.py
@@ -139,6 +155,7 @@ python manage.py runserver --pdb
 ```
 
 #### Go Debugging
+
 ```go
 // Use delve debugger integration
 // Breakpoints work automatically
@@ -148,6 +165,7 @@ func main() {
 ```
 
 #### JavaScript/TypeScript
+
 ```javascript
 // Chrome DevTools integration
 // Set breakpoints in source code
@@ -159,6 +177,7 @@ console.log("Debug point");
 ### 1. Running Tests
 
 #### General Test Commands
+
 ```
 <leader>tt       -- Run all tests
 <leader>tf       -- Run current file tests
@@ -170,6 +189,7 @@ console.log("Debug point");
 #### Language-Specific Testing
 
 **Python:**
+
 ```bash
 # pytest integration
 pytest test_file.py
@@ -178,6 +198,7 @@ pytest -v  # verbose output
 ```
 
 **JavaScript/TypeScript:**
+
 ```bash
 # Jest integration
 npm test
@@ -186,6 +207,7 @@ npm run test:coverage
 ```
 
 **Go:**
+
 ```bash
 # Go test integration
 go test ./...
@@ -196,6 +218,7 @@ go test -run TestFunction
 ### 2. Test-Driven Development (TDD)
 
 #### TDD Workflow
+
 1. Write failing test
 2. Run test to see failure: `<leader>tn`
 3. Write minimal code to pass
@@ -203,9 +226,9 @@ go test -run TestFunction
 5. Refactor and repeat
 
 #### AI-Assisted Testing
+
 ```
 <leader>apt      -- Generate tests for selection
-<leader>aga      -- Generate tests with ChatGPT
 ```
 
 ## Git Integration Workflow
@@ -213,6 +236,7 @@ go test -run TestFunction
 ### 1. Git Operations
 
 #### Basic Git Commands
+
 ```
 <leader>gs       -- Git status
 <leader>gc       -- Git commits
@@ -222,6 +246,7 @@ go test -run TestFunction
 ```
 
 #### Hunk Operations
+
 ```
 ]h               -- Next git hunk
 [h               -- Previous git hunk
@@ -231,6 +256,7 @@ go test -run TestFunction
 ```
 
 #### Git Browsing
+
 ```
 <leader>gy       -- Open in browser
 <leader>gY       -- Copy repo URL
@@ -239,12 +265,14 @@ go test -run TestFunction
 ### 2. Commit Workflow
 
 #### AI-Assisted Commits
+
 ```
 <leader>apm      -- Generate commit message
 <leader>apM      -- Generate commit for staged changes
 ```
 
 #### Manual Commits
+
 ```bash
 # Stage changes
 git add .
@@ -259,12 +287,14 @@ git commit -m "feat: add new feature"
 ### 3. Branch Management
 
 #### Branch Operations
+
 ```
 <leader>gb       -- Switch branches
 <leader>gB       -- Create new branch
 ```
 
 #### Git Worktrees
+
 ```bash
 # Create worktree for feature branch
 git worktree add ../feature-branch feature-branch
@@ -278,6 +308,7 @@ git worktree add ../feature-branch feature-branch
 ### 1. Code Generation
 
 #### CodeCompanion Workflow
+
 ```
 <leader>apv      -- Open AI chat
 <leader>ape      -- Explain code
@@ -288,6 +319,7 @@ git worktree add ../feature-branch feature-branch
 ```
 
 #### Quick AI Actions
+
 ```
 <leader>apq      -- Quick AI chat
 <leader>apa      -- AI action palette
@@ -296,66 +328,75 @@ git worktree add ../feature-branch feature-branch
 ### 2. Code Review
 
 #### AI Code Review
+
 ```
 <leader>apR      -- AI code review
 <leader>apl      -- Explain LSP diagnostics
 ```
 
 #### Code Quality
+
 ```
 <leader>apn      -- Better naming suggestions
-<leader>ago      -- Optimize code (ChatGPT)
-<leader>agl      -- Readability analysis
 ```
 
+<leader>apn -- Better naming suggestions
+<leader>ago -- Optimize code (ChatGPT)
+<leader>agl -- Readability analysis
+
+```
 ## Search and Navigation
 
 ### 1. Fuzzy Finding
 
 #### File Search
 ```
-<leader><space>  -- Find files
-<leader>/        -- Grep in files
-<leader>sw       -- Search word under cursor
-<leader>sg       -- Live grep
-```
 
+<leader><space> -- Find files
+<leader>/ -- Grep in files
+<leader>sw -- Search word under cursor
+<leader>sg -- Live grep
+
+```
 #### Code Navigation
 ```
-<leader>ss       -- Search symbols
-<leader>sj       -- Search jump list
-<leader>sm       -- Search marks
-<leader>sr       -- Search registers
-```
 
+<leader>ss -- Search symbols
+<leader>sj -- Search jump list
+<leader>sm -- Search marks
+<leader>sr -- Search registers
+
+```
 ### 2. Advanced Search
 
 #### Regex Search
 ```
-<leader>sg       -- Live grep with regex
-<leader>sG       -- Grep in current directory
-<leader>sB       -- Grep in open buffers
-```
 
+<leader>sg -- Live grep with regex
+<leader>sG -- Grep in current directory
+<leader>sB -- Grep in open buffers
+
+```
 #### Symbol Search
 ```
-<leader>ss       -- Workspace symbols
-<leader>sS       -- Document symbols
-gI               -- Implementation
-gr               -- References
-```
 
+<leader>ss -- Workspace symbols
+<leader>sS -- Document symbols gI -- Implementation gr -- References
+
+````
 ## Performance and Optimization
 
 ### 1. Profiling
 
 #### Startup Performance
+
 ```vim
 :Lazy profile    -- Plugin loading profile
 :Startup         -- Startup time breakdown
-```
+````
 
 #### Runtime Performance
+
 ```
 <leader>dps      -- Profiler scratch buffer
 ```
@@ -363,6 +404,7 @@ gr               -- References
 ### 2. Large File Handling
 
 The configuration automatically optimizes for large files by:
+
 - Disabling syntax highlighting for files > 1MB
 - Reducing features for better performance
 - Using lazy loading for expensive operations
@@ -372,7 +414,9 @@ The configuration automatically optimizes for large files by:
 ### 1. Polyglot Projects
 
 #### Language Detection
+
 The configuration automatically detects file types and loads appropriate:
+
 - LSP servers
 - Formatters
 - Linters
@@ -380,7 +424,9 @@ The configuration automatically detects file types and loads appropriate:
 - Snippets
 
 #### Per-Language Settings
+
 Each language has optimized settings for:
+
 - Indentation rules
 - Line length limits
 - Specific tooling integration
@@ -388,12 +434,14 @@ Each language has optimized settings for:
 ### 2. Monorepo Support
 
 #### Project Management
+
 ```
 <leader>fp       -- Switch between projects
 <leader>fw       -- Find in workspace
 ```
 
 #### Multi-Root Workspaces
+
 The configuration supports multiple project roots within a single workspace.
 
 ## Productivity Tips
@@ -401,6 +449,7 @@ The configuration supports multiple project roots within a single workspace.
 ### 1. Efficient Editing
 
 #### Text Objects
+
 ```
 vai              -- Select function (treesitter)
 vii              -- Select inner function
@@ -408,6 +457,7 @@ vaf              -- Select outer function
 ```
 
 #### Quick Actions
+
 ```
 <leader>.        -- Scratch buffer
 <leader>S        -- Select scratch buffer
@@ -418,6 +468,7 @@ gc               -- Comment selection
 ### 2. Window Management
 
 #### Window Operations
+
 ```
 <C-w>s           -- Horizontal split
 <C-w>v           -- Vertical split
@@ -426,6 +477,7 @@ gc               -- Comment selection
 ```
 
 #### Tab Management
+
 ```
 <leader><tab>n   -- New tab
 <leader><tab>c   -- Close tab
@@ -436,6 +488,7 @@ gc               -- Comment selection
 ### 3. Session Management
 
 #### Session Operations
+
 ```
 <leader>qs       -- Save session
 <leader>ql       -- Load session
@@ -447,6 +500,7 @@ gc               -- Comment selection
 ### 1. LSP Issues
 
 #### Diagnostics
+
 ```vim
 :LspInfo         -- Check LSP status
 :LspRestart      -- Restart LSP servers
@@ -454,6 +508,7 @@ gc               -- Comment selection
 ```
 
 #### Common Fixes
+
 ```vim
 :Mason           -- Update/install servers
 :Lazy update     -- Update plugins
@@ -463,6 +518,7 @@ gc               -- Comment selection
 ### 2. Plugin Issues
 
 #### Plugin Management
+
 ```vim
 :Lazy            -- Plugin manager
 :Lazy update     -- Update plugins
@@ -493,4 +549,5 @@ gc               -- Comment selection
 - Monitor startup time
 - Keep plugins updated
 
-This workflow guide should help you leverage the full power of this Neovim configuration for efficient software development.
+This workflow guide should help you leverage the full power of this Neovim
+configuration for efficient software development.

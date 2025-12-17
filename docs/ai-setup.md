@@ -1,6 +1,7 @@
 # AI Setup and Configuration Guide
 
-This configuration includes three powerful AI assistants: CodeCompanion, ChatGPT, and OpenCode. This guide covers setup, configuration, and usage.
+This configuration includes two powerful AI assistants: CodeCompanion and
+OpenCode. This guide covers setup, configuration, and usage.
 
 ## Prerequisites
 
@@ -11,15 +12,14 @@ This configuration includes three powerful AI assistants: CodeCompanion, ChatGPT
 ## Supported AI Providers
 
 ### CodeCompanion (Primary)
+
 - **GitHub Copilot** (recommended)
 - **OpenAI** (GPT-4, GPT-4o, o1, o3 models)
 - **Anthropic Claude** (Sonnet, Opus models)
 - **Google Gemini** (2.0 Flash, 2.5 Pro)
 
-### ChatGPT
-- **OpenAI** API (GPT-4o, o1-mini, etc.)
-
 ### OpenCode
+
 - **OpenCode** service integration
 
 ## Setup Instructions
@@ -45,7 +45,8 @@ CodeCompanion is the primary AI assistant and supports multiple providers.
    gh copilot status
    ```
 
-3. **Configuration**: CodeCompanion will automatically detect your Copilot access.
+3. **Configuration**: CodeCompanion will automatically detect your Copilot
+   access.
 
 #### OpenAI Setup
 
@@ -68,34 +69,20 @@ CodeCompanion is the primary AI assistant and supports multiple providers.
 
 #### Other Providers
 
-For Anthropic Claude, Google Gemini, and other providers, set the respective environment variables:
+For Anthropic Claude, Google Gemini, and other providers, set the respective
+environment variables:
 
 ```bash
 export ANTHROPIC_API_KEY="your-claude-key"
 export GEMINI_API_KEY="your-gemini-key"
 ```
 
-### 2. ChatGPT Setup
-
-1. **Get OpenAI API Key** (same as above)
-
-2. **Create Encrypted Key File**:
-   ```bash
-   # Create and encrypt your API key
-   echo "your-openai-api-key" | gpg --encrypt --recipient your-email > ~/chatgpt.key.gpg
-   ```
-
-3. **Verify GPG Setup**:
-   ```bash
-   # Test decryption
-   gpg --decrypt ~/chatgpt.key.gpg
-   ```
-
-### 3. OpenCode Setup
+### 2. OpenCode Setup
 
 1. **Installation**: OpenCode is automatically configured through the plugin.
 
-2. **API Configuration**: Follow OpenCode's authentication process when first launched.
+2. **API Configuration**: Follow OpenCode's authentication process when first
+   launched.
 
 ## Configuration Options
 
@@ -106,10 +93,12 @@ export GEMINI_API_KEY="your-gemini-key"
 The configuration supports multiple models with different capabilities:
 
 **Free Models:**
+
 - `gpt-4.1` (Copilot free tier)
 - `gpt-4o` (Copilot free tier)
 
 **Premium Models (usage tracked):**
+
 - `gpt-4.5` (50 premium requests)
 - `claude-sonnet-3.5` (1 premium request)
 - `claude-sonnet-3.7` (1 premium request)
@@ -125,12 +114,15 @@ The configuration supports multiple models with different capabilities:
 #### Switching Models
 
 Use `gM` in chat windows to toggle between models:
+
 - Default: `gpt-4.1` (Copilot)
 - Alternate: `gemini-2.5-pro`
 
 ### Custom System Prompts
 
-The configuration uses a custom system prompt optimized for coding tasks. You can modify it in:
+The configuration uses a custom system prompt optimized for coding tasks. You
+can modify it in:
+
 ```lua
 -- lua/ai/prompts/system.lua
 system_prompt = require("ai.prompts.system").cline_prompt()
@@ -141,6 +133,7 @@ system_prompt = require("ai.prompts.system").cline_prompt()
 ### CodeCompanion Usage
 
 #### Starting a Chat
+
 ```
 <leader>apv  -- Toggle chat window
 <leader>apa  -- Action palette
@@ -148,6 +141,7 @@ system_prompt = require("ai.prompts.system").cline_prompt()
 ```
 
 #### Code Actions
+
 ```
 <leader>ape  -- Explain selected code
 <leader>apf  -- Fix selected code
@@ -157,7 +151,9 @@ system_prompt = require("ai.prompts.system").cline_prompt()
 ```
 
 #### Chat Commands
+
 Within chat windows:
+
 - `<CR>` or `<C-CR>` - Send message
 - `q` - Close chat
 - `<C-c>` - Stop generation
@@ -166,31 +162,13 @@ Within chat windows:
 - `gM` - Switch model
 
 #### Slash Commands
+
 - `/buffer` - Insert open buffers
 - `/file` - Insert a file
 - `/explain` - Explain code
 - `/fix` - Fix code
 - `/tests` - Generate tests
 - `/commit` - Generate commit message
-
-### ChatGPT Usage
-
-#### Basic Commands
-```
-<leader>agc  -- Open ChatGPT
-<leader>age  -- Edit with instruction
-<leader>agf  -- Fix bugs
-<leader>ago  -- Optimize code
-<leader>agx  -- Explain code
-```
-
-#### Specialized Commands
-```
-<leader>agg  -- Grammar correction
-<leader>agt  -- Translate
-<leader>agd  -- Generate docstring
-<leader>aga  -- Add tests
-```
 
 ### OpenCode Usage
 
@@ -210,7 +188,9 @@ Within chat windows:
 CodeCompanion includes detailed analytics to track premium model usage:
 
 #### View Analytics
+
 Press `gA` in any chat window to see:
+
 - Premium requests by time period
 - Requests by model
 - Usage by command
@@ -218,7 +198,9 @@ Press `gA` in any chat window to see:
 - Failure rates
 
 #### Usage Reports
+
 Analytics track premium request costs:
+
 - Daily/weekly/monthly breakdowns
 - Model-specific usage
 - User and command statistics
@@ -227,6 +209,7 @@ Analytics track premium request costs:
 ### History Management
 
 #### Chat History
+
 - Press `gh` in chat windows to browse previous conversations
 - Auto-generated titles for easy navigation
 - Search through chat history
@@ -235,24 +218,28 @@ Analytics track premium request costs:
 ## Tips and Best Practices
 
 ### 1. Model Selection Strategy
+
 - Use **Copilot free models** (`gpt-4.1`, `gpt-4o`) for general coding
 - Use **Claude Sonnet** for complex reasoning and refactoring
 - Use **o1/o3 models** for mathematical and complex problem solving
 - Use **Gemini Flash** for quick, cost-effective queries
 
 ### 2. Context Management
+
 - Use `/file` to include specific files in context
 - Select relevant code before using AI commands
 - Use `/buffer` to include multiple open files
 - Be specific in your prompts for better results
 
 ### 3. Workflow Integration
+
 - Use `<leader>apt` to generate tests for functions
 - Use `<leader>apm` for commit message generation
 - Use `<leader>apf` to fix LSP diagnostics
 - Use `<leader>apr` for refactoring suggestions
 
 ### 4. Security Best Practices
+
 - Store API keys encrypted with GPG
 - Use environment variables for sensitive data
 - Never commit API keys to version control
@@ -263,22 +250,20 @@ Analytics track premium request costs:
 ### Common Issues
 
 **CodeCompanion not working:**
+
 1. Check Copilot status: `gh copilot status`
 2. Verify authentication: `gh auth status`
 3. Check network connectivity
 4. Restart Neovim
 
-**ChatGPT authentication errors:**
-1. Verify GPG key decryption: `gpg --decrypt ~/chatgpt.key.gpg`
-2. Check API key validity at OpenAI dashboard
-3. Ensure GPG is properly configured
-
 **Model switching not working:**
+
 1. Verify you have access to the target model
 2. Check premium usage limits
 3. Try restarting the chat session
 
 **Slow response times:**
+
 1. Check internet connection
 2. Try switching to a faster model (e.g., Gemini Flash)
 3. Reduce context size
@@ -295,6 +280,7 @@ Analytics track premium request costs:
 ### Custom Prompts
 
 Create custom prompts in `lua/ai/prompts/`:
+
 ```lua
 -- lua/ai/prompts/custom.lua
 return {
@@ -314,6 +300,7 @@ return {
 ### Extension Development
 
 The configuration supports custom extensions:
+
 ```lua
 -- lua/ai/extensions/my-extension.lua
 local M = {}
@@ -326,6 +313,7 @@ return M
 ```
 
 Register in CodeCompanion configuration:
+
 ```lua
 extensions = {
   ["my-extension"] = {
