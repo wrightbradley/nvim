@@ -180,25 +180,26 @@ return {
           end,
           pyright = function()
             Util.lsp.on_attach(function(client, _)
-              -- Only use Pyright for hover and type information
-              -- ty handles diagnostics, so disable them in Pyright
+              -- Pyright only provides hover (better type info than ty's "Unknown")
+              -- ty handles everything else (diagnostics, navigation, completion, etc.)
               client.server_capabilities.diagnosticProvider = nil
               client.server_capabilities.publishDiagnostics = false
-            end, "pyright")
-          end,
-          ty = function()
-            Util.lsp.on_attach(function(client, _)
-              -- ty handles diagnostics only, pyright handles everything else
-              -- Disable hover (shows "Unknown" for many types)
-              client.server_capabilities.hoverProvider = false
-              -- Disable navigation to avoid duplicates with pyright
+              -- Disable navigation to let ty handle it
               client.server_capabilities.definitionProvider = false
               client.server_capabilities.declarationProvider = false
               client.server_capabilities.typeDefinitionProvider = false
               client.server_capabilities.referencesProvider = false
               client.server_capabilities.implementationProvider = false
-              -- Disable rename (pyright handles this better)
               client.server_capabilities.renameProvider = false
+              client.server_capabilities.codeActionProvider = false
+              client.server_capabilities.completionProvider = nil
+            end, "pyright")
+          end,
+          ty = function()
+            Util.lsp.on_attach(function(client, _)
+              -- ty handles everything except hover (shows "Unknown" for many types)
+              -- Disable hover in favor of Pyright
+              client.server_capabilities.hoverProvider = false
             end, "ty")
           end,
         },
