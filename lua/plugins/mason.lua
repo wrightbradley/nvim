@@ -107,20 +107,27 @@ return {
 
           -- Also get LSP servers from mason-lspconfig to avoid uninstalling them
           local lsp_servers = {}
-          local ok, lspconfig_opts = pcall(require("lazy.core.config").plugins["nvim-lspconfig"].opts)
-          if ok and lspconfig_opts and lspconfig_opts.servers then
-            for _, server in ipairs(lspconfig_opts.servers) do
-              lsp_servers[server] = true
+          local ok, lsp_plugin = pcall(function()
+            return require("lazy.core.config").plugins["nvim-lspconfig"]
+          end)
+          if ok and lsp_plugin then
+            local lsp_opts = type(lsp_plugin.opts) == "function" and lsp_plugin.opts() or lsp_plugin.opts
+            if lsp_opts and lsp_opts.servers then
+              for _, server in ipairs(lsp_opts.servers) do
+                lsp_servers[server] = true
+              end
             end
           end
 
           for _, pkg in ipairs(installed) do
-            local pkg_type = pkg.spec.categories[1] or ""
+            local pkg_categories = pkg.spec.categories or {}
+            local is_lsp = vim.tbl_contains(pkg_categories, "LSP")
+
             -- Only auto-uninstall if:
             -- 1. Not in ensure_installed list
             -- 2. Not an LSP server (those are managed by mason-lspconfig)
             -- 3. Not in the LSP servers list from lsp.lua
-            if not ensure_installed_set[pkg.name] and pkg_type ~= "LSP" and not lsp_servers[pkg.name] then
+            if not ensure_installed_set[pkg.name] and not is_lsp and not lsp_servers[pkg.name] then
               vim.notify(
                 "Mason: Auto-uninstalling " .. pkg.name .. " (not in ensure_installed)",
                 vim.log.levels.INFO
