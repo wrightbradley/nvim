@@ -195,6 +195,7 @@ return {
               client.server_capabilities.renameProvider = nil
               client.server_capabilities.codeActionProvider = nil
               client.server_capabilities.completionProvider = nil
+              client.server_capabilities.semanticTokensProvider = nil
 
               -- Keep hover and inlay hints enabled - basedpyright has better type inference
               -- client.server_capabilities.hoverProvider is left enabled
@@ -389,11 +390,10 @@ return {
         vim.lsp.enable(server)
       end
 
-      -- mason-lspconfig handles ensure_installed and automatic_enable
+      -- mason-lspconfig handles ensure_installed and automatic_installation
       if Util.has("mason-lspconfig.nvim") then
         require("mason-lspconfig").setup({
           ensure_installed = opts.servers,
-          automatic_enable = true,
         })
       end
     end),
