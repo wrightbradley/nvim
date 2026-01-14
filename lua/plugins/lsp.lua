@@ -179,19 +179,12 @@ return {
             end, "ruff")
           end,
           basedpyright = function()
-            Util.lsp.on_attach(function(client, _)
+            Util.lsp.on_attach(function(client, buffer)
               -- basedpyright provides hover and inlay hints (better type info than ty's "Unknown")
               -- ty handles everything else (diagnostics, navigation, completion, etc.)
 
               -- Completely disable diagnostics - ty handles them
               client.server_capabilities.diagnosticProvider = nil
-              client.server_capabilities.publishDiagnostics = nil
-              if client.config then
-                client.config.capabilities = client.config.capabilities or {}
-                if client.config.capabilities.textDocument then
-                  client.config.capabilities.textDocument.publishDiagnostics = nil
-                end
-              end
 
               -- Disable navigation to let ty handle it
               client.server_capabilities.definitionProvider = false
@@ -206,6 +199,20 @@ return {
               -- Keep hover and inlay hints enabled - basedpyright has better type inference
               -- client.server_capabilities.hoverProvider is left enabled
               -- client.server_capabilities.inlayHintProvider is left enabled
+
+              -- Nuclear option: clear any diagnostics from basedpyright immediately
+              vim.api.nvim_create_autocmd("DiagnosticChanged", {
+                buffer = buffer,
+                callback = function()
+                  local diagnostics = vim.diagnostic.get(buffer)
+                  local filtered = vim.tbl_filter(function(d)
+                    return not (d.source and d.source:match("basedpyright"))
+                  end, diagnostics)
+                  if #filtered < #diagnostics then
+                    vim.diagnostic.set(vim.lsp.diagnostic.get_namespace(client.id), buffer, {})
+                  end
+                end,
+              })
             end, "basedpyright")
           end,
           ty = function()
