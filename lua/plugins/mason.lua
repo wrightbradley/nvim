@@ -1,10 +1,9 @@
 ---@file Mason plugin configuration
---- This file configures the Mason plugin for managing external tools and LSP servers
---- in Neovim. It ensures specified tools are installed and sets up Mason to handle
---- updates and installations.
+--- This file configures Mason for managing tools (formatters, linters, DAP adapters).
+--- LSP servers are managed by mason-lspconfig in lsp.lua via automatic_installation.
 
 return {
-  -- cmdline tools and lsp servers
+  -- cmdline tools, formatters, linters, and DAP adapters
   {
     "mason-org/mason.nvim",
     cmd = "Mason",
@@ -12,65 +11,63 @@ return {
     build = ":MasonUpdate",
     opts = {
       ensure_installed = {
-        "ansible-language-server",
+        -- Linters and formatters
         "ansible-lint",
-        "bash-language-server",
-        "clangd",
         "cmakelang",
         "cmakelint",
-        -- "codelldb",
-        "cueimports",
-        "cuelsp",
-        "cypher-language-server",
-        "delve",
-        "docker-compose-language-service",
-        "dockerfile-language-server",
-        "eslint-lsp",
         "gofumpt",
         "goimports",
         "golangci-lint",
-        "gopls",
         "hadolint",
-        "helm-ls",
-        -- "java-debug-adapter",
-        -- "java-test",
-        -- "jdtls",
-        "jq",
-        "jq-lsp",
-        "js-debug-adapter",
-        "json-lsp",
-        -- "kotlin-debug-adapter",
-        -- "kotlin-language-server",
-        -- "ktlint",
-        "lua-language-server",
         "markdown-toc",
         "markdownlint-cli2",
-        "marksman",
-        "neocmakelsp",
         "prettier",
-        "pyright",
-        -- "regal",
-        -- "regols",
-        "ruff",
         "shellcheck",
         "shfmt",
-        -- "sqlfluff",
-        -- "sqlls",
-        -- "sqls",
         "stylua",
-        "tailwindcss-language-server",
-        "taplo",
-        "terraform-ls",
-        -- "texlab",
         "tflint",
-        "ty",
-        "vale-ls",
-        "vtsls",
-        "vue-language-server",
-        "yaml-language-server",
         "yamlfmt",
         "yamllint",
-        "zls",
+
+        -- DAP adapters
+        "delve",
+        "js-debug-adapter",
+        -- "codelldb",
+        -- "java-debug-adapter",
+        -- "java-test",
+        -- "kotlin-debug-adapter",
+
+        -- Utilities
+        "cueimports",
+        "jq",
+
+        -- LSP servers are installed via mason-lspconfig in lsp.lua
+        -- The list below is kept for reference but can be removed:
+        -- "ansible-language-server",
+        -- "bash-language-server",
+        -- "clangd",
+        -- "cuelsp",
+        -- "cypher-language-server",
+        -- "docker-compose-language-service",
+        -- "dockerfile-language-server",
+        -- "eslint-lsp",
+        -- "gopls",
+        -- "helm-ls",
+        -- "jq-lsp",
+        -- "json-lsp",
+        -- "lua-language-server",
+        -- "marksman",
+        -- "neocmakelsp",
+        -- "pyright",
+        -- "ruff",
+        -- "tailwindcss-language-server",
+        -- "taplo",
+        -- "terraform-ls",
+        -- "vale-ls",
+        -- "vtsls",
+        -- "vue-language-server",
+        -- "yaml-language-server",
+        -- "zls",
       },
     },
     --- Configures Mason with the specified options.

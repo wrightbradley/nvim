@@ -105,6 +105,16 @@ return {
       settings = {
         options = {
           notify_user_on_venv_activation = false,
+          on_venv_activate_callback = function()
+            -- Restart Python LSP servers when venv changes
+            -- This ensures ty and ruff pick up the new environment
+            local clients = vim.lsp.get_clients()
+            for _, client in ipairs(clients) do
+              if client.name == "ty" or client.name == "ruff" then
+                vim.cmd("LspRestart " .. client.name)
+              end
+            end
+          end,
         },
       },
       picker = {
