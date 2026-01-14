@@ -1,39 +1,25 @@
----@file LSP-related utility functions for Neovim
---- This module provides utility functions for managing Language Server Protocol (LSP)
---- clients, handling dynamic capabilities, and configuring LSP-related settings in Neovim.
+---@file LSP utilities for Neovim 0.11+
 
 ---@class util.lsp
 local M = {}
 
 ---@alias lsp.Client.filter {id?: number, bufnr?: number, name?: string, method?: string, filter?:fun(client: lsp.Client):boolean}
 
---- Retrieves active LSP clients based on filters.
----@param opts? lsp.Client.filter Optional filters for retrieving clients.
----@return vim.lsp.Client[] List of active LSP clients.
+--- Get active LSP clients
+---@param opts? lsp.Client.filter
+---@return vim.lsp.Client[]
 function M.get_clients(opts)
-  local ret = {} ---@type vim.lsp.Client[]
-  if vim.lsp.get_clients then
-    ret = vim.lsp.get_clients(opts)
-  else
-    ---@diagnostic disable-next-line: deprecated
-    ret = vim.lsp.get_active_clients(opts)
-    if opts and opts.method then
-      ---@param client vim.lsp.Client
-      ret = vim.tbl_filter(function(client)
-        return client.supports_method(opts.method, { bufnr = opts.bufnr })
-      end, ret)
-    end
-  end
+  local ret = vim.lsp.get_clients(opts)
   return opts and opts.filter and vim.tbl_filter(opts.filter, ret) or ret
 end
 
---- Sets up an autocmd for LSP attachment.
----@param on_attach fun(client:vim.lsp.Client, buffer) Callback function for LSP attachment.
----@param name? string Optional name of the LSP client.
+--- Set up LspAttach autocmd
+---@param on_attach fun(client:vim.lsp.Client, buffer:number)
+---@param name? string Optional LSP client name filter
 function M.on_attach(on_attach, name)
   return vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
-      local buffer = args.buf ---@type number
+      local buffer = args.buf
       local client = vim.lsp.get_client_by_id(args.data.client_id)
       if client and (not name or client.name == name) then
         return on_attach(client, buffer)
@@ -45,11 +31,10 @@ end
 ---@type table<string, table<vim.lsp.Client, table<number, boolean>>>
 M._supports_method = {}
 
---- Initializes LSP-related handlers and capabilities.
+--- Initialize LSP handlers for dynamic capabilities
 function M.setup()
   local register_capability = vim.lsp.handlers["client/registerCapability"]
   vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
-    ---@diagnostic disable-next-line: no-unknown
     local ret = register_capability(err, res, ctx)
     local client = vim.lsp.get_client_by_id(ctx.client_id)
     if client then
@@ -66,26 +51,24 @@ function M.setup()
   M.on_dynamic_capability(M._check_methods)
 end
 
---- Checks and triggers methods supported by LSP clients.
----@param client vim.lsp.Client The LSP client.
----@param buffer number The buffer number.
+--- Check and trigger method support events
+---@param client vim.lsp.Client
+---@param buffer number
 function M._check_methods(client, buffer)
-  -- Don't trigger on invalid buffers
   if not vim.api.nvim_buf_is_valid(buffer) then
     return
   end
-  -- Don't trigger on non-listed buffers
   if not vim.bo[buffer].buflisted then
     return
   end
-  -- Don't trigger on nofile buffers
   if vim.bo[buffer].buftype == "nofile" then
     return
   end
+
   for method, clients in pairs(M._supports_method) do
     clients[client] = clients[client] or {}
     if not clients[client][buffer] then
-      if client.supports_method and client.supports_method(method, { bufnr = buffer }) then
+      if client.supports_method and client:supports_method(method, { bufnr = buffer }) then
         clients[client][buffer] = true
         vim.api.nvim_exec_autocmds("User", {
           pattern = "LspSupportsMethod",
@@ -96,16 +79,16 @@ function M._check_methods(client, buffer)
   end
 end
 
---- Registers a callback for dynamic LSP capabilities.
----@param fn fun(client:vim.lsp.Client, buffer):boolean? The callback function.
----@param opts? {group?: integer} Optional group for the autocmd.
+--- Register callback for dynamic LSP capabilities
+---@param fn fun(client:vim.lsp.Client, buffer:number):boolean?
+---@param opts? {group?: integer}
 function M.on_dynamic_capability(fn, opts)
   return vim.api.nvim_create_autocmd("User", {
     pattern = "LspDynamicCapability",
     group = opts and opts.group or nil,
     callback = function(args)
       local client = vim.lsp.get_client_by_id(args.data.client_id)
-      local buffer = args.data.buffer ---@type number
+      local buffer = args.data.buffer
       if client then
         return fn(client, buffer)
       end
@@ -113,16 +96,16 @@ function M.on_dynamic_capability(fn, opts)
   })
 end
 
---- Registers a callback for when a method is supported by an LSP client.
----@param method string The method to check for support.
----@param fn fun(client:vim.lsp.Client, buffer) The callback function.
+--- Register callback when a method is supported
+---@param method string
+---@param fn fun(client:vim.lsp.Client, buffer:number)
 function M.on_supports_method(method, fn)
   M._supports_method[method] = M._supports_method[method] or setmetatable({}, { __mode = "k" })
   return vim.api.nvim_create_autocmd("User", {
     pattern = "LspSupportsMethod",
     callback = function(args)
       local client = vim.lsp.get_client_by_id(args.data.client_id)
-      local buffer = args.data.buffer ---@type number
+      local buffer = args.data.buffer
       if client and method == args.data.method then
         return fn(client, buffer)
       end
@@ -130,18 +113,15 @@ function M.on_supports_method(method, fn)
   })
 end
 
-
-
---- Configures a formatter for LSP.
----@param opts? LazyFormatter| {filter?: (string|lsp.Client.filter)}
----@return LazyFormatter The configured formatter.
+--- Create LSP formatter config
+---@param opts? LazyFormatter|{filter?: string|lsp.Client.filter}
+---@return LazyFormatter
 function M.formatter(opts)
   opts = opts or {}
   local filter = opts.filter or {}
   filter = type(filter) == "string" and { name = filter } or filter
   ---@cast filter lsp.Client.filter
-  ---@type LazyFormatter
-  local ret = {
+  return Util.merge({
     name = "LSP",
     primary = true,
     priority = 1,
@@ -150,22 +130,19 @@ function M.formatter(opts)
     end,
     sources = function(buf)
       local clients = M.get_clients(Util.merge({}, filter, { bufnr = buf }))
-      ---@param client vim.lsp.Client
       local ret = vim.tbl_filter(function(client)
-        return client.supports_method("textDocument/formatting")
-          or client.supports_method("textDocument/rangeFormatting")
+        return client:supports_method("textDocument/formatting")
+          or client:supports_method("textDocument/rangeFormatting")
       end, clients)
-      ---@param client vim.lsp.Client
       return vim.tbl_map(function(client)
         return client.name
       end, ret)
     end,
-  }
-  return Util.merge(ret, opts) --[[@as LazyFormatter]]
+  }, opts)
 end
 
---- Formats the current buffer using LSP.
----@param opts? lsp.Client.format Optional formatting options.
+--- Format buffer using LSP
+---@param opts? lsp.Client.format
 function M.format(opts)
   opts = vim.tbl_deep_extend(
     "force",
@@ -175,8 +152,6 @@ function M.format(opts)
     Util.opts("conform.nvim").format or {}
   )
   local ok, conform = pcall(require, "conform")
-  -- Use conform for formatting with LSP when available,
-  -- since it has better format diffing
   if ok then
     opts.formatters = {}
     conform.format(opts)
@@ -185,6 +160,7 @@ function M.format(opts)
   end
 end
 
+--- Code action helper
 M.action = setmetatable({}, {
   __index = function(_, action)
     return function()
@@ -199,35 +175,12 @@ M.action = setmetatable({}, {
   end,
 })
 
---- Convert root marker patterns to root_dir function for native LSP config.
---- Similar to lspconfig.util.root_pattern but uses vim.fs.root.
----@param patterns string|string[] Root marker patterns (e.g., ".git", "package.json")
----@return fun(fname: string): string|nil Function that returns root directory
-function M.root_pattern(patterns)
-  if type(patterns) == "string" then
-    patterns = { patterns }
-  end
-
-  return function(fname)
-    return vim.fs.root(fname, patterns)
-  end
-end
-
---- Merge LSP capabilities with optional extensions.
---- Useful for adding completion, snippet, or other capability extensions.
----@param ... table Additional capability tables to merge
----@return table Merged capabilities
-function M.merge_capabilities(...)
-  local base = vim.lsp.protocol.make_client_capabilities()
-  return vim.tbl_deep_extend("force", base, ...)
-end
-
 ---@class LspCommand: lsp.ExecuteCommandParams
 ---@field open? boolean
 ---@field handler? lsp.Handler
 
---- Executes an LSP command.
----@param opts LspCommand The command options.
+--- Execute LSP command
+---@param opts LspCommand
 function M.execute(opts)
   local params = {
     command = opts.command,
