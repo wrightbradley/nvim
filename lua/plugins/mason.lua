@@ -10,6 +10,9 @@ return {
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
     opts = {
+      -- Set to true to automatically uninstall tools not in ensure_installed
+      -- Warning: Only uninstalls non-LSP tools (LSPs managed by mason-lspconfig)
+      auto_uninstall = true,
       ensure_installed = {
         -- Linters and formatters
         "ansible-lint",
@@ -86,10 +89,44 @@ return {
       end)
 
       mr.refresh(function()
+        -- Install missing packages
         for _, tool in ipairs(opts.ensure_installed) do
           local p = mr.get_package(tool)
           if not p:is_installed() then
             p:install()
+          end
+        end
+
+        -- Auto-uninstall packages not in ensure_installed (if enabled)
+        if opts.auto_uninstall then
+          local installed = mr.get_installed_packages()
+          local ensure_installed_set = {}
+          for _, tool in ipairs(opts.ensure_installed) do
+            ensure_installed_set[tool] = true
+          end
+
+          -- Also get LSP servers from mason-lspconfig to avoid uninstalling them
+          local lsp_servers = {}
+          local ok, lspconfig_opts = pcall(require("lazy.core.config").plugins["nvim-lspconfig"].opts)
+          if ok and lspconfig_opts and lspconfig_opts.servers then
+            for _, server in ipairs(lspconfig_opts.servers) do
+              lsp_servers[server] = true
+            end
+          end
+
+          for _, pkg in ipairs(installed) do
+            local pkg_type = pkg.spec.categories[1] or ""
+            -- Only auto-uninstall if:
+            -- 1. Not in ensure_installed list
+            -- 2. Not an LSP server (those are managed by mason-lspconfig)
+            -- 3. Not in the LSP servers list from lsp.lua
+            if not ensure_installed_set[pkg.name] and pkg_type ~= "LSP" and not lsp_servers[pkg.name] then
+              vim.notify(
+                "Mason: Auto-uninstalling " .. pkg.name .. " (not in ensure_installed)",
+                vim.log.levels.INFO
+              )
+              pkg:uninstall()
+            end
           end
         end
       end)
