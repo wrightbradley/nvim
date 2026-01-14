@@ -1,7 +1,7 @@
 ---@type vim.lsp.Config
 return {
-  -- Pyright settings optimized for hover/type information only
-  -- ty and ruff handle all diagnostics
+  -- Pyright settings optimized for hover and inlay hints
+  -- ty handles diagnostics, navigation, completion, etc.
   settings = {
     python = {
       analysis = {
@@ -13,6 +13,13 @@ return {
         autoSearchPaths = true,
         -- Disable diagnostics completely
         diagnosticMode = "none",
+        -- Enable inlay hints for better type information
+        inlayHints = {
+          variableTypes = true,
+          functionReturnTypes = true,
+          callArgumentNames = true,
+          parameterTypes = true,
+        },
       },
     },
   },

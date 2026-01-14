@@ -180,7 +180,7 @@ return {
           end,
           pyright = function()
             Util.lsp.on_attach(function(client, _)
-              -- Pyright only provides hover (better type info than ty's "Unknown")
+              -- Pyright provides hover and inlay hints (better type info than ty's "Unknown")
               -- ty handles everything else (diagnostics, navigation, completion, etc.)
 
               -- Completely disable diagnostics - ty handles them
@@ -202,13 +202,17 @@ return {
               client.server_capabilities.renameProvider = false
               client.server_capabilities.codeActionProvider = false
               client.server_capabilities.completionProvider = nil
+
+              -- Keep inlay hints enabled - pyright has better type inference
+              -- client.server_capabilities.inlayHintProvider is left enabled
             end, "pyright")
           end,
           ty = function()
             Util.lsp.on_attach(function(client, _)
-              -- ty handles everything except hover (shows "Unknown" for many types)
-              -- Disable hover in favor of Pyright
+              -- ty handles everything except hover and inlay hints (shows "Unknown" for many types)
+              -- Disable hover and inlay hints in favor of Pyright
               client.server_capabilities.hoverProvider = false
+              client.server_capabilities.inlayHintProvider = nil
             end, "ty")
           end,
         },
