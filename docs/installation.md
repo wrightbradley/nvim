@@ -16,6 +16,7 @@ This guide will help you install and configure this Neovim setup on your system.
 ### Operating System Support
 
 This configuration works on:
+
 - **macOS** (primary development platform)
 - **Linux** (Ubuntu, Fedora, Arch, etc.)
 - **Windows** (via WSL2 recommended)
@@ -25,6 +26,7 @@ This configuration works on:
 ### 1. Install Prerequisites
 
 #### macOS (using Homebrew)
+
 ```bash
 # Install Homebrew if not already installed
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -36,6 +38,7 @@ brew install --cask font-jetbrains-mono-nerd-font
 ```
 
 #### Ubuntu/Debian
+
 ```bash
 # Update package list
 sudo apt update
@@ -64,6 +67,7 @@ sudo apt install -y ripgrep fd-find fzf
 ```
 
 #### Arch Linux
+
 ```bash
 # Install packages
 sudo pacman -S neovim git nodejs npm python python-pip rust go
@@ -77,11 +81,13 @@ cd yay && makepkg -si
 ### 2. Install Additional Development Tools
 
 #### Using npm (global packages)
+
 ```bash
 npm install -g neovim tree-sitter-cli
 ```
 
 #### Using pip (Python packages)
+
 ```bash
 pip3 install --user pynvim neovim
 ```
@@ -106,6 +112,7 @@ git clone https://github.com/YOURUSERNAME/nvim-config.git ~/.config/nvim
 ### 5. Initial Setup
 
 #### Environment Setup
+
 ```bash
 # Copy environment template
 cd ~/.config/nvim
@@ -119,12 +126,14 @@ direnv allow .
 ```
 
 #### Initialize Development Tools
+
 ```bash
 # Initialize the development environment
 make init
 ```
 
 This will:
+
 - Set up direnv environment
 - Initialize Vale for documentation linting
 - Install pre-commit hooks
@@ -137,26 +146,31 @@ nvim
 ```
 
 On first launch, the configuration will:
+
 1. Install lazy.nvim plugin manager
 2. Download and install all plugins
 3. Set up LSP servers via Mason
 4. Configure tree-sitter parsers
 
-**Note**: The first launch may take several minutes as all plugins and tools are downloaded and compiled.
+**Note**: The first launch may take several minutes as all plugins and tools are
+downloaded and compiled.
 
 ## Post-Installation Setup
 
 ### 1. LSP Servers
 
-The configuration uses Mason to manage LSP servers. Most will install automatically, but you can manually install additional ones:
+The configuration uses Mason to manage LSP servers. Most will install
+automatically, but you can manually install additional ones:
 
 ```
 :Mason
 ```
 
 Common LSP servers included:
+
 - **lua_ls** (Lua)
-- **pyright** (Python)
+- **ty** (Python type checking - from Astral, creators of ruff)
+- **ruff** (Python linting/formatting)
 - **typescript-language-server** (TypeScript/JavaScript)
 - **gopls** (Go)
 - **rust_analyzer** (Rust)
@@ -182,6 +196,7 @@ cargo install stylua
 ### 3. AI Setup
 
 Follow the [AI Setup Guide](ai-setup.md) to configure:
+
 - GitHub Copilot
 - OpenAI API
 - Other AI providers
@@ -256,6 +271,7 @@ eval "$(direnv hook bash)"  # for bash
 ```
 
 This will verify:
+
 - Neovim version and capabilities
 - Plugin installation status
 - LSP server availability
@@ -283,6 +299,7 @@ This will verify:
 ### 3. Common Issues Check
 
 Run the linting tools:
+
 ```bash
 # Run all linters
 make lint
@@ -296,12 +313,14 @@ pre-commit run --all-files
 ### 1. Personal Configuration
 
 Create personal overrides:
+
 ```bash
 # Create personal config file
 touch ~/.config/nvim/lua/config/personal.lua
 ```
 
 Example personal configuration:
+
 ```lua
 -- lua/config/personal.lua
 local M = {}
@@ -318,6 +337,7 @@ return M
 ### 2. Plugin Customization
 
 Create custom plugin configurations in `lua/plugins/`:
+
 ```lua
 -- lua/plugins/my-plugin.lua
 return {
@@ -370,6 +390,7 @@ pre-commit autoupdate
 ### Common Issues
 
 **Plugin installation fails:**
+
 ```bash
 # Clear plugin cache
 rm -rf ~/.local/share/nvim/lazy
@@ -377,24 +398,28 @@ nvim --headless "+Lazy! sync" +qa
 ```
 
 **LSP not working:**
+
 ```vim
 :LspInfo
 :Mason
 ```
 
 **Slow startup:**
+
 ```vim
 :Lazy profile
 ```
 
 **Git integration issues:**
+
 ```bash
 # Check git configuration
 git config --list
 gh auth status
 ```
 
-For more detailed troubleshooting, see the [Troubleshooting Guide](troubleshooting.md).
+For more detailed troubleshooting, see the
+[Troubleshooting Guide](troubleshooting.md).
 
 ## Getting Help
 
@@ -407,6 +432,7 @@ For more detailed troubleshooting, see the [Troubleshooting Guide](troubleshooti
 ## Next Steps
 
 After installation:
+
 1. Read the [Keybindings Reference](keybindings.md)
 2. Set up [AI Integration](ai-setup.md)
 3. Explore [Language Support](language-support.md)

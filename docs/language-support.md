@@ -1,10 +1,13 @@
 # Language Support Guide
 
-This configuration provides comprehensive support for multiple programming languages through LSP servers, formatters, linters, debuggers, and specialized plugins.
+This configuration provides comprehensive support for multiple programming
+languages through LSP servers, formatters, linters, debuggers, and specialized
+plugins.
 
 ## Supported Languages
 
 ### Primary Languages (Full Support)
+
 - **Python** - Complete development environment
 - **TypeScript/JavaScript** - Full-stack web development
 - **Go** - Systems programming and web services
@@ -12,6 +15,7 @@ This configuration provides comprehensive support for multiple programming langu
 - **Lua** - Neovim configuration and scripting
 
 ### Additional Languages (Good Support)
+
 - **Terraform** - Infrastructure as code
 - **Ansible** - Configuration management
 - **YAML/JSON** - Configuration files with schema validation
@@ -25,6 +29,7 @@ This configuration provides comprehensive support for multiple programming langu
 ### Python
 
 #### Features
+
 - **LSP**: Pyright for type checking and IntelliSense
 - **Formatting**: Black, isort for import sorting
 - **Linting**: Flake8, mypy for type checking
@@ -32,6 +37,7 @@ This configuration provides comprehensive support for multiple programming langu
 - **Virtual Environment**: Automatic detection and switching
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/python.lua
 {
@@ -41,23 +47,25 @@ This configuration provides comprehensive support for multiple programming langu
 ```
 
 #### LSP Settings
+
 ```lua
--- Located in: lua/plugins/nvim-lspconfig.lua
-pyright = {
+-- Located in: after/lsp/ty.lua
+-- ty (Astral's type checker) - replaces pyright
+-- See: https://docs.astral.sh/ty/reference/configuration/
+return {
   settings = {
-    python = {
-      analysis = {
-        typeCheckingMode = "basic",
-        autoImportCompletions = true,
-        autoSearchPaths = true,
-        useLibraryCodeForTypes = true,
-      },
+    ty = {
+      -- ty settings here
     },
   },
 }
+
+-- Ruff handles linting and formatting
+-- Located in: after/lsp/ruff.lua
 ```
 
 #### Usage
+
 ```
 :VenvSelect              -- Select virtual environment
 <leader>dPt              -- Debug test method
@@ -66,6 +74,7 @@ pyright = {
 ```
 
 #### Dependencies Installation
+
 ```bash
 # Python tools
 pip install black isort flake8 mypy debugpy
@@ -75,6 +84,7 @@ pip install python-lsp-server  # Alternative LSP
 ### TypeScript/JavaScript
 
 #### Features
+
 - **LSP**: TypeScript Language Server
 - **Formatting**: Prettier with automatic configuration detection
 - **Linting**: ESLint integration
@@ -82,6 +92,7 @@ pip install python-lsp-server  # Alternative LSP
 - **Framework Support**: React, Vue, Angular, Node.js
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/typescript.lua
 typescript = {
@@ -113,6 +124,7 @@ typescript = {
 ```
 
 #### Custom Keybindings
+
 ```
 <leader>co               -- Organize imports
 <leader>cM               -- Add missing imports
@@ -121,6 +133,7 @@ typescript = {
 ```
 
 #### Dependencies
+
 ```bash
 # Global tools
 npm install -g typescript typescript-language-server
@@ -131,6 +144,7 @@ npm install -g @types/node  # For Node.js projects
 ### Go
 
 #### Features
+
 - **LSP**: gopls for comprehensive Go support
 - **Formatting**: gofumpt for enhanced formatting
 - **Linting**: Built into gopls
@@ -139,6 +153,7 @@ npm install -g @types/node  # For Node.js projects
 - **Build Tools**: Go modules and build support
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/go.lua
 {
@@ -149,6 +164,7 @@ npm install -g @types/node  # For Node.js projects
 ```
 
 #### Go-specific Commands
+
 ```
 :GoRun                   -- Run current file
 :GoTest                  -- Run tests
@@ -158,6 +174,7 @@ npm install -g @types/node  # For Node.js projects
 ```
 
 #### Usage
+
 ```
 <leader>gt               -- Run tests
 <leader>gT               -- Run test file
@@ -166,6 +183,7 @@ npm install -g @types/node  # For Node.js projects
 ```
 
 #### Dependencies
+
 ```bash
 # Go tools (installed automatically by go.nvim)
 go install golang.org/x/tools/gopls@latest
@@ -176,6 +194,7 @@ go install mvdan.cc/gofumpt@latest
 ### Rust
 
 #### Features
+
 - **LSP**: rust-analyzer for comprehensive Rust support
 - **Formatting**: rustfmt integration
 - **Linting**: Clippy integration
@@ -184,6 +203,7 @@ go install mvdan.cc/gofumpt@latest
 - **Crate Management**: Dependency handling
 
 #### LSP Configuration
+
 ```lua
 -- Located in: lua/plugins/nvim-lspconfig.lua
 rust_analyzer = {
@@ -205,6 +225,7 @@ rust_analyzer = {
 ```
 
 #### Usage
+
 ```
 :RustRun                 -- Run current project
 :RustTest                -- Run tests
@@ -213,6 +234,7 @@ rust_analyzer = {
 ```
 
 #### Dependencies
+
 ```bash
 # Rust toolchain
 rustup component add rust-analyzer
@@ -223,6 +245,7 @@ rustup component add clippy
 ### Lua
 
 #### Features
+
 - **LSP**: lua-language-server with Neovim API support
 - **Formatting**: stylua for consistent formatting
 - **Linting**: selene for Lua-specific linting
@@ -230,6 +253,7 @@ rustup component add clippy
 - **Neovim Integration**: Full API completion and documentation
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/nvim-lspconfig.lua
 lua_ls = {
@@ -257,6 +281,7 @@ lua_ls = {
 ```
 
 #### Dependencies
+
 ```bash
 # Lua tools
 brew install lua-language-server stylua selene  # macOS
@@ -268,6 +293,7 @@ brew install lua-language-server stylua selene  # macOS
 ### Terraform
 
 #### Features
+
 - **LSP**: terraform-ls for HCL support
 - **Formatting**: terraform fmt
 - **Linting**: tflint integration
@@ -275,6 +301,7 @@ brew install lua-language-server stylua selene  # macOS
 - **Providers**: Auto-completion for providers
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/terraform.lua
 {
@@ -284,6 +311,7 @@ brew install lua-language-server stylua selene  # macOS
 ```
 
 #### Usage
+
 ```
 :Terraform plan          -- Run terraform plan
 :Terraform apply         -- Run terraform apply
@@ -294,12 +322,14 @@ brew install lua-language-server stylua selene  # macOS
 ### Ansible
 
 #### Features
+
 - **LSP**: ansible-language-server
 - **Syntax**: YAML with Jinja2 templating
 - **Linting**: ansible-lint integration
 - **Documentation**: Module documentation
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/ansible.lua
 {
@@ -310,12 +340,14 @@ brew install lua-language-server stylua selene  # macOS
 ### YAML/JSON
 
 #### Features
+
 - **Schema Validation**: SchemaStore integration
 - **LSP**: yaml-language-server, json-language-server
 - **Formatting**: Prettier integration
 - **Linting**: yamllint, jsonlint
 
 #### Schema Support
+
 - Kubernetes manifests
 - Docker Compose files
 - GitHub Actions workflows
@@ -325,11 +357,13 @@ brew install lua-language-server stylua selene  # macOS
 ### Helm
 
 #### Features
+
 - **Syntax**: Helm template syntax highlighting
 - **LSP**: Integration with YAML LSP for values
 - **Templating**: Go template support
 
 #### Configuration
+
 ```lua
 -- Located in: lua/plugins/helm.lua
 {
@@ -436,6 +470,7 @@ ensure_installed = {
 ### Large Files
 
 The configuration automatically optimizes for large files by:
+
 - Disabling expensive features for files > 1MB
 - Using faster parsers when available
 - Reducing LSP features for better performance
@@ -443,6 +478,7 @@ The configuration automatically optimizes for large files by:
 ### Multi-Language Projects
 
 For projects with multiple languages:
+
 - LSP servers load only for relevant file types
 - Language-specific plugins are lazy-loaded
 - Shared formatters (like Prettier) work across file types
@@ -477,4 +513,5 @@ For projects with multiple languages:
 3. **Clear Cache**: `:Lazy clean` and restart
 4. **Check Dependencies**: Ensure language tools are installed
 
-This language support guide should help you leverage the full capabilities of this configuration for multi-language development.
+This language support guide should help you leverage the full capabilities of
+this configuration for multi-language development.

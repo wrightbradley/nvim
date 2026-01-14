@@ -1,6 +1,7 @@
 # Customization Guide
 
-This guide covers how to customize and extend this Neovim configuration to suit your personal preferences and workflow.
+This guide covers how to customize and extend this Neovim configuration to suit
+your personal preferences and workflow.
 
 ## Configuration Architecture
 
@@ -296,17 +297,9 @@ return {
   "neovim/nvim-lspconfig",
   opts = {
     servers = {
-      -- Customize Python LSP
-      pyright = {
-        settings = {
-          python = {
-            analysis = {
-              typeCheckingMode = "strict",
-              autoImportCompletions = true,
-            },
-          },
-        },
-      },
+      -- Customize Python LSP (ty - Astral's type checker)
+      -- Note: ty config goes in after/lsp/ty.lua
+      -- See: https://docs.astral.sh/ty/reference/configuration/
 
       -- Add a custom LSP server
       ["custom-ls"] = {
@@ -664,4 +657,5 @@ git add lua/config/personal.lua
 git commit -m "Add personal customizations"
 ```
 
-This guide should help you customize the configuration to fit your specific needs while maintaining compatibility with future updates.
+This guide should help you customize the configuration to fit your specific
+needs while maintaining compatibility with future updates.

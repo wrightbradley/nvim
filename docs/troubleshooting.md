@@ -1,6 +1,7 @@
 # Troubleshooting Guide
 
-This guide helps you diagnose and fix common issues with this Neovim configuration.
+This guide helps you diagnose and fix common issues with this Neovim
+configuration.
 
 ## General Diagnostics
 
@@ -81,8 +82,10 @@ nvim --startuptime startup.log  -- Generate startup log
 **Manual Server Installation:**
 
 ```bash
-# Python
-pip install pyright
+# Python (ty - Astral's type checker)
+pip install ty
+# or with pipx
+pipx install ty
 
 # JavaScript/TypeScript
 npm install -g typescript-language-server
@@ -433,4 +436,5 @@ nvim --noplugin         -- Start without any plugins
 nvim --clean            -- Start with no config at all
 ```
 
-This troubleshooting guide should help you resolve most issues you encounter with this Neovim configuration.
+This troubleshooting guide should help you resolve most issues you encounter
+with this Neovim configuration.
