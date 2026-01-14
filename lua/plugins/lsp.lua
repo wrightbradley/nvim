@@ -182,8 +182,17 @@ return {
             Util.lsp.on_attach(function(client, _)
               -- Pyright only provides hover (better type info than ty's "Unknown")
               -- ty handles everything else (diagnostics, navigation, completion, etc.)
+
+              -- Completely disable diagnostics - ty handles them
               client.server_capabilities.diagnosticProvider = nil
-              client.server_capabilities.publishDiagnostics = false
+              client.server_capabilities.publishDiagnostics = nil
+              if client.config then
+                client.config.capabilities = client.config.capabilities or {}
+                if client.config.capabilities.textDocument then
+                  client.config.capabilities.textDocument.publishDiagnostics = nil
+                end
+              end
+
               -- Disable navigation to let ty handle it
               client.server_capabilities.definitionProvider = false
               client.server_capabilities.declarationProvider = false
