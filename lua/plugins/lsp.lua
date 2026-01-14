@@ -174,8 +174,8 @@ return {
           end,
           ruff = function()
             Util.lsp.on_attach(function(client, _)
-              -- Disable hover in favor of Pyright
-              client.server_capabilities.hoverProvider = false
+              -- Disable hover in favor of basedpyright
+              client.server_capabilities.hoverProvider = nil
             end, "ruff")
           end,
           basedpyright = function()
@@ -186,14 +186,14 @@ return {
               -- Completely disable diagnostics - ty handles them
               client.server_capabilities.diagnosticProvider = nil
 
-              -- Disable navigation to let ty handle it
-              client.server_capabilities.definitionProvider = false
-              client.server_capabilities.declarationProvider = false
-              client.server_capabilities.typeDefinitionProvider = false
-              client.server_capabilities.referencesProvider = false
-              client.server_capabilities.implementationProvider = false
-              client.server_capabilities.renameProvider = false
-              client.server_capabilities.codeActionProvider = false
+              -- Disable navigation to let ty handle it (use nil, not false)
+              client.server_capabilities.definitionProvider = nil
+              client.server_capabilities.declarationProvider = nil
+              client.server_capabilities.typeDefinitionProvider = nil
+              client.server_capabilities.referencesProvider = nil
+              client.server_capabilities.implementationProvider = nil
+              client.server_capabilities.renameProvider = nil
+              client.server_capabilities.codeActionProvider = nil
               client.server_capabilities.completionProvider = nil
 
               -- Keep hover and inlay hints enabled - basedpyright has better type inference
@@ -218,8 +218,8 @@ return {
           ty = function()
             Util.lsp.on_attach(function(client, _)
               -- ty handles everything except hover and inlay hints (shows "Unknown" for many types)
-              -- Disable hover and inlay hints in favor of basedpyright
-              client.server_capabilities.hoverProvider = false
+              -- Disable hover and inlay hints in favor of basedpyright (use nil, not false)
+              client.server_capabilities.hoverProvider = nil
               client.server_capabilities.inlayHintProvider = nil
             end, "ty")
           end,
