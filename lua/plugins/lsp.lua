@@ -78,7 +78,7 @@ return {
           "yamlls",
           "vtsls",
           "jsonls",
-          "pyright", -- For hover/type information (ty handles diagnostics)
+          "basedpyright", -- Enhanced pyright fork with inlay hints (ty handles most, basedpyright for hover/hints)
           "ruff",
           "eslint",
           "bashls",
@@ -178,9 +178,9 @@ return {
               client.server_capabilities.hoverProvider = false
             end, "ruff")
           end,
-          pyright = function()
+          basedpyright = function()
             Util.lsp.on_attach(function(client, _)
-              -- Pyright provides hover and inlay hints (better type info than ty's "Unknown")
+              -- basedpyright provides hover and inlay hints (better type info than ty's "Unknown")
               -- ty handles everything else (diagnostics, navigation, completion, etc.)
 
               -- Completely disable diagnostics - ty handles them
@@ -203,14 +203,15 @@ return {
               client.server_capabilities.codeActionProvider = false
               client.server_capabilities.completionProvider = nil
 
-              -- Keep inlay hints enabled - pyright has better type inference
+              -- Keep hover and inlay hints enabled - basedpyright has better type inference
+              -- client.server_capabilities.hoverProvider is left enabled
               -- client.server_capabilities.inlayHintProvider is left enabled
-            end, "pyright")
+            end, "basedpyright")
           end,
           ty = function()
             Util.lsp.on_attach(function(client, _)
               -- ty handles everything except hover and inlay hints (shows "Unknown" for many types)
-              -- Disable hover and inlay hints in favor of Pyright
+              -- Disable hover and inlay hints in favor of basedpyright
               client.server_capabilities.hoverProvider = false
               client.server_capabilities.inlayHintProvider = nil
             end, "ty")
