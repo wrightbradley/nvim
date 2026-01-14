@@ -200,19 +200,14 @@ return {
               -- client.server_capabilities.hoverProvider is left enabled
               -- client.server_capabilities.inlayHintProvider is left enabled
 
-              -- Nuclear option: clear any diagnostics from basedpyright immediately
-              vim.api.nvim_create_autocmd("DiagnosticChanged", {
-                buffer = buffer,
-                callback = function()
-                  local diagnostics = vim.diagnostic.get(buffer)
-                  local filtered = vim.tbl_filter(function(d)
-                    return not (d.source and d.source:match("basedpyright"))
-                  end, diagnostics)
-                  if #filtered < #diagnostics then
-                    vim.diagnostic.set(vim.lsp.diagnostic.get_namespace(client.id), buffer, {})
-                  end
-                end,
-              })
+              -- Completely disable diagnostics from basedpyright's namespace
+              local ns = vim.lsp.diagnostic.get_namespace(client.id)
+              vim.diagnostic.config({
+                virtual_text = false,
+                signs = false,
+                underline = false,
+                update_in_insert = false,
+              }, ns)
             end, "basedpyright")
           end,
           ty = function()
