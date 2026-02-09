@@ -35,7 +35,6 @@ return {
         optional = true, -- make optional so it's only enabled if any extras need it
         opts = {},
       },
-      "giuxtaposition/blink-cmp-copilot",
     },
     event = "InsertEnter",
 
@@ -117,15 +116,6 @@ return {
               module = "lazydev.integrations.blink",
               score_offset = 100,
             },
-
-            -- Copilot integration (disabled by default for performance)
-            copilot = {
-              name = "copilot",
-              module = "blink-cmp-copilot",
-              kind = "Copilot",
-              score_offset = 100,
-              async = true,
-            },
           },
 
           --[[
@@ -173,9 +163,6 @@ return {
 
             -- Rust: Excellent LSP with rust-analyzer
             rust = { "snippets", "lsp", "buffer" },
-
-            -- Special cases
-            codecompanion = { "codecompanion" }, -- AI coding assistant
           },
         },
 
@@ -223,18 +210,14 @@ return {
         end
       end
 
-      -- Add Tab key behavior for snippet navigation + AI accept
+      -- Add Tab key behavior for snippet navigation
       if not opts.keymap["<Tab>"] then
         opts.keymap["<Tab>"] = {
           function()
-            -- First priority: snippet navigation
+            -- Snippet navigation
             if vim.snippet.active({ direction = 1 }) then
               vim.snippet.jump(1)
               return true
-            end
-            -- Second priority: AI accept (if available and configured)
-            if Util.cmp.actions.ai_accept then
-              return Util.cmp.actions.ai_accept()
             end
           end,
           "fallback",
@@ -244,7 +227,7 @@ return {
       -- Unset custom prop to pass blink.cmp validation
       opts.sources.compat = nil
 
-      -- Handle custom completion item kinds (for copilot, etc.)
+      -- Handle custom completion item kinds
       for _, provider in pairs(opts.sources.providers or {}) do
         ---@cast provider blink.cmp.SourceProviderConfig|{kind?:string}
         if provider.kind then

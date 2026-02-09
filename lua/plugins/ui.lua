@@ -157,13 +157,6 @@ return {
                 end
               end,
             },
-            Util.lualine.status(Util.config.icons.kinds.Copilot, function()
-              local clients = package.loaded["copilot"] and Util.lsp.get_clients({ name = "copilot", bufnr = 0 }) or {}
-              if #clients > 0 then
-                local status = require("copilot.status").data.status
-                return (status == "InProgress" and "pending") or (status == "Warning" and "error") or "ok"
-              end
-            end),
           },
           lualine_y = {
             { "progress", separator = " ", padding = { left = 1, right = 1 } },
