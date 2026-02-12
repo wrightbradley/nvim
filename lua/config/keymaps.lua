@@ -28,7 +28,10 @@ local map = vim.keymap.set
 map("i", "jk", "<Esc>", { noremap = true, desc = "Exit insert mode" })
 map("i", "jj", "<Esc>", { noremap = true, desc = "Exit insert mode" })
 map("c", "jk", "<C-c>", { noremap = true, desc = "Exit command mode" })
-map("v", "jk", "<Esc>", { noremap = true, desc = "Exit visual mode" })
+-- REMOVED: map("v", "jk", "<Esc>", { noremap = true, desc = "Exit visual mode" })
+-- This mapping causes a 300ms timeout when holding 'j' in visual mode,
+-- which results in one extra line being selected after releasing the key.
+-- Use regular <Esc> to exit visual mode instead.
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
