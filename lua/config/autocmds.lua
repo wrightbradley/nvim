@@ -161,17 +161,28 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   desc = "Create directory if it doesn't exist when saving a file",
 })
 
--- function _G.check_filetype(bufnr)
---   print("Filetype for buffer " .. bufnr .. ": " .. vim.bo[bufnr].filetype)
--- end
---
--- vim.api.nvim_create_autocmd("BufEnter", {
---   callback = function(args)
---     print("BufEnter: buffer", args.buf, "filetype", vim.bo[args.buf].filetype)
---   end,
--- })
--- vim.api.nvim_create_autocmd("FileType", {
---   callback = function(args)
---     print("FileType: filetype", args.match, "buffer", args.buf)
---   end,
--- })
+--- Detect `uv run --script` shebangs as Python (PEP 723 inline scripts).
+--- Neovim's builtin detection doesn't recognize the `uv run` shebang,
+--- so extensionless uv scripts get misdetected. This corrects the filetype
+--- after the buffer content is loaded. BufReadPost handles new files;
+--- BufWinEnter catches files opened before this autocmd was registered
+--- (e.g. files passed as CLI arguments, where BufReadPost fires before
+--- lazy.nvim finishes loading plugins and config).
+--- autocmd group: uv_script_filetype
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter" }, {
+  group = augroup("uv_script_filetype"),
+  callback = function(event)
+    if vim.bo[event.buf].filetype == "python" then
+      return
+    end
+    -- Skip special buffers
+    if vim.bo[event.buf].buftype ~= "" then
+      return
+    end
+    local first_line = vim.api.nvim_buf_get_lines(event.buf, 0, 1, false)[1] or ""
+    if first_line:find("uv run %-%-script") then
+      vim.bo[event.buf].filetype = "python"
+    end
+  end,
+  desc = "Detect uv run --script shebangs as Python",
+})
