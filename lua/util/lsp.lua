@@ -192,7 +192,7 @@ function M.execute(opts)
       params = params,
     })
   else
-    return vim.lsp.buf_request(0, "workspace/executeCommand", params, opts.handler)
+    return vim.lsp.buf.execute_command(params, opts.handler)
   end
 end
 

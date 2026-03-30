@@ -196,10 +196,10 @@ function M.setup(opts)
         -- Create a new buffer and display the results
         local buf = vim.api.nvim_create_buf(false, true)
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-        vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
-        vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
-        vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
-        vim.api.nvim_buf_set_option(buf, "modifiable", false)
+        vim.bo[buf].buftype = "nofile"
+        vim.bo[buf].bufhidden = "wipe"
+        vim.bo[buf].filetype = "markdown"
+        vim.bo[buf].modifiable = false
 
         -- Open in a split
         vim.cmd("split")

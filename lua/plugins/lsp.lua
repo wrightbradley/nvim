@@ -363,11 +363,7 @@ return {
       -- Code lens
       if opts.codelens.enabled and vim.lsp.codelens then
         Util.lsp.on_supports_method("textDocument/codeLens", function(_, buffer)
-          vim.lsp.codelens.refresh()
-          vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-            buffer = buffer,
-            callback = vim.lsp.codelens.refresh,
-          })
+          vim.lsp.codelens.enable(true, { bufnr = buffer })
         end)
       end
 
