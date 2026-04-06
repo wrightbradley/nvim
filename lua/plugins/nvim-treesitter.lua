@@ -81,11 +81,15 @@ return {
         callback = function(ev)
           local ok = pcall(vim.treesitter.start, ev.buf)
           if ok then
-            -- Treesitter-based folding
-            vim.wo[ev.buf][0].foldmethod = "expr"
-            vim.wo[ev.buf][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-            -- Treesitter-based indentation
+            -- Treesitter-based indentation (buffer-local, always safe)
             vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            -- Treesitter-based folding (window-local; apply to all windows showing this buffer)
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              if vim.api.nvim_win_get_buf(win) == ev.buf then
+                vim.wo[win].foldmethod = "expr"
+                vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+              end
+            end
           end
         end,
       })
