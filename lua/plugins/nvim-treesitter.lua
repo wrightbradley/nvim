@@ -2,94 +2,100 @@
 --- This file configures the `nvim-treesitter` plugin for syntax highlighting and text objects
 --- in Neovim. It sets up Treesitter parsers and additional modules for enhanced functionality.
 
+-- Parsers to ensure are installed
+local parsers = {
+  "bash",
+  "c",
+  "css",
+  "csv",
+  "cue",
+  "diff",
+  "dockerfile",
+  "editorconfig",
+  "fish",
+  "git_config",
+  "git_rebase",
+  "gitattributes",
+  "gitcommit",
+  "gitignore",
+  "go",
+  "gomod",
+  "gosum",
+  "gotmpl",
+  "gowork",
+  "graphql",
+  "hcl",
+  "helm",
+  "html",
+  "http",
+  "hurl",
+  "javascript",
+  "jinja",
+  "jq",
+  "jsdoc",
+  "json",
+  "latex",
+  "lua",
+  "luadoc",
+  "luap",
+  "markdown",
+  "markdown_inline",
+  "printf",
+  "python",
+  "query",
+  "regex",
+  "rst",
+  "scss",
+  "svelte",
+  "terraform",
+  "toml",
+  "tsx",
+  "typescript",
+  "typst",
+  "vim",
+  "vimdoc",
+  "vue",
+  "xml",
+  "yaml",
+}
+
 return {
-  -- Treesitter is a new parser generator tool that we can
-  -- use in Neovim to power faster and more accurate
-  -- syntax highlighting.
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master", -- last release is way too old and doesn't work on Windows
+    branch = "main",
     build = ":TSUpdate",
-    event = { "LazyFile", "VeryLazy" },
-    lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
-    init = function(plugin)
-      -- PERF: add nvim-treesitter queries to the rtp and it's custom query predicates early
-      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
-      -- no longer trigger the **nvim-treesitter** module to be loaded in time.
-      -- Luckily, the only things that those plugins need are the custom queries, which we make available
-      -- during startup.
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
+    -- The new main branch does not support lazy-loading
+    lazy = false,
+    config = function()
+      require("nvim-treesitter").setup()
+
+      -- Register mise as a TOML-based filetype so treesitter uses the toml parser
+      -- and queries/mise/injections.scm applies for mise config files.
+      vim.treesitter.language.register("toml", "mise")
+
+      -- Install missing parsers asynchronously on startup
+      require("nvim-treesitter").install(parsers)
+
+      -- Enable treesitter highlighting, indent, and folding for all supported filetypes
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function(ev)
+          local ok = pcall(vim.treesitter.start, ev.buf)
+          if ok then
+            -- Treesitter-based folding
+            vim.wo[ev.buf][0].foldmethod = "expr"
+            vim.wo[ev.buf][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+            -- Treesitter-based indentation
+            vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
     end,
-    cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
-    keys = {
-      { "<c-space>", desc = "Increment Selection" },
-      { "<bs>", desc = "Decrement Selection", mode = "x" },
-    },
-    ---@type TSConfig
-    ---@diagnostic disable-next-line: missing-fields
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    event = "VeryLazy",
+    enabled = true,
     opts = {
-      highlight = { enable = true },
-      indent = { enable = true },
-      ensure_installed = {
-        "bash",
-        "c",
-        "csv",
-        "cue",
-        "diff",
-        "dockerfile",
-        "editorconfig",
-        "fish",
-        "git_config",
-        "git_rebase",
-        "gitattributes",
-        "gitcommit",
-        "gitignore",
-        "go",
-        "gomod",
-        "gosum",
-        "gotmpl",
-        "gowork",
-        "graphql",
-        "hcl",
-        "helm",
-        "html",
-        "http",
-        "hurl",
-        "javascript",
-        "jinja",
-        "jq",
-        "jsdoc",
-        "json",
-        "jsonc",
-        "lua",
-        "luadoc",
-        "luap",
-        "markdown",
-        "markdown_inline",
-        "printf",
-        "python",
-        "query",
-        "regex",
-        "rst",
-        "terraform",
-        "toml",
-        "tsx",
-        "typescript",
-        "vim",
-        "vimdoc",
-        "xml",
-        "yaml",
-      },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
-          scope_incremental = false,
-          node_decremental = "<bs>",
-        },
-      },
       textobjects = {
         move = {
           enable = true,
@@ -100,39 +106,16 @@ return {
         },
       },
     },
-    ---@param opts TSConfig
     config = function(_, opts)
-      if type(opts.ensure_installed) == "table" then
-        opts.ensure_installed = Util.dedup(opts.ensure_installed)
-      end
-      require("nvim-treesitter.configs").setup(opts)
-      require("vim.treesitter.query").add_predicate("is-mise?", function(_, _, bufnr, _)
-        local filepath = vim.api.nvim_buf_get_name(tonumber(bufnr) or 0)
-        local filename = vim.fn.fnamemodify(filepath, ":t")
-        return string.match(filename, ".*mise.*%.toml$")
-      end, { force = true, all = false })
-    end,
-  },
-  {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    event = "VeryLazy",
-    enabled = true,
-    config = function()
-      -- If treesitter is already loaded, we need to run config again for textobjects
-      if Util.is_loaded("nvim-treesitter") then
-        local opts = Util.opts("nvim-treesitter")
-        require("nvim-treesitter.configs").setup({ textobjects = opts.textobjects })
-      end
+      require("nvim-treesitter-textobjects").setup(opts)
 
-      -- When in diff mode, we want to use the default
-      -- vim text objects c & C instead of the treesitter ones.
+      -- When in diff mode, use default vim text objects c & C instead of treesitter ones.
       local move = require("nvim-treesitter-textobjects.move") ---@type table<string,fun(...)>
-      local configs = require("nvim-treesitter.configs")
       for name, fn in pairs(move) do
         if name:find("goto") == 1 then
           move[name] = function(q, ...)
             if vim.wo.diff then
-              local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
+              local config = opts.textobjects.move[name] ---@type table<string,string>
               for key, query in pairs(config or {}) do
                 if q == query and key:find("[%]%[][cC]") then
                   vim.cmd("normal! " .. key)
