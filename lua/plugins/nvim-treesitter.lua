@@ -67,6 +67,12 @@ return {
     -- The new main branch does not support lazy-loading
     lazy = false,
     config = function()
+      local ts_install = require("nvim-treesitter.install")
+
+      local ts_path = vim.fn.stdpath("data") .. "/mise/installs/node/latest/bin"
+      vim.env.PATH = ts_path .. ":" .. (vim.env.PATH or "")
+      ts_install.compilers = { "tree-sitter" }
+
       require("nvim-treesitter").setup()
 
       -- Register mise as a TOML-based filetype so treesitter uses the toml parser
