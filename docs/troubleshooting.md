@@ -347,8 +347,8 @@ nvim --cmd "set verbose=9" --cmd "set verbosefile=/tmp/nvim.log"
 **LSP Debug:**
 
 ```vim
-:lua vim.lsp.set_log_level("debug")
-:lua print(vim.lsp.get_log_path())
+:lua vim.lsp.log.set_level("debug")
+:lua print(vim.lsp.log.get_filename())
 ```
 
 **Lazy.nvim Debug:**
@@ -398,7 +398,7 @@ nvim  # Will reinstall everything
 **LSP Logs:**
 
 ```vim
-:lua print(vim.lsp.get_log_path())
+:lua print(vim.lsp.log.get_filename())
 ```
 
 ## Prevention Tips

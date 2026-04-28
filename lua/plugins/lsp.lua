@@ -22,7 +22,7 @@ return {
         callback = function(ev)
           local client = vim.lsp.get_client_by_id(ev.data.client_id)
           -- Enable enhanced completion for Go language server
-          if client and client.name == "gopls" and client:supports_method("textDocument/completion") then
+          if client and client.name == "gopls" and client:supports_method("textDocument/completion", { bufnr = ev.buf }) then
             vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
           end
         end,
@@ -322,15 +322,15 @@ return {
           end, "Rename File")
 
           -- Capability-specific keymaps
-          if client:supports_method("textDocument/signatureHelp") then
+          if client:supports_method("textDocument/signatureHelp", { bufnr = buffer }) then
             map("n", "gK", vim.lsp.buf.signature_help, "Signature Help")
             map("i", "<c-k>", vim.lsp.buf.signature_help, "Signature Help")
           end
-          if client:supports_method("textDocument/codeLens") then
+          if client:supports_method("textDocument/codeLens", { bufnr = buffer }) then
             map({ "n", "v" }, "<leader>cc", vim.lsp.codelens.run, "Run Codelens")
             map("n", "<leader>cC", vim.lsp.codelens.refresh, "Refresh Codelens")
           end
-          if Snacks.words.is_enabled() and client:supports_method("textDocument/documentHighlight") then
+          if Snacks.words.is_enabled() and client:supports_method("textDocument/documentHighlight", { bufnr = buffer }) then
             map("n", "]]", function()
               Snacks.words.jump(vim.v.count1)
             end, "Next Reference")

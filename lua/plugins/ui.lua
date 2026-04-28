@@ -1,3 +1,12 @@
+local noice_lsp_override = {
+  ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+  ["cmp.entry.get_documentation"] = true,
+}
+
+if vim.fn.has("nvim-0.12") == 0 then
+  noice_lsp_override["vim.lsp.util.stylize_markdown"] = true
+end
+
 return {
   -- This is what powers the fancy-looking
   -- tabs, which include filetype icons and close buttons.
@@ -206,11 +215,7 @@ return {
     event = "VeryLazy",
     opts = {
       lsp = {
-        override = {
-          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-          ["vim.lsp.util.stylize_markdown"] = true,
-          ["cmp.entry.get_documentation"] = true,
-        },
+        override = noice_lsp_override,
         hover = {
           silent = true,
         },

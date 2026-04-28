@@ -26,7 +26,8 @@ function M.foldexpr()
     if vim.bo[buf].filetype:find("dashboard") then
       vim.b[buf].ts_folds = false
     else
-      vim.b[buf].ts_folds = pcall(vim.treesitter.get_parser, buf)
+      local ok, parser = pcall(vim.treesitter.get_parser, buf)
+      vim.b[buf].ts_folds = ok and parser ~= nil
     end
   end
   return vim.b[buf].ts_folds and vim.treesitter.foldexpr() or "0"

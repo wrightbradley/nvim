@@ -113,6 +113,9 @@ opt.virtualedit = "block" -- Allow cursor to move where there is no text in visu
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.winborder = "rounded"
+if vim.fn.exists("+pumborder") == 1 then
+  opt.pumborder = "rounded"
+end
 opt.wrap = false -- Disable line wrap
 
 opt.smoothscroll = true

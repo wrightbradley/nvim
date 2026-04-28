@@ -20,7 +20,7 @@ end, { desc = "Organize Imports" })
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
-    if client and client:supports_method("textDocument/completion") then
+    if client and client:supports_method("textDocument/completion", { bufnr = ev.buf }) then
       vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
     end
   end,
