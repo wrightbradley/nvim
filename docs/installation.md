@@ -34,6 +34,7 @@ This configuration works on:
 # Install required tools
 brew install neovim git node python@3.11 rust go
 brew install ripgrep fd fzf lazygit
+cargo install mdterm
 brew install --cask font-jetbrains-mono-nerd-font
 ```
 
@@ -72,6 +73,7 @@ sudo apt install -y ripgrep fd-find fzf
 # Install packages
 sudo pacman -S neovim git nodejs npm python python-pip rust go
 sudo pacman -S ripgrep fd fzf lazygit
+cargo install mdterm
 
 # Install AUR helper (yay) if needed
 git clone https://aur.archlinux.org/yay.git

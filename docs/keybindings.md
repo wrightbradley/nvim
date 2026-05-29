@@ -149,6 +149,14 @@ Press `<leader>?` to show the which-key help for available keybindings.
 | `<leader>cD` | n    | Go to Source Definition   |
 | `<leader>cV` | n    | Select TypeScript Version |
 
+### Markdown
+
+| Key          | Mode | Description                              |
+| ------------ | ---- | ---------------------------------------- |
+| `<leader>ue` | n    | Markdown reader (mdterm, float terminal) |
+| `<leader>um` | n    | Toggle render-markdown (in-buffer)       |
+| `<leader>cp` | n    | Markdown browser preview                 |
+
 ## Debugging (`<leader>d`)
 
 ### Debug Profiler (`<leader>dp`)

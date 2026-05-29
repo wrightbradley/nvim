@@ -27,6 +27,16 @@ return {
 
   {
     "MeanderingProgrammer/render-markdown.nvim",
+    keys = {
+      {
+        "<leader>ue",
+        function()
+          require("util.mdterm").toggle()
+        end,
+        desc = "Markdown Reader (mdterm)",
+        ft = { "markdown", "markdown.mdx" },
+      },
+    },
     opts = {
       code = {
         sign = false,

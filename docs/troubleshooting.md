@@ -166,7 +166,22 @@ cd /path/to/project
 git status              -- Verify git repository
 ```
 
-### 5. Formatting and Linting Issues
+### 5. Markdown reader (mdterm)
+
+#### Symptoms
+
+- `<leader>ue` shows a warning or does not open a viewer
+
+#### Solutions
+
+```bash
+cargo install mdterm   # Requires Rust 1.85+
+which mdterm           # Must be on PATH
+```
+
+Run `:checkhealth` and confirm `mdterm` is listed as installed.
+
+### 6. Formatting and Linting Issues
 
 #### Symptoms
 
@@ -212,7 +227,7 @@ go install mvdan.cc/gofumpt@latest
 :lua print(vim.inspect(require("conform").list_formatters()))
 ```
 
-### 6. Completion Issues
+### 7. Completion Issues
 
 #### Symptoms
 
@@ -242,7 +257,7 @@ go install mvdan.cc/gofumpt@latest
 :Lazy reload blink.cmp
 ```
 
-### 7. File Explorer Problems
+### 8. File Explorer Problems
 
 #### Symptoms
 
@@ -265,7 +280,7 @@ go install mvdan.cc/gofumpt@latest
 :Explore                -- Built-in netrw
 ```
 
-### 8. Theme and UI Issues
+### 9. Theme and UI Issues
 
 #### Symptoms
 
@@ -296,7 +311,7 @@ brew install --cask font-jetbrains-mono-nerd-font  # macOS
 :colorscheme tokyonight -- Reset to configured theme
 ```
 
-### 9. Performance Issues
+### 10. Performance Issues
 
 #### Memory Usage
 
