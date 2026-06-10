@@ -2,10 +2,30 @@
 --- This file configures Mason for managing tools (formatters, linters, DAP adapters).
 --- LSP servers are managed by mason-lspconfig in lsp.lua via automatic_installation.
 
+--- Mise Python builds omit stdlib venv; Mason PyPI packages need a Python with venv.
+local function ensure_mason_python_path()
+  if vim.g.mason_python_path_prepared then
+    return
+  end
+
+  for _, dir in ipairs({ "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin" }) do
+    local py = dir .. "/python3"
+    if vim.fn.executable(py) == 1 then
+      local result = vim.system({ py, "-c", "import venv" }, { text = true }):wait()
+      if result.code == 0 then
+        vim.env.PATH = dir .. ":" .. (vim.env.PATH or "")
+        vim.g.mason_python_path_prepared = true
+        return
+      end
+    end
+  end
+end
+
 return {
   -- cmdline tools, formatters, linters, and DAP adapters
   {
     "mason-org/mason.nvim",
+    event = "LazyFile",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
@@ -76,6 +96,7 @@ return {
     --- Configures Mason with the specified options.
     ---@param opts MasonSettings | {ensure_installed: string[]}
     config = function(_, opts)
+      ensure_mason_python_path()
       require("mason").setup(opts)
       local mr = require("mason-registry")
       mr:on("package:install:success", function()

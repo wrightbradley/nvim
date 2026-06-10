@@ -1,5 +1,8 @@
+local mason_cmd = vim.fs.joinpath(vim.fn.stdpath("data"), "mason/bin/tailwindcss-language-server")
+
 ---@type vim.lsp.Config
 return {
+  cmd = { mason_cmd, "--stdio" },
   filetypes = {
     -- html
     "aspnetcorerazor",
