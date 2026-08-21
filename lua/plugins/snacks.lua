@@ -245,6 +245,41 @@ return {
       { "<leader>gy", function() Snacks.gitbrowse() end, desc = "Open in git repository browser" },
       { "<leader>gY", function() Snacks.gitbrowse({ action = "yank" }) end, desc = "Yank git repository URL" },
 
+      -- github
+      {
+        "<leader>gH",
+        function()
+          if vim.fn.executable("gh-dash") ~= 1 then
+            return Util.warn("gh-dash is not installed (`brew install gh-dash`)", { title = "gh-dash" })
+          end
+          Snacks.terminal({ "gh", "dash" }, {
+            cwd = Util.root.git(),
+            win = { style = "float", title = " gh-dash ", footer = "" },
+          })
+        end,
+        desc = "GitHub Dashboard (gh-dash)",
+      },
+      {
+        "<leader>gv",
+        function()
+          Snacks.terminal({ "gh", "pr", "checks", "--watch" }, {
+            cwd = Util.root.git(),
+            win = { style = "float", title = " PR Checks ", interactive = false },
+          })
+        end,
+        desc = "PR Checks (watch CI)",
+      },
+      {
+        "<leader>gR",
+        function()
+          Snacks.terminal({ "gh", "run", "list" }, {
+            cwd = Util.root.git(),
+            win = { style = "float", title = " GitHub Actions ", interactive = false },
+          })
+        end,
+        desc = "GitHub Actions Runs",
+      },
+
       -- Grep
       { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
       { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },

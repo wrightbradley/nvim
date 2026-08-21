@@ -6,9 +6,24 @@ return {
       { "<leader>ghb", "<cmd>GhBlameCurrentLine<cr>", desc = "GitHub Blame Current Line" },
     },
   },
-  -- NOTE: Octo.nvim removed in favor of Snacks.gh (LazyVim v15.13.0)
-  -- Snacks.gh provides lightweight GitHub integration via picker
-  -- For full GitHub editing capabilities, Octo can be re-enabled if needed
+  -- NOTE: Octo.nvim re-enabled for the PR review write-loop (comments,
+  -- reviews, approvals). Snacks.picker still handles lightweight browsing
+  -- (<leader>gp / <leader>gi); Octo handles stateful GitHub editing.
+  {
+    "pwntester/octo.nvim",
+    cmd = "Octo",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "folke/snacks.nvim",
+    },
+    opts = {
+      picker = "snacks",
+    },
+    keys = {
+      { "<leader>gO", "<cmd>Octo pr list<cr>", desc = "GitHub PRs (Octo)" },
+    },
+  },
   -- {
   --   "polarmutex/git-worktree.nvim",
   --   dependencies = {

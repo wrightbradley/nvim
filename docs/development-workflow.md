@@ -233,6 +233,10 @@ go test -run TestFunction
 
 ## Git Integration Workflow
 
+> **GitHub PR review:** see the dedicated
+> [GitHub PR Review Workflow](github-review-workflow.md) guide for reviewing PRs
+> (octo.nvim), monitoring CI, and addressing review feedback.
+
 ### 1. Git Operations
 
 #### Basic Git Commands

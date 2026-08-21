@@ -134,8 +134,29 @@ Press `<leader>?` to show the which-key help for available keybindings.
 | `<leader>gC` | n    | Git Buffer Commits             |
 | `<leader>gb` | n    | Git Branches                   |
 | `<leader>gd` | n    | Git Diff (hunks)               |
+| `<leader>gD` | n    | Git Diff (origin, grouped)     |
 | `<leader>gy` | n    | Open in git repository browser |
 | `<leader>gY` | n    | Yank git repository URL        |
+
+### GitHub (`<leader>g`)
+
+See the [GitHub PR Review Workflow](github-review-workflow.md) for the full
+review flow.
+
+| Key           | Mode | Description                          |
+| ------------- | ---- | ------------------------------------ |
+| `<leader>gO`  | n    | Octo PR list (full review workflow)  |
+| `<leader>gp`  | n    | GitHub Pull Requests (open)          |
+| `<leader>gP`  | n    | GitHub Pull Requests (all)           |
+| `<leader>gi`  | n    | GitHub Issues (open)                 |
+| `<leader>gI`  | n    | GitHub Issues (all)                  |
+| `<leader>gH`  | n    | gh-dash dashboard (float)            |
+| `<leader>gv`  | n    | PR Checks — watch CI                 |
+| `<leader>gR`  | n    | GitHub Actions runs                  |
+| `<leader>gc`  | n    | GhReviewComments (addressed threads) |
+| `<leader>ghb` | n    | GitHub blame of current line         |
+| `<leader>gws` | n    | Switch git worktree                  |
+| `<leader>gwn` | n    | Create new git worktree              |
 
 ## Code Operations
 
