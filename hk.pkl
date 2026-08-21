@@ -1,0 +1,77 @@
+amends "package://github.com/jdx/hk/releases/download/v1.56.0/hk@1.56.0#/Config.pkl"
+
+import "package://github.com/jdx/hk/releases/download/v1.56.0/hk@1.56.0#/Builtins.pkl"
+
+// Vendored LazyVim reference tree - never lint or format it
+exclude = List("Lazyvim/**")
+
+local linters = new Mapping<String, Step> {
+  // --- General Checks ---
+  ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
+    // .gitignore intentionally contains whitespace patterns
+    exclude = List(".gitignore")
+  }
+  // replaces pre-commit's end-of-file-fixer
+  ["newlines"] = Builtins.newlines
+  // replaces check-added-large-files (--maxkb=1500)
+  ["large-files"] {
+    glob = List("**/*")
+    check = "hk util check-added-large-files --maxkb=1500 {{files}}"
+  }
+  ["check-case-conflict"] = Builtins.check_case_conflict
+  // replaces check-json
+  ["check-json"] {
+    glob = List("**/*.json")
+    check = "jq empty {{files}}"
+    batch = true
+  }
+  ["check-merge-conflict"] = Builtins.check_merge_conflict
+  ["python-debug-statements"] = Builtins.python_debug_statements
+  ["detect-private-key"] = Builtins.detect_private_key
+
+  // --- Security Checks ---
+  // mirrors Yelp/detect-secrets args from the old pre-commit config
+  ["detect-secrets"] {
+    glob = List("**/*")
+    check = "uvx --from detect-secrets detect-secrets-hook --disable-plugin KeywordDetector --disable-plugin Base64HighEntropyString --exclude-secrets '[0-9a-f]{40}' {{files}}"
+  }
+  ["gitleaks"] = Builtins.gitleaks
+
+  // --- YAML Checks ---
+  ["yamlfmt"] = Builtins.yamlfmt
+  ["yamllint"] = Builtins.yamllint
+
+  // --- Lua Checks ---
+  // scoped to lua/ after/ ftdetect/ - vendored Lazyvim/ is excluded globally
+  ["stylua"] = (Builtins.stylua) {
+    glob = List("lua/**/*.lua", "after/**/*.lua", "ftdetect/**/*.lua")
+  }
+  ["selene"] = (Builtins.selene) {
+    glob = List("lua/**/*.lua", "after/**/*.lua", "ftdetect/**/*.lua")
+  }
+
+  // --- Config Checks ---
+  // validate hk.pkl itself whenever it changes
+  ["pkl-validate"] = (Builtins.pkl) {
+    glob = List("hk.pkl")
+  }
+}
+
+hooks {
+  ["pre-commit"] {
+    // automatically apply available fixes (yamlfmt, stylua, newlines, ...)
+    fix = true
+    stash = "git"
+    steps {
+      ...linters
+    }
+  }
+  // special hooks for `hk fix` / `hk check`
+  ["fix"] {
+    fix = true
+    steps = linters
+  }
+  ["check"] {
+    steps = linters
+  }
+}

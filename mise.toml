@@ -1,0 +1,48 @@
+#:schema https://schema.mise.sh/schemas/mise.json
+
+[tools]
+# Git hook manager + Pkl runtime (needed to evaluate hk.pkl)
+hk = "1.56.0"
+pkl = "latest"
+# lint/format toolchain used by hk.pkl
+uv = "latest"          # runs detect-secrets via uvx
+jq = "latest"          # check-json
+gitleaks = "latest"    # secret scanning
+yamlfmt = "latest"     # YAML formatting
+"pipx:yamllint" = "latest"
+stylua = "latest"      # Lua formatting
+# Lua linter (full backend key - no registry shorthand exists)
+"aqua:Kampfkarren/selene" = "latest"
+
+[tasks.init]
+description = "initialize environment (direnv, vale, git hooks)"
+depends = ["direnv", "vale", "hooks"]
+
+[tasks.direnv]
+description = "setup direnv for env"
+run = 'cp .envrc.sample .envrc && direnv allow .'
+
+[tasks.vale]
+description = "setup vale prose linter dictionaries"
+run = 'vale sync --config .vale.ini'
+
+[tasks.hooks]
+description = "install git hooks via hk"
+run = 'hk install'
+
+[tasks.lint]
+description = "Run all linters (hk)"
+run = 'hk check --all'
+
+[tasks.fix]
+description = "Auto-fix lint issues where possible (hk)"
+run = 'hk fix'
+
+[tasks.gen-docs]
+description = "Regenerate nvim plugin catalog docs"
+run = 'uv run scripts/gen-nvim-plugin-catalog.py'
+
+# `mise tasks` prints this automatically; kept for `make help` muscle memory
+[tasks.help]
+description = "Show available tasks"
+run = 'mise tasks'

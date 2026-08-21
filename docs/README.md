@@ -78,7 +78,7 @@ This is a LazyVim-based Neovim configuration with extensive customizations:
 ## Contributing
 
 - Follow the guidelines in [Customization Guide](customization.md)
-- Use `make lint` to check code quality
+- Use `mise run lint` to check code quality
 - Update documentation when adding features
 - Test changes across different file types
 

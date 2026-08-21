@@ -3,15 +3,15 @@ name: Linting
 on:
   workflow_call:
 jobs:
-  pre-commit-ci:
-    name: Pre-Commit
+  hk-ci:
+    name: hk
     runs-on: ubuntu-24.04
-    env:
-      PYTHON_VERSION: "3.12"
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
+      - name: Install tools via mise
+        uses: jdx/mise-action@v2
+      - name: Run hk checks
+        run: hk check --all

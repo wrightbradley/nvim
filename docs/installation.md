@@ -131,14 +131,14 @@ direnv allow .
 
 ```bash
 # Initialize the development environment
-make init
+mise run init
 ```
 
 This will:
 
 - Set up direnv environment
 - Initialize Vale for documentation linting
-- Install pre-commit hooks
+- Install hk git hooks
 
 ### 6. First Launch
 
@@ -303,11 +303,8 @@ This will verify:
 Run the linting tools:
 
 ```bash
-# Run all linters
-make lint
-
-# Run pre-commit hooks
-pre-commit run --all-files
+# Run all linters (hk)
+mise run lint
 ```
 
 ## Customization
@@ -378,13 +375,16 @@ git pull origin main
 
 ```bash
 # Update plugin catalog
-make gen-docs
+mise run gen-docs
 
 # Run linters
-make lint
+mise run lint
 
-# Update pre-commit hooks
-pre-commit autoupdate
+# Auto-fix lint issues where possible
+mise run fix
+
+# Reinstall git hooks after changing hk.pkl
+mise run hooks
 ```
 
 ## Troubleshooting
