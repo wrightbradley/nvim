@@ -10,7 +10,7 @@ return {
     opts = {
       setup = {
         vtsls = function()
-          Util.lsp.on_attach(function(client, buffer)
+          Util.lsp.on_attach(function(_client, buffer)
             local function map(lhs, rhs, desc)
               vim.keymap.set("n", lhs, rhs, { buffer = buffer, desc = desc })
             end

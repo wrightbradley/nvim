@@ -2,3 +2,9 @@ std = "vim"
 
 [lints]
 mixed_table = "allow"
+# LazyVim-style one-line toggle/key mappings
+multiple_statements = "allow"
+# `Util` / `Snacks` globals are intentional (see lua/config/init.lua)
+global_usage = "allow"
+# `if docs then --[[ comments ]] end` blocks are LazyVim docgen guards
+empty_if = "allow"

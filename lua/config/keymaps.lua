@@ -6,21 +6,6 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 
 -- This file is automatically loaded by config.init
--- local Util = require("util")
-
--- local function map(mode, lhs, rhs, opts)
---   local keys = require("lazy.core.handler").handlers.keys
---   ---@cast keys LazyKeysHandler
---   -- do not create the keymap if a lazy keys handler exists
---   if not keys.active[keys.parse({ lhs, mode = mode }).id] then
---     opts = opts or {}
---     opts.silent = opts.silent ~= false
---     if opts.remap and not vim.g.vscode then
---       opts.remap = nil
---     end
---     map(mode, lhs, rhs, opts)
---   end
--- end
 
 local map = vim.keymap.set
 
@@ -48,23 +33,15 @@ map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 -- map('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- map('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
---- Keybinds to make split navigation easier
-map("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-map("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-map("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-map("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
-
 --- Better up/down navigation
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 
--- Move to window using the <ctrl> hjkl keys
+--- Move to window using the <ctrl> hjkl keys
+--  Use CTRL+<hjkl> to switch between windows. `remap` lets buffer-local or
+--  plugin mappings (e.g. nvim-tmux-navigation) take precedence.
 map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", remap = true })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", remap = true })
@@ -260,16 +237,8 @@ map("n", "<leader><tab>]", "<cmd>tabnext<cr>", { desc = "Next Tab" })
 map("n", "<leader><tab>d", "<cmd>tabclose<cr>", { desc = "Close Tab" })
 map("n", "<leader><tab>[", "<cmd>tabprevious<cr>", { desc = "Previous Tab" })
 
---- Native snippets. only needed on < 0.11, as 0.11 creates these by default
--- if vim.fn.has("nvim-0.11") == 0 then
---   map("s", "<Tab>", function()
---     return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
---   end, { expr = true, desc = "Jump Next" })
---   map({ "i", "s" }, "<S-Tab>", function()
---     return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
---   end, { expr = true, desc = "Jump Previous" })
--- end
-vim.keymap.set('n', '<leader>bi', function()
+--- Show buffer info
+map("n", "<leader>bi", function()
   local buf = vim.api.nvim_get_current_buf()
   print("")
   print("Buffer number: " .. buf)

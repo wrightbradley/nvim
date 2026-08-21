@@ -172,7 +172,11 @@ return {
           keymap = { preset = "cmdline", ["<Right>"] = false, ["<Left>"] = false },
           completion = {
             list = { selection = { preselect = false } },
-            menu = { auto_show = function(ctx) return vim.fn.getcmdtype() == ":" end },
+            menu = {
+              auto_show = function(_ctx)
+                return vim.fn.getcmdtype() == ":"
+              end,
+            },
             ghost_text = { enabled = true },
           },
         },

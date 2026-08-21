@@ -21,4 +21,4 @@ _G.Util = require("util")
 --- @param event any (string|array) Event(s) that will trigger the handler
 --- @param opts vim.api.keyset.create_autocmd.opts
 --- @return integer
-function vim.api.nvim_create_autocmd(event, opts) end
+function vim.api.nvim_create_autocmd(_event, _opts) end

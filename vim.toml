@@ -17,5 +17,23 @@ any = true
 [it]
 any = true
 
-[before_each.args]
+[before_each]
+any = true
+
+[Util]
+any = true
+
+[Snacks]
+any = true
+
+[docs]
+any = true
+
+[nvim_bufferline]
+any = true
+
+[MiniHipatterns]
+any = true
+
+[package.config]
 any = true

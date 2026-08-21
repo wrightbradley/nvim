@@ -58,7 +58,7 @@ return {
           { name = "buffer" },
         }),
         formatting = {
-          format = function(entry, item)
+          format = function(_entry, item)
             local icons = Util.config.icons.kinds
             if icons[item.kind] then
               item.kind = icons[item.kind] .. item.kind

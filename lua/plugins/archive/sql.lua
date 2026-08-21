@@ -1,6 +1,5 @@
 if docs then
   -- The setup below will automatically configure connections without the need for manual input each time.
-
   -- Example configuration using dictionary with keys:
   --    vim.g.dbs = {
   --      dev = "Replace with your database connection URL.",

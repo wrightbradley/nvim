@@ -22,7 +22,11 @@ return {
         callback = function(ev)
           local client = vim.lsp.get_client_by_id(ev.data.client_id)
           -- Enable enhanced completion for Go language server
-          if client and client.name == "gopls" and client:supports_method("textDocument/completion", { bufnr = ev.buf }) then
+          if
+            client
+            and client.name == "gopls"
+            and client:supports_method("textDocument/completion", { bufnr = ev.buf })
+          then
             vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
           end
         end,
@@ -179,7 +183,7 @@ return {
             end, "ruff")
           end,
           basedpyright = function()
-            Util.lsp.on_attach(function(client, buffer)
+            Util.lsp.on_attach(function(client, _buffer)
               -- basedpyright provides hover and inlay hints (better type info than ty's "Unknown")
               -- ty handles everything else (diagnostics, navigation, completion, etc.)
 
@@ -330,7 +334,9 @@ return {
             map({ "n", "v" }, "<leader>cc", vim.lsp.codelens.run, "Run Codelens")
             map("n", "<leader>cC", vim.lsp.codelens.refresh, "Refresh Codelens")
           end
-          if Snacks.words.is_enabled() and client:supports_method("textDocument/documentHighlight", { bufnr = buffer }) then
+          if
+            Snacks.words.is_enabled() and client:supports_method("textDocument/documentHighlight", { bufnr = buffer })
+          then
             map("n", "]]", function()
               Snacks.words.jump(vim.v.count1)
             end, "Next Reference")

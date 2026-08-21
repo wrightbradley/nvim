@@ -225,7 +225,7 @@ end
 --- Returns a pretty-printed path.
 ---@param opts? {hl_last?: string} Optional options for path formatting.
 ---@return string The formatted path.
-function M.pretty_path(opts)
+function M.pretty_path(_opts)
   return ""
 end
 

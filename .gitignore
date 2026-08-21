@@ -9,3 +9,6 @@ data
 lua-main/
 LazyVim
 prose_styles
+
+# macOS
+.DS_Store

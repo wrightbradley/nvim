@@ -47,6 +47,21 @@ repos:
     rev: v1.38.0
     hooks:
       - id: yamllint
+  ##############################################################################
+  ################################ Lua Checks ##################################
+  # Vendored `Lazyvim/` reference tree is excluded via the files filter.
+  - repo: local
+    hooks:
+      - id: stylua
+        name: stylua
+        entry: stylua --check
+        language: system
+        files: ^(lua|after|ftdetect)/.*\.lua$
+      - id: selene
+        name: selene
+        entry: selene
+        language: system
+        files: ^(lua|after|ftdetect)/.*\.lua$
 ##############################################################################
 ################################ Linting Checks #############################
 # - repo: local

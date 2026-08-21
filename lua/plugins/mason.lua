@@ -3,6 +3,7 @@
 --- LSP servers are managed by mason-lspconfig in lsp.lua via automatic_installation.
 
 --- Mise Python builds omit stdlib venv; Mason PyPI packages need a Python with venv.
+--- NOTE: These are macOS paths (Homebrew on Apple Silicon / Intel + system Python).
 local function ensure_mason_python_path()
   if vim.g.mason_python_path_prepared then
     return
@@ -149,10 +150,7 @@ return {
             -- 2. Not an LSP server (those are managed by mason-lspconfig)
             -- 3. Not in the LSP servers list from lsp.lua
             if not ensure_installed_set[pkg.name] and not is_lsp and not lsp_servers[pkg.name] then
-              vim.notify(
-                "Mason: Auto-uninstalling " .. pkg.name .. " (not in ensure_installed)",
-                vim.log.levels.INFO
-              )
+              vim.notify("Mason: Auto-uninstalling " .. pkg.name .. " (not in ensure_installed)", vim.log.levels.INFO)
               pkg:uninstall()
             end
           end
