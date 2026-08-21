@@ -211,7 +211,8 @@ return {
         hover = {
           silent = true,
         },
-        signature = { enabled = true },
+        -- blink.cmp owns signature help display; don't render it twice
+        signature = { enabled = false },
       },
       routes = {
         {

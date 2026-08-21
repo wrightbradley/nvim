@@ -247,7 +247,7 @@ return {
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
       -- Neovim 0.12: toggle between virtual text and virtual line diagnostics
-      vim.keymap.set("n", "<leader>uL", function()
+      vim.keymap.set("n", "<leader>uv", function()
         local cfg = vim.diagnostic.config()
         local use_lines = not cfg.virtual_lines
         vim.diagnostic.config({
@@ -312,7 +312,7 @@ return {
             Snacks.picker.lsp_type_definitions()
           end, "Goto Type Definition")
           map("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
-          map("n", "K", vim.lsp.buf.hover, "Hover")
+          -- NOTE: "K" (hover) is a native LSP default in Neovim 0.12 -- not mapped here
           map("n", "<leader>ss", function()
             Snacks.picker.lsp_symbols({ filter = Util.config.kind_filter })
           end, "LSP Symbols")

@@ -77,6 +77,8 @@ return {
       { "<leader>qS", function() require("persistence").select() end,desc = "Select Session" },
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+      -- Neovim 0.12 :restart - restarts Nvim in place; persistence restores the session
+      { "<leader>qR", "<cmd>restart<cr>", desc = "Restart Nvim" },
     },
   },
   -- Kubernetes YAML schema support - lazy loads only for YAML files

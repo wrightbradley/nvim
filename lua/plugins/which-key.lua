@@ -44,8 +44,13 @@ return {
           },
           -- better descriptions
           { "gx", desc = "Open with system app" },
-          { "<BS>", desc = "Decrement Selection", mode = "x" },
-          { "<c-space>", desc = "Increment Selection", mode = { "x", "n" } },
+          -- Neovim 0.12 native treesitter node selection
+          { "an", desc = "Select Parent Node", mode = "x" },
+          { "in", desc = "Select Child Node", mode = "x" },
+          { "]n", desc = "Select Next Node", mode = "x" },
+          { "[n", desc = "Select Prev Node", mode = "x" },
+          { "]N", desc = "Expand to Next Node", mode = "x" },
+          { "[N", desc = "Expand to Prev Node", mode = "x" },
         },
       },
     },
