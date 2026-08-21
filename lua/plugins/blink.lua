@@ -1,22 +1,13 @@
 --[[
-  Blink.cmp Configuration - Performance Optimized
+  Blink.cmp Configuration
 
-  This configuration is the result of extensive debugging and optimization.
-  Key performance insights discovered:
-
-  1. LSP sources can block completion if servers are slow/unavailable
-  2. Multiple sources competing simultaneously causes delays
-  3. Per-filetype sources provide better performance than global defaults
-  4. Friendly-snippets loading causes hanging issues - disabled until fixed
-  5. Documentation auto-show adds significant overhead
-  6. Buffer source scanning can be expensive with large files
-
-  Performance Strategy:
-  - Conservative default sources (snippets + buffer only)
-  - LSP enabled per-filetype only where valuable
-  - Aggressive buffer source limits
-  - Documentation disabled by default (manual trigger available)
-  - Snippet prioritization ensures they appear first
+  Sources strategy:
+  - LSP, snippets, path, and buffer enabled globally. Modern blink.cmp
+    handles slow LSP servers gracefully (async, debounced), so there is no
+    need to disable LSP per-filetype.
+  - lazydev is added for Lua (Neovim config development).
+  - friendly-snippets is enabled and loaded from this config's snippets/
+    directory plus the friendly-snippets collection.
 --]]
 
 return {
@@ -29,7 +20,7 @@ return {
       "sources.default",
     },
     dependencies = {
-      "rafamadriz/friendly-snippets", -- Currently disabled due to loading issues
+      "rafamadriz/friendly-snippets",
       {
         "saghen/blink.compat",
         optional = true, -- make optional so it's only enabled if any extras need it
@@ -53,6 +44,10 @@ return {
           nerd_font_variant = "mono",
           kind_icons = vim.tbl_extend("force", {}, Util.config.icons.kinds),
         },
+        -- Use the bundled Rust fuzzy matcher (faster than the default Lua fzy)
+        fuzzy = {
+          implementation = "rust",
+        },
         completion = {
           accept = {
             auto_brackets = { enabled = true },
@@ -63,21 +58,20 @@ return {
             draw = {
               columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
             },
-            winblend = 0, -- Disable transparency for better performance
+            winblend = 0,
           },
-          -- Documentation disabled for performance (was causing delays)
-          -- Use <C-Space> to manually show documentation when needed
+          -- Auto-show documentation after a short delay; <C-Space> toggles manually
           documentation = {
-            auto_show = false,
+            auto_show = true,
+            auto_show_delay_ms = 300,
           },
           -- Ghost text enabled (minimal performance impact)
           ghost_text = {
             enabled = true,
           },
-          -- Trigger settings optimized for responsiveness vs performance
           trigger = {
             show_on_insert_on_trigger_character = true,
-            prefetch_on_insert = false, -- Reduce background processing
+            prefetch_on_insert = true,
             show_in_snippet = true,
           },
         },
@@ -86,12 +80,7 @@ return {
         },
         sources = {
           compat = {}, -- For nvim-cmp source compatibility
-          -- Conservative default sources for general use
-          -- Removed LSP from default to prevent blocking when servers unavailable
-          default = { "snippets", "buffer" },
-
-          -- Minimum keyword length to trigger completion (performance optimization)
-          min_keyword_length = 2,
+          default = { "lsp", "snippets", "path", "buffer" },
 
           providers = {
             -- Snippets configuration
@@ -103,11 +92,11 @@ return {
               score_offset = 100, -- Highest priority - snippets first
             },
 
-            -- Buffer source optimized for performance
+            -- Buffer source: context-aware suggestions, kept modest in size
             buffer = {
-              max_items = 5, -- Limit to prevent overwhelming completion menu
-              min_keyword_length = 3, -- Require more chars to reduce noise
-              score_offset = -50, -- Lower priority than snippets
+              max_items = 5,
+              min_keyword_length = 3,
+              score_offset = -50, -- Lower priority than LSP/snippets
             },
 
             -- LazyDev for lua development
@@ -118,51 +107,9 @@ return {
             },
           },
 
-          --[[
-            Per-filetype sources - key performance optimization
-
-            Only enable LSP for languages where it provides significant value
-            and where LSP servers are reliably available.
-
-            Philosophy:
-            - Snippets always included (primary value for most languages)
-            - Buffer included for context-aware completion
-            - LSP only where it adds substantial value
-            - Specialized sources (lazydev) only where relevant
-          --]]
           per_filetype = {
-            -- Lua: Full featured with LSP + LazyDev for Neovim development
-            lua = { "snippets", "lsp", "buffer", "lazydev" },
-
-            -- Python: Snippets + buffer only (LSP can be added when properly configured)
-            -- TODO: Add LSP back when Python language server is set up
-            python = { "snippets", "buffer" },
-
-            -- JavaScript/TypeScript: LSP typically well-configured and fast
-            javascript = { "snippets", "lsp", "buffer" },
-            typescript = { "snippets", "lsp", "buffer" },
-            javascriptreact = { "snippets", "lsp", "buffer" },
-            typescriptreact = { "snippets", "lsp", "buffer" },
-
-            -- Shell scripts: No LSP needed, snippets are primary value
-            -- Buffer useful for referencing variables and function names
-            sh = { "snippets", "buffer" },
-            bash = { "snippets", "buffer" },
-            zsh = { "snippets", "buffer" },
-
-            -- Configuration files: Buffer useful for duplicating values
-            json = { "snippets", "buffer" },
-            yaml = { "snippets", "buffer" },
-            toml = { "snippets", "buffer" },
-
-            -- Markdown: Buffer useful for referencing other content
-            markdown = { "snippets", "buffer" },
-
-            -- Go: Typically has excellent LSP support
-            go = { "snippets", "lsp", "buffer" },
-
-            -- Rust: Excellent LSP with rust-analyzer
-            rust = { "snippets", "lsp", "buffer" },
+            -- Lua: add LazyDev for Neovim config development
+            lua = { "snippets", "lsp", "path", "buffer", "lazydev" },
           },
         },
 
@@ -268,23 +215,15 @@ return {
 --[[
   Usage Notes:
 
-  1. Snippets are the highest priority completion source
-  2. Type 2+ characters to trigger completion
-  3. <C-Space> to manually trigger completion and show documentation
-  4. <Tab> and <S-Tab> to navigate between snippet placeholders
-  5. <C-y> for quick accept without triggering completion
+  1. Sources: LSP > snippets > path > buffer (via score_offsets)
+  2. <C-Space> to manually trigger completion and toggle documentation
+  3. <Tab> and <S-Tab> to navigate between snippet placeholders
+  4. <C-y> for quick accept without triggering completion
 
   Troubleshooting:
 
-  - If completion is slow: Check which LSP servers are running
-  - If snippets don't appear: Verify filetype with `:echo &filetype`
-  - If LSP completions needed: Add language to per_filetype configuration
-  - If friendly-snippets needed: Enable after investigating loading issue
-
-  Performance Tuning:
-
-  - Increase keyword_length if too aggressive
-  - Decrease buffer max_items if still slow
-  - Add more languages to per_filetype as needed
-  - Re-enable documentation auto_show if performance allows
+  - If completion is slow: check which LSP servers are running (`:LspInfo`)
+  - If snippets don't appear: verify filetype with `:echo &filetype`
+  - To customize sources for a specific filetype, add an entry to
+    `sources.per_filetype` (see the `lua` entry for an example)
 --]]

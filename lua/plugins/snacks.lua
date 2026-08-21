@@ -39,7 +39,7 @@ local excluded = {
 -- Patterns used to detect project root directories
 -- These are used by the file picker and project management features
 local root_patterns = {
-  -- Project structure directories
+  -- Monorepo structure
   "client",
   "server",
 
@@ -52,70 +52,31 @@ local root_patterns = {
 
   -- Build tool configuration files
   "Makefile",
-  "CMakeLists.txt",
-  "build.gradle",
-  "build.gradle.kts",
-  "pom.xml",
-  "build.xml",
 
   -- Node.js and JavaScript project files
   "package.json",
-  "package-lock.json",
-  "yarn.lock",
   ".nvmrc",
-  "gulpfile.js",
-  "Gruntfile.js",
 
   -- python
   "requirements.txt",
-  "Pipfile",
   "pyproject.toml",
   "setup.py",
-  "tox.ini",
-
-  -- rust
-  "Cargo.toml",
 
   -- go
   "go.mod",
 
-  -- elixir
-  "mix.exs",
-
   -- configuration files
-  ".prettierrc",
-  ".prettierrc.json",
-  ".prettierrc.yaml",
-  ".prettierrc.yml",
-  ".eslintrc",
-  ".eslintrc.json",
-  ".eslintrc.js",
-  ".eslintrc.cjs",
-  ".eslintignore",
-  ".stylelintrc",
-  ".stylelintrc.json",
-  ".stylelintrc.yaml",
-  ".stylelintrc.yml",
   ".editorconfig",
   ".gitignore",
 
-  -- html projects
-  "index.html",
-
   -- miscellaneous
   "README.md",
-  "README.rst",
-  "LICENSE",
-  "Vagrantfile",
-  "Procfile",
   ".env",
   ".env.example",
-  "config.yaml",
-  "config.yml",
+
+  -- infrastructure
   ".terraform",
   "terraform.tfstate",
-  ".kitchen.yml",
-  "Berksfile",
 }
 vim.g.root_spec = { root_patterns, "lsp", "cwd" }
 return {
@@ -323,27 +284,7 @@ return {
     end,
   },
 
-  -- Project management support
-  {
-    "ahmedkhalf/project.nvim",
-    opts = {
-      manual_mode = true,
-    },
-    event = "VeryLazy",
-    config = function(_, opts)
-      require("project_nvim").setup(opts)
-      local history = require("project_nvim.utils.history")
-      history.delete_project = function(project)
-        for k, v in pairs(history.recent_projects) do
-          if v == project.value then
-            history.recent_projects[k] = nil
-            return
-          end
-        end
-      end
-    end,
-  },
-  -- Trouble integration
+  -- Kubernetes YAML schema support - lazy loads only for YAML files
   {
     "folke/snacks.nvim",
     optional = true,

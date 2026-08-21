@@ -4,44 +4,6 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    dependencies = {
-      {
-        "mrjones2014/legendary.nvim",
-        -- since legendary.nvim handles all your keymaps/commands,
-        -- its recommended to load legendary.nvim before other plugins
-        -- sqlite is only needed if you want to use frecency sorting
-        -- dependencies = { 'kkharji/sqlite.lua' }
-        opts = {
-          extensions = {
-            lazy_nvim = {
-              -- Automatically register keymaps that are defined on lazy.nvim plugin specs
-              -- using the `keys = {}` property.
-              auto_register = true,
-            },
-            which_key = {
-              -- Automatically add which-key tables to legendary
-              -- see ./doc/WHICH_KEY.md for more details
-              auto_register = true,
-            },
-            -- load keymaps and commands from nvim-tree.lua
-            nvim_tree = true,
-            -- load commands from smart-splits.nvim
-            -- and create keymaps, see :h legendary-extensions-smart-splits.nvim
-            smart_splits = {
-              directions = { "h", "j", "k", "l" },
-              mods = {
-                move = "<C>",
-                resize = "<M>",
-              },
-            },
-            -- load commands from op.nvim
-            op_nvim = true,
-            -- load keymaps from diffview.nvim
-            diffview = true,
-          },
-        },
-      },
-    },
     opts_extend = { "spec" },
     opts = {
       -- preset = "helix",

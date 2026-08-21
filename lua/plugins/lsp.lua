@@ -246,6 +246,17 @@ return {
       end
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
+      -- Neovim 0.12: toggle between virtual text and virtual line diagnostics
+      vim.keymap.set("n", "<leader>uL", function()
+        local cfg = vim.diagnostic.config()
+        local use_lines = not cfg.virtual_lines
+        vim.diagnostic.config({
+          virtual_text = use_lines and false or opts.diagnostics.virtual_text,
+          virtual_lines = use_lines and { only_current_line = true } or false,
+        })
+        Snacks.notify(use_lines and "Diagnostics: virtual lines" or "Diagnostics: virtual text", { title = "UI" })
+      end, { desc = "Toggle Diagnostic Virtual Lines" })
+
       -- Global LSP capabilities
       local has_blink, blink = pcall(require, "blink.cmp")
       local capabilities = vim.tbl_deep_extend(
@@ -349,6 +360,19 @@ return {
             map("n", "<a-p>", function()
               Snacks.words.jump(-vim.v.count1, true)
             end, "Prev Reference")
+          end
+
+          -- Neovim 0.12: native LSP inline completions
+          -- (servers supporting textDocument/inlineCompletion)
+          if
+            vim.lsp.inline_completion and client:supports_method("textDocument/inlineCompletion", { bufnr = buffer })
+          then
+            vim.lsp.inline_completion.enable(true, { bufnr = buffer })
+            map("i", "<M-y>", function()
+              if not vim.lsp.inline_completion.get() then
+                Snacks.notify("No inline completion available", { title = "LSP", level = "info" })
+              end
+            end, "Trigger/Accept Inline Completion")
           end
         end,
       })
