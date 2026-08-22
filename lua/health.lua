@@ -8,13 +8,10 @@ local error = vim.health.error or vim.health.report_error
 function M.check()
   start("NeoVim")
 
-  if vim.fn.has("nvim-0.11.0") == 1 then
-    ok("Using Neovim >= 0.11.0")
-    if vim.fn.has("nvim-0.12.0") == 0 then
-      warn("Use Neovim >= 0.12.0 for the best experience")
-    end
+  if vim.fn.has("nvim-0.12.0") == 1 then
+    ok("Using Neovim >= 0.12.0")
   else
-    error("Neovim >= 0.11.0 is required (vim.diagnostic.jump and other APIs are used)")
+    error("Neovim >= 0.12.0 is required (this config is built for 0.12 APIs)")
   end
 
   for _, cmd in ipairs({ "git", "rg", { "fd", "fdfind" }, "lazygit", "mdterm", "fzf", "curl" }) do
