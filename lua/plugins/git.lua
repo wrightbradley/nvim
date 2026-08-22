@@ -64,31 +64,8 @@ return {
   --     },
   --   },
   -- },
-  {
-    "Juksuu/worktrees.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    config = function()
-      require("worktrees").setup()
-    end,
-    keys = {
-      {
-        "<leader>gws",
-        function()
-          Snacks.picker.worktrees()
-        end,
-        desc = "Git Worktree switch",
-      },
-      {
-        "<leader>gwn",
-        function()
-          Snacks.picker.worktrees_new()
-        end,
-        desc = "Create new Git Worktree",
-      },
-    },
-  },
+  -- Worktree switching lives in lua/plugins/worktrees.lua (custom snacks
+  -- picker over `git worktree list`, with persistence.nvim auto-restore).
   {
     "dlvhdr/gh-addressed.nvim",
     dependencies = {
