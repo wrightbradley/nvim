@@ -163,3 +163,21 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 
 --- Detect `uv run --script` shebangs as Python (PEP 723 inline scripts).
 --- Detection lives in `ftdetect/uv.lua`.
+
+--- Name the tmux window after the current project/worktree directory, so
+--- panes are distinguishable when working across many worktrees.
+vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
+  group = augroup("tmux_window_name"),
+  callback = function()
+    if not vim.env.TMUX then
+      return
+    end
+    local cwd = (vim.uv or vim.loop).cwd() or ""
+    local name = vim.fn.fnamemodify(cwd, ":t")
+    if name == "" then
+      return
+    end
+    vim.system({ "tmux", "rename-window", name }, { text = true })
+  end,
+  desc = "Name tmux window after current project directory",
+})

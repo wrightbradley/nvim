@@ -40,12 +40,13 @@ map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, 
 map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 
 --- Move to window using the <ctrl> hjkl keys
---  Use CTRL+<hjkl> to switch between windows. `remap` lets buffer-local or
---  plugin mappings (e.g. nvim-tmux-navigation) take precedence.
-map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", remap = true })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", remap = true })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window", remap = true })
+--  Uses tmux.nvim so movement crosses into tmux panes at nvim window borders
+--  (falls back to plain wincmd when not running inside tmux).
+for key, move in pairs({ h = "move_left", j = "move_bottom", k = "move_top", l = "move_right" }) do
+  map("n", "<C-" .. key .. ">", function()
+    require("tmux")[move]()
+  end, { desc = "Go to " .. ({ h = "Left", j = "Lower", k = "Upper", l = "Right" })[key] .. " Window" })
+end
 
 --- Resize window using <ctrl> arrow keys
 map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })

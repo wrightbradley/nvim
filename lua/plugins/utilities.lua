@@ -3,8 +3,20 @@ return {
   { "nvim-lua/plenary.nvim", lazy = true },
   {
     "aserowy/tmux.nvim",
+    -- Navigation/resize functions are called from keymaps.lua; the plugin
+    -- itself only needs to be loadable when those keys fire.
+    lazy = true,
     config = function()
-      require("tmux").setup()
+      require("tmux").setup({
+        navigation = {
+          -- We map <C-hjkl> ourselves in keymaps.lua (tmux.nvim's defaults
+          -- would clash with them), so only enable behavior options here.
+          enable_default_keybindings = false,
+          -- Unzoom a zoomed tmux pane when navigating beyond the nvim border
+          persist_zoom = true,
+        },
+        resize = { enable_default_keybindings = false },
+      })
     end,
   },
   {

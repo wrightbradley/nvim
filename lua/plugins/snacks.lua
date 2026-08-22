@@ -243,7 +243,8 @@ return {
       { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
       { "<leader>gbl", function() Snacks.git.blame_line() end, desc = "Git Blame Line" },
       { "<leader>gy", function() Snacks.gitbrowse() end, desc = "Open in git repository browser" },
-      { "<leader>gY", function() Snacks.gitbrowse({ action = "yank" }) end, desc = "Yank git repository URL" },
+      -- NOTE: <leader>gb (git log line) and <leader>gY (gitbrowse yank) are
+      -- defined in config/keymaps.lua; don't duplicate them here.
 
       -- github
       {

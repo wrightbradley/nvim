@@ -98,7 +98,8 @@ return {
     },
     cmd = "GhReviewComments",
     keys = {
-      { "<leader>gc", "<cmd>GhReviewComments<cr>", desc = "GitHub Review Comments" },
+      -- NOTE: <leader>gc is Git Commits (snacks.lua); use ghc for GitHub comments
+      { "<leader>ghc", "<cmd>GhReviewComments<cr>", desc = "GitHub Review Comments" },
     },
   },
   -- { "wakatime/vim-wakatime", lazy = false },
