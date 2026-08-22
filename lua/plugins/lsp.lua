@@ -82,7 +82,9 @@ return {
           "yamlls",
           "vtsls",
           "jsonls",
-          "basedpyright", -- Enhanced pyright fork with inlay hints (ty handles most, basedpyright for hover/hints)
+          "basedpyright", -- Enhanced pyright fork with inlay hints. Gated per-project below:
+          -- only attaches in repos opting in via pyrightconfig.json or
+          -- [tool.basedpyright]/[tool.pyright]; ty handles checking everywhere else
           "ruff",
           "eslint",
           "bashls",
@@ -216,11 +218,15 @@ return {
             end, "basedpyright")
           end,
           ty = function()
-            Util.lsp.on_attach(function(client, _)
+            Util.lsp.on_attach(function(client, buffer)
               -- ty handles everything except hover and inlay hints (shows "Unknown" for many types)
-              -- Disable hover and inlay hints in favor of basedpyright (use nil, not false)
-              client.server_capabilities.hoverProvider = nil
-              client.server_capabilities.inlayHintProvider = nil
+              -- Yield hover + inlay hints to basedpyright only when it's active for this
+              -- project; otherwise keep ty's so Python buffers are never hover-less.
+              if vim.b[buffer].py_use_basedpyright then
+                -- Disable hover and inlay hints in favor of basedpyright (use nil, not false)
+                client.server_capabilities.hoverProvider = nil
+                client.server_capabilities.inlayHintProvider = nil
+              end
             end, "ty")
           end,
         },
@@ -416,10 +422,48 @@ return {
         vim.lsp.enable(server)
       end
 
+      -- Per-project Python type-checker gate.
+      -- ty is the default checker everywhere; basedpyright (hover + inlay hints,
+      -- diagnostics already neutered in its on_attach/config) only activates in
+      -- repos that opt in via `pyrightconfig.json` or a `[tool.basedpyright]` /
+      -- `[tool.pyright]` section in pyproject.toml — e.g. repos whose CI pins pyright.
+      -- Note: vim.lsp.enable is global, so this follows the first Python project
+      -- opened in the instance (fine for one-project-per-session workflows).
+      local function uses_basedpyright(buf)
+        local root = Util.root.get({ buf = buf })
+        if vim.fs.find({ "pyrightconfig.json" }, { path = root, upward = true })[1] then
+          return true
+        end
+        local pyproject = vim.fs.find("pyproject.toml", { path = root, upward = true })[1]
+        if pyproject then
+          local ok, content = pcall(vim.fn.readfile, pyproject)
+          if ok then
+            local text = table.concat(content, "\n")
+            return text:find("%[tool%.basedpyright%]") ~= nil or text:find("%[tool%.pyright%]") ~= nil
+          end
+        end
+        return false
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("python-typechecker-gate", { clear = true }),
+        pattern = "python",
+        callback = function(args)
+          local use = uses_basedpyright(args.buf)
+          -- Buffer flag read by ty's on_attach to decide hover/inlay ownership
+          vim.b[args.buf].py_use_basedpyright = use
+          if use then
+            vim.lsp.enable("basedpyright")
+          end
+        end,
+      })
+
       -- mason-lspconfig handles ensure_installed and automatic_installation
       if Util.has("mason-lspconfig.nvim") then
         require("mason-lspconfig").setup({
           ensure_installed = opts.servers,
+          -- basedpyright is enabled by the per-project gate above, not unconditionally
+          automatic_enable = { exclude = { "basedpyright" } },
         })
       end
     end),
