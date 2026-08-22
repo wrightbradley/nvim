@@ -10,8 +10,14 @@
 - **Fix:** Run `mise run fix` to auto-fix issues where possible.
 - **Hooks:** Run `mise run hooks` to (re)install hk git hooks; set `HK=0` to
   bypass hooks for a single commit.
-- **No explicit build or test commands** are defined; this is a Neovim
-  configuration repo. Testing is typically manual or plugin-specific.
+- **Docs check:** Run `mise run check-docs` to regenerate the plugin catalog and
+  fail if `docs/` has uncommitted changes (set `GITHUB_TOKEN` — the generator
+  queries the GitHub API per installed plugin).
+- **Smoke test:** CI runs a headless Neovim load
+  (`nvim --headless "+Lazy! sync"
+  +qa`) via `.github/workflows/smoke-test.yml`;
+  run the same command locally to verify the config boots.
+- **No explicit build command**; this is a Neovim configuration repo.
 
 ## Code Style Guidelines
 

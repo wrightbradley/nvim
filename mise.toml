@@ -42,6 +42,10 @@ run = 'hk fix'
 description = "Regenerate nvim plugin catalog docs"
 run = 'uv run scripts/gen-nvim-plugin-catalog.py'
 
+[tasks.check-docs]
+description = "verify generated docs are up to date (needs GITHUB_TOKEN for API calls)"
+run = 'uv run scripts/gen-nvim-plugin-catalog.py && git diff --exit-code -- docs/'
+
 # `mise tasks` prints this automatically; kept for `make help` muscle memory
 [tasks.help]
 description = "Show available tasks"

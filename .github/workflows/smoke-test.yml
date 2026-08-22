@@ -1,0 +1,39 @@
+---
+name: Smoke test
+on:
+  workflow_call:
+jobs:
+  headless:
+    name: headless nvim
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v6
+
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Sync plugins and load config
+        run: |
+          set -o pipefail
+          nvim --headless "+Lazy! sync" +qa 2>&1 | tee "${RUNNER_TEMP}/sync.log"
+
+      - name: Fail on startup errors
+        run: '! grep -qE "(Error detected while processing|E[0-9]{3,}:)" "${RUNNER_TEMP}/sync.log"'
+
+      - name: Reload config with plugins installed
+        run: nvim --headless +qa
+
+      - name: Install toolchain
+        uses: jdx/mise-action@v2
+
+      - name: Verify generated docs are current
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uv run scripts/gen-nvim-plugin-catalog.py
+          git diff --exit-code -- docs/
