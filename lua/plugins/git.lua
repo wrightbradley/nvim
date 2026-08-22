@@ -22,6 +22,11 @@ return {
     },
     keys = {
       { "<leader>gO", "<cmd>Octo pr list<cr>", desc = "GitHub PRs (Octo)" },
+      -- Review write-loop: start -> comment on lines -> submit
+      { "<leader>gOs", "<cmd>Octo review start<cr>", desc = "Start PR Review (Octo)" },
+      { "<leader>gOz", "<cmd>Octo review submit<cr>", desc = "Submit PR Review (Octo)" },
+      { "<leader>gOm", "<cmd>Octo review commits<cr>", desc = "Review Commits (Octo)" },
+      { "<leader>gOd", "<cmd>Octo pr diff<cr>", desc = "PR Diff (Octo)" },
     },
   },
   -- {

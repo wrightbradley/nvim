@@ -17,11 +17,15 @@ return {
     -- stylua: ignore
     keys = {
       -- opencode.nvim exposes a general, flexible API — customize it to your workflow!
-      -- But here are some examples to get you started :)
       { '<leader>Ot', function() require('opencode').toggle() end, desc = 'Toggle opencode', },
       { '<leader>Oa', function() require('opencode').ask() end, desc = 'Ask opencode', mode = { 'n', 'v' }, },
       { '<leader>OA', function() require('opencode').ask('@file ') end, desc = 'Ask opencode about current file', mode = { 'n', 'v' }, },
       { '<leader>On', function() require('opencode').command('/new') end, desc = 'New session', },
+      -- Review workflow (agent-written code)
+      { '<leader>Ov', function() require('opencode').prompt('Review my uncommitted changes. Run `git diff` to see them, then review for correctness, security issues, and unnecessary complexity. Report findings before suggesting fixes.') end, desc = 'Review working diff', },
+      { '<leader>Ob', function() require('opencode').prompt('Explain the hunk under the cursor. Run `git diff` first for context.') end, desc = 'Explain current change', },
+      { '<leader>Oc', function() require('opencode').prompt('Write a conventional-commit message for my staged changes following the repo style in cliff.toml/CHANGELOG.md. Output only the message.') end, desc = 'Generate commit message', },
+      -- General helpers
       { '<leader>Oe', function() require('opencode').prompt('Explain @cursor and its context') end, desc = 'Explain code near cursor' },
       { '<leader>Or', function() require('opencode').prompt('Review @file for correctness and readability') end, desc = 'Review file', },
       { '<leader>Of', function() require('opencode').prompt('Fix these @diagnostics') end, desc = 'Fix errors', },
