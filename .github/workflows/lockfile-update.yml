@@ -1,0 +1,46 @@
+---
+name: Update lazy-lock.json
+on:
+  schedule:
+    # Mondays at 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    name: lazy update
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v6
+
+      - name: Install Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+
+      - name: Update plugin pins
+        run: |
+          set -o pipefail
+          nvim --headless "+Lazy! update" +qa
+
+      - name: Open PR with updated lockfile
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/lazy-lock-update
+          delete-branch: true
+          title: "chore: update plugin pins (lazy-lock.json)"
+          commit-message: "chore: update plugin pins (lazy-lock.json)"
+          body: |
+            Automated weekly `Lazy update` run.
+
+            Review the lockfile diff, then merge if CI passes. The smoke-test
+            workflow validates that the config loads with the new pins.
+          labels: |
+            dependencies
