@@ -83,6 +83,20 @@ return {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = {},
+    init = function()
+      -- tmux-resurrect reopens nvim panes by re-running bare `nvim` in the
+      -- saved working directory. This makes that launch automatically restore
+      -- this project's session (buffers, layout) instead of opening empty.
+      -- Skipped when nvim is opened with file arguments.
+      vim.api.nvim_create_autocmd("VimEnter", {
+        nested = true,
+        callback = function(args)
+          if vim.fn.argc(-1) == 0 and #args.file == 0 then
+            require("persistence").load()
+          end
+        end,
+      })
+    end,
     -- stylua: ignore
     keys = {
       { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
