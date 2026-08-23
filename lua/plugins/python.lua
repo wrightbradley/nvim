@@ -45,39 +45,25 @@ return {
     },
   },
 
-  -- {
-  --   "mfussenegger/nvim-dap",
-  --   optional = true,
-  --   dependencies = {
-  --     "mfussenegger/nvim-dap-python",
-  --     keys = {
-  --       {
-  --         "<leader>dPt",
-  --         function()
-  --           require("dap-python").test_method()
-  --         end,
-  --         desc = "Debug Method",
-  --         ft = "python",
-  --       },
-  --       {
-  --         "<leader>dPc",
-  --         function()
-  --           require("dap-python").test_class()
-  --         end,
-  --         desc = "Debug Class",
-  --         ft = "python",
-  --       },
-  --     },
-  --     config = function()
-  --       -- TODO: fix paths
-  --       -- if vim.fn.has("win32") == 1 then
-  --       --   require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/Scripts/pythonw.exe"))
-  --       -- else
-  --       --   require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/bin/python"))
-  --       -- end
-  --     end,
-  --   },
-  -- },
+  {
+    "mfussenegger/nvim-dap",
+    optional = true,
+    dependencies = {
+      "mfussenegger/nvim-dap-python",
+      -- stylua: ignore
+      keys = {
+        { "<leader>dPt", function() require("dap-python").test_method() end, desc = "Debug Method", ft = "python" },
+        { "<leader>dPc", function() require("dap-python").test_class() end, desc = "Debug Class", ft = "python" },
+      },
+      config = function()
+        if vim.fn.has("win32") == 1 then
+          require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/Scripts/pythonw.exe"))
+        else
+          require("dap-python").setup(Util.get_pkg_path("debugpy", "/venv/bin/python"))
+        end
+      end,
+    },
+  },
   {
     "benomahony/uv.nvim",
     ft = py_ft,
@@ -149,7 +135,8 @@ return {
     keys = { { "<leader>cv", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
   },
 
-  -- Don't mess up DAP adapters provided by nvim-dap-python
+  -- Don't mess up DAP adapters provided by nvim-dap-python, but make sure the
+  -- debugpy Mason package is installed for it to use.
   {
     "jay-babu/mason-nvim-dap.nvim",
     optional = true,
@@ -157,6 +144,7 @@ return {
       handlers = {
         python = function() end,
       },
+      ensure_installed = { "debugpy" },
     },
   },
 }

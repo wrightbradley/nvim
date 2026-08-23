@@ -21,6 +21,7 @@
 | todo-comments.nvim | ✅  Highlight, list and search todo comments in your projects | [Link](https://github.com/folke/todo-comments.nvim) |
 | nvim-dap | Debug Adapter Protocol client implementation for Neovim | [Link](https://github.com/mfussenegger/nvim-dap) |
 | nui.nvim | UI Component Library for Neovim. | [Link](https://github.com/MunifTanjim/nui.nvim) |
+| neotest | An extensible framework for interacting with tests within NeoVim. | [Link](https://github.com/nvim-neotest/neotest) |
 | mini.ai | Neovim Lua plugin to extend and create `a`/`i` textobjects. Part of 'mini.nvim' library. | [Link](https://github.com/echasnovski/mini.ai) |
 | mason-nvim-dap.nvim | No description available. | [Link](https://github.com/jay-babu/mason-nvim-dap.nvim) |
 | nvim-dap-go | An extension for nvim-dap providing configurations for launching go debugger (delve) and debugging individual tests | [Link](https://github.com/leoluz/nvim-dap-go) |
@@ -29,6 +30,7 @@
 | mini.icons | Icon provider. Part of 'mini.nvim' library.  | [Link](https://github.com/echasnovski/mini.icons) |
 | flash.nvim | Navigate your code with search labels, enhanced character motions and Treesitter integration | [Link](https://github.com/folke/flash.nvim) |
 | nvim-base64 | Neovim plugin to encode/decode base64 strings | [Link](https://github.com/deponian/nvim-base64) |
+| nvim-nio | A library for asynchronous IO in Neovim | [Link](https://github.com/nvim-neotest/nvim-nio) |
 | vim-helm | vim syntax for helm templates (yaml + gotmpl + sprig + custom) | [Link](https://github.com/towolf/vim-helm) |
 | noice.nvim | 💥 Highly experimental plugin that completely replaces the UI for messages, cmdline and the popupmenu. | [Link](https://github.com/folke/noice.nvim) |
 | opencode.nvim | Neovim 🤝 OpenCode in the flow that you already know. | [Link](https://github.com/NickvanDyke/opencode.nvim) |
@@ -36,10 +38,12 @@
 | nvim-dap-virtual-text | No description available. | [Link](https://github.com/theHamsta/nvim-dap-virtual-text) |
 | nvim-ansible | Small neovim plugin to make working with Ansible playbooks or roles more convenient | [Link](https://github.com/mfussenegger/nvim-ansible) |
 | nvim-dap-ui | A UI for nvim-dap | [Link](https://github.com/rcarriga/nvim-dap-ui) |
+| nvim-dap-python | Mirror of https://codeberg.org/mfussenegger/nvim-dap-python | [Link](https://github.com/mfussenegger/nvim-dap-python) |
 | fff.nvim | The fastest and the most accurate file search SDK for AI agents, Neovim, Rust, C,  Python, Bun and NodeJS | [Link](https://github.com/dmtrKovalenko/fff.nvim) |
 | lazydev.nvim | Faster LuaLS setup for Neovim | [Link](https://github.com/folke/lazydev.nvim) |
 | conform.nvim | Lightweight yet powerful formatter plugin for Neovim | [Link](https://github.com/stevearc/conform.nvim) |
 | nvim-ts-autotag | Use treesitter to auto close and auto rename html tag | [Link](https://github.com/windwp/nvim-ts-autotag) |
+| neotest-golang | Reliable Neotest adapter for running Go tests in Neovim. | [Link](https://github.com/fredrikaverpil/neotest-golang) |
 | lualine.nvim | A blazing fast and easy to configure neovim statusline plugin written in pure lua. | [Link](https://github.com/nvim-lualine/lualine.nvim) |
 | plenary.nvim | plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. | [Link](https://github.com/nvim-lua/plenary.nvim) |
 | mini.pairs | Neovim Lua plugin to automatically manage character pairs. Part of 'mini.nvim' library. | [Link](https://github.com/echasnovski/mini.pairs) |
@@ -60,6 +64,7 @@
 | tmux.nvim | tmux integration for nvim features pane movement and resizing from within nvim. | [Link](https://github.com/aserowy/tmux.nvim) |
 | blink.cmp | Performant, batteries-included completion plugin for Neovim  | [Link](https://github.com/saghen/blink.cmp) |
 | grug-far.nvim | Find And Replace plugin for neovim | [Link](https://github.com/MagicDuck/grug-far.nvim) |
+| neotest-python | No description available. | [Link](https://github.com/nvim-neotest/neotest-python) |
 | mini.hipatterns | Highlight patterns in text. Part of 'mini.nvim' library.  | [Link](https://github.com/echasnovski/mini.hipatterns) |
 | nvim-treesitter-context | Show code context | [Link](https://github.com/nvim-treesitter/nvim-treesitter-context) |
 | venv-selector.nvim | Allows selection of python virtual environment from within neovim | [Link](https://github.com/linux-cultist/venv-selector.nvim) |

@@ -13,6 +13,6 @@ return {
   cmd = { "Typr", "TyprStats" },
   keys = {
     { "<leader>ty", "<cmd>Typr<cr>", desc = "Open Typr" },
-    { "<leader>ts", "<cmd>TyprStats<cr>", desc = "Typr Stats" },
+    { "<leader>T", "<cmd>TyprStats<cr>", desc = "Typr Stats" },
   },
 }
