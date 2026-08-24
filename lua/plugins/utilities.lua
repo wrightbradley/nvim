@@ -88,10 +88,19 @@ return {
       -- saved working directory. This makes that launch automatically restore
       -- this project's session (buffers, layout) instead of opening empty.
       -- Skipped when nvim is opened with file arguments.
+      --
+      -- DISABLED: firing on every bare `nvim` launch restores the session
+      -- before snacks.dashboard opens, so the dashboard never shows. To
+      -- restore a session manually, use the dashboard's "Restore Session"
+      -- entry or <leader>qs / <leader>qS.
+      -- To selectively auto-restore only tmux-resurrected panes, flip this to
+      -- true and pair it with tmux-resurrect:
+      --   set -g @resurrect-processes '~nvim->NVIM_RESTORE=1 nvim'
+      local auto_restore_session = false
       vim.api.nvim_create_autocmd("VimEnter", {
         nested = true,
         callback = function(args)
-          if vim.fn.argc(-1) == 0 and #args.file == 0 then
+          if auto_restore_session and vim.env.NVIM_RESTORE == "1" and vim.fn.argc(-1) == 0 and #args.file == 0 then
             require("persistence").load()
           end
         end,
